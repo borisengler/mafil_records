@@ -158,6 +158,7 @@ app.get('/api/series/:series_instance_uid', async (req, res) => {
 app.get('/api/pacs/studies', async (req, res) => {
   const { start, end } = req.query;
   const url = `https://pacs-api.devel.mafildb.ics.muni.cz/json?start=${start}&end=${end}&level=STUDY`;
+  console.log('get: ', url);
 
   try {
     const resp = await fetch(
@@ -179,7 +180,7 @@ app.get('/api/pacs/studies', async (req, res) => {
 app.get('/api/pacs/series', async (req, res) => {
   const { accession_number } = req.query;
   const url = `https://pacs-api.devel.mafildb.ics.muni.cz/json?accession_number=${accession_number}&level=SERIES`;
-
+  console.log('get: ', url);
   try {
     const resp = await fetch(
       url,

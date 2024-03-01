@@ -6,7 +6,7 @@
     "build": "react-scripts build",
     "postbuild": "ts-node -P tsconfig.postbuild.json postbuild.ts",
     "eject": "react-scripts eject",
-    "start": "react-scripts start",
+    "start": "WATCHPACK_POLLING=true react-scripts start",
     "test": "react-scripts test"
   },
   "browserslist": {
@@ -61,6 +61,6 @@
     "typescript": "^5.0.4"
   },
   "engines": {
-    "node": "20.x"
+    "node": "16.x"
   }
 }

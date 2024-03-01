@@ -45,5 +45,5 @@ function SuccessfulVisit() {
   );
 }
 
-const ProtectedSuccessfulVisit = withAuthentication(SuccessfulVisit);
+const ProtectedSuccessfulVisit = SuccessfulVisit;
 export default ProtectedSuccessfulVisit

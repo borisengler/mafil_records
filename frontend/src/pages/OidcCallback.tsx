@@ -11,25 +11,31 @@ function OIDCCallback() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log("Inside OIDCCallback useEffect", auth.user, auth);
+  
     const handleUserLoaded = () => {
+      console.log("User loaded:", auth.user);
       if (auth.user && auth.user.profile) {
+        console.log("Navigating to /studies");
         navigate("/studies");
       } else {
-        navigate("/");
+        // console.log("Navigating to /");
+        // navigate("/");
       }
     };
-
+  
+    console.log("Adding user loaded event listener");
     auth.events.addUserLoaded(handleUserLoaded);
-
+  
     return () => {
-      // Clean up the event listener when the component is unmounted
+      console.log("Cleaning up user loaded event listener");
       auth.events.removeUserLoaded(handleUserLoaded);
     };
   }, [auth, navigate]);
 
   return (
     <Container>
-      <LoadingBox loadingMessage='Signing in...' />
+      <LoadingBox loadingMessage='Signing in.' />
     </Container>
   );
 }

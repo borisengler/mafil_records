@@ -2,6 +2,7 @@ import DateRange from '../components/studies/DateRangeSelector';
 
 export async function fetchStudies(dateRange: DateRange) {
   const url = `/api/pacs/studies?start=${dateRange.start}&end=${dateRange.end}`;
+  console.log('getting studies:', url);
 
   try {
     const resp = await fetch(

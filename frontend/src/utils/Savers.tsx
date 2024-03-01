@@ -15,6 +15,7 @@ export async function saveSeriesData(StudyInstanceUID: string): Promise<boolean>
 
     if (response.ok) {
       success = true;
+      console.log('Sucessfuly saved series data to database');
     } else {
       console.error('Failed to save series data to the database');
     }
@@ -42,6 +43,7 @@ export async function saveStudyData(StudyInstanceUID: string): Promise<boolean> 
 
     if (response.ok) {
       success = true;
+      console.log('Sucessfuly saved study data to database');
     } else {
       console.error('Failed to save study data to the database');
     }
