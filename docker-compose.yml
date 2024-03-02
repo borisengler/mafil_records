@@ -12,6 +12,7 @@
         - "3000:3000"
       volumes:
         - ./frontend:/app
+        - ./shared:/app/src/shared
       environment:
         - PORT=3000
     backend:
@@ -20,11 +21,14 @@
         dockerfile: backend.dockerfile
       ports:
         - "4000:4000"
+      volumes:
+        - ./backend:/app
       environment:
         - PORT=4000
         - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
       depends_on:
         - db
+      restart: always
     db:
       image: postgres:latest
       env_file:

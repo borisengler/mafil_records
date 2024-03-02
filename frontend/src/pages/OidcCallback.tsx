@@ -20,7 +20,7 @@ function OIDCCallback() {
         navigate("/studies");
       } else {
         // console.log("Navigating to /");
-        // navigate("/");
+        navigate("/");
       }
     };
   

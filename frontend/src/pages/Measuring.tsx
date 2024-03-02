@@ -19,6 +19,8 @@ import removeSeriesFromLocalStorage from '../utils/RemoveSeriesFromLocalStorage'
 import removeStudiesFromLocalStorage from '../utils/RemoveStudiesFromLocalStorage';
 import { saveSeriesData, saveStudyData } from '../utils/Savers';
 import { getStudyData } from '../utils/DatabaseFetchers';
+import { fetchStudyTemplates } from '../utils/MAFILFetchers';
+import { Template } from "../shared/Types";
 
 export interface StudyData {
   study_instance_uid: string;
@@ -55,6 +57,8 @@ function Measuring() {
     const currentStudyString = localStorage.getItem('currentStudy');
     if (currentStudyString) {
       try {
+        const fetchedTemplates: Template[] = await fetchStudyTemplates(props.StudyID);
+        setStudyTemplates(fetchedTemplates);
         const currentStudy = JSON.parse(currentStudyString);
         const json = await fetchSeries(currentStudy.AccessionNumber);
         // Sort the series by series number, highest (newly added) first
@@ -172,9 +176,10 @@ function Measuring() {
     general_comment: '',
   });
 
+  const [studyTemplates, setStudyTemplates] = useState<Template[]>([]);
+
   useEffect(() => {
     (async () => {
-      console.log(`useEffect called with ${props.StudyInstanceUID}`)
       const fetchedStudyData = await getStudyData(props.StudyInstanceUID);
       setStudyData(fetchedStudyData);
     })();
