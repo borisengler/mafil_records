@@ -1,5 +1,6 @@
 
 export interface Template {
+  uuid: string;
   name: string;
   order_for_displaying: number | null;
   measurement_modality: "MR" | "EF";

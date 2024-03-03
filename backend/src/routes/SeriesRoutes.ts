@@ -1,3 +1,5 @@
+import { SeriesDataProps } from '../model/SeriesProps';
+
 const { Pool } = require('pg');
 
 const connectionString = process.env.DATABASE_URL;

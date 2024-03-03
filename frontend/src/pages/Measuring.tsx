@@ -11,6 +11,7 @@ import SortButton from '../components/common/SortButton';
 import CommonAppBar from '../components/global/AppBarContent';
 import { ResizableSidebar } from '../components/global/ResizableSidebar';
 import { Series, SeriesProps } from '../components/series/Series';
+import { TemplateDropdown } from '../components/series/TemplateDropdown';
 import { StudyProps } from '../components/studies/Study';
 import { SidebarProvider } from '../contexts/SidebarContext';
 import { fetchSeries } from '../utils/PACSFetchers';
@@ -177,6 +178,7 @@ function Measuring() {
   });
 
   const [studyTemplates, setStudyTemplates] = useState<Template[]>([]);
+  const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -220,6 +222,11 @@ function Measuring() {
           <InfoItem label="Visit ID" text={props.AccessionNumber} />
           <InfoItem label="Study UID" text={props.StudyInstanceUID} />
           <InfoItem label="Patient name" text={props.PatientName} />
+          <TemplateDropdown
+            selectedTemplate={selectedTemplate}
+            handleTemplateChange={setSelectedTemplate}
+            templates={studyTemplates}
+          />
           <MultiLineInput
             label="General comment to study"
             name="general_comment"
@@ -232,12 +239,12 @@ function Measuring() {
           </Box>
           <Divider sx={{ my: 3 }} />
         </ResizableSidebar>
-        <ListItems
-          loading={loading}
-          list={listSeries()}
-          errorMessage={fetchError}
-          loadingMessage={`Fetching series...`}
-        />
+          <ListItems
+            loading={loading}
+            list={listSeries()}
+            errorMessage={fetchError}
+            loadingMessage={`Fetching series...`}
+          />
       </React.Fragment>
     </SidebarProvider >
   );

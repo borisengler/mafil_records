@@ -9,8 +9,10 @@ const mafilApiUrl = process.env.MAFIL_API_URL;
 export const getTemplatesForStudy = async (req, res) => {
 
     const { study_id } = req.params;
+    
     const templates: Template[] = [
         {
+            uuid: "t123asd",
             name: "Template1",
             order_for_displaying: 1,
             measurement_modality: "MR",
@@ -49,6 +51,7 @@ export const getTemplatesForStudy = async (req, res) => {
             ]
         },
         {
+            uuid: "t08askj",
             name: "Template2",
             order_for_displaying: 2,
             measurement_modality: "MR",
@@ -62,13 +65,14 @@ export const getTemplatesForStudy = async (req, res) => {
 export const getTemplate = async (req, res) => {
     const { study_id } = req.params;
     const template: Template = {
+        uuid: "t123asd",
         name: "Template1",
         order_for_displaying: 1,
         measurement_modality: "MR",
         comment: "",
         measurementTemplates: [
             {
-                name: "template1",
+                name: "Basic template",
                 order_for_displaying: 1,
                 compulsory: true,
                 comment: null,
