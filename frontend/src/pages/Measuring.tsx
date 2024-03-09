@@ -22,7 +22,7 @@ import { saveSeriesData, saveStudyData } from '../utils/Savers';
 import { getStudyData } from '../utils/DatabaseFetchers';
 import { postValidationData } from '../utils/ValidationFetchers';
 import { fetchStudyTemplates } from '../utils/MAFILFetchers';
-import { FormattedTemplate, SeriesProps } from "../shared/Types";
+import { FormattedTemplate, SeriesProps } from '../../../shared/Types';
 
 export interface StudyData {
   study_instance_uid: string;

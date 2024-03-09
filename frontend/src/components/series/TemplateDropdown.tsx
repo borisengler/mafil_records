@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { IconButton, MenuItem, Select, SelectChangeEvent, Tooltip, FormControl, InputLabel } from '@mui/material';
-import { FormattedTemplate } from "../../shared/Types";
+import { FormattedTemplate } from "../../../../shared/Types";
 
 
 interface TemplateDropdownProps {

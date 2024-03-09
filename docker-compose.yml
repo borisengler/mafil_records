@@ -12,7 +12,7 @@
         - "3000:3000"
       volumes:
         - ./frontend:/app
-        - ./shared:/app/src/shared
+        - ./shared:/shared
       environment:
         - PORT=3000
     backend:

@@ -11,7 +11,7 @@ import React, { useEffect, useState } from 'react';
 import CommonCard, { ExpandMore } from '../common/CommonCard';
 import { MultiLineInput, MultiLineInputProps, SingleLineInput, SingleLineInputProps } from '../common/Inputs';
 import { getSeriesData } from '../../utils/DatabaseFetchers';
-import { SeriesData, SeriesProps } from "../../shared/Types";
+import { SeriesData, SeriesProps } from "../../../../shared/Types";
 
 export function SeriesSingleLineInput({ name, label, value, onChange }: SingleLineInputProps) {
   return (

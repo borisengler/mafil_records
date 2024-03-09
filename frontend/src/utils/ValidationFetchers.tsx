@@ -1,4 +1,4 @@
-import { SeriesProps, FormattedTemplate} from "../shared/Types"
+import { SeriesProps, FormattedTemplate} from "../../../shared/Types"
 
 
 export async function postValidationData(series: SeriesProps[], template: FormattedTemplate) {

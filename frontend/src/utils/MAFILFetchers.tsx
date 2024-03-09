@@ -1,6 +1,4 @@
-import { FormattedTemplate } from "../shared/Types";
-
-
+import { FormattedTemplate } from "../../../shared/Types";
 
 export async function fetchStudyTemplates(study_id: string) {
     const url = `/api/study/${study_id}/template`;
