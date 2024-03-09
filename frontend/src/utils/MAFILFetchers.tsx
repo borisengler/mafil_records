@@ -1,4 +1,5 @@
-import { Template } from "../shared/Types"
+import { FormattedTemplate } from "../shared/Types";
+
 
 
 export async function fetchStudyTemplates(study_id: string) {
@@ -11,7 +12,7 @@ export async function fetchStudyTemplates(study_id: string) {
           mode: 'cors',
         });
 
-      const templates: Template[] = await response.json();
+      const templates: FormattedTemplate[] = await response.json();
       return templates;
     } catch (err) {
       throw err;

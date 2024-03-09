@@ -1,10 +1,11 @@
 
 export interface Template {
-  id: string;
+  id: number;
   name: string;
   order_for_displaying: number | null;
   measurement_modality: "MR" | "EF";
   versioned_templates?: VersionedTemplate[];
+  is_default: boolean;
 }
 
 export interface VersionedTemplate {
@@ -131,7 +132,8 @@ export interface SeriesProps {
 
 export interface ValidatedSeries {
   ValidationResult: "OK" | "NOK" | "NOT_FOUND";
-  UserInput: MeasurementTemplatePair[],
+  UserInput: MeasurementTemplatePair[];
+  OrderForDisplaying: number;
   SeriesInstanceUID: string;
   SequenceFileName: string;
   AcquisitionMatrix: number[];
@@ -161,4 +163,5 @@ export interface ValidatedSeries {
 export interface MissingSeries {
   UserInput: MeasurementTemplatePair[],
   SeriesDescription: string;
+  OrderForDisplaying: number;
 }

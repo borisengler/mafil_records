@@ -1,4 +1,4 @@
-import { Template, FormattedTemplate, VersionedTemplate } from "../shared/Types"
+import { Template, FormattedTemplate, VersionedTemplate, MeasurementTemplate, MeasurementTemplatePair } from "../../../shared/Types"
 
 const axios = require('axios');
 const express = require("express");
@@ -55,6 +55,8 @@ export const getDefaultTemplateForStudy = async (req, res) => {
     const latestVersionedTemplate: VersionedTemplate | null = sortedVersionedTemplates[0] || null;
 
     const formattedTemplate: FormattedTemplate = {
+        id: `${defaultTemplate.id.toString()} - ${latestVersionedTemplate.version}`,
+        version: latestVersionedTemplate.version,
         name: `${defaultTemplate.name} (${latestVersionedTemplate.version})`,
         is_default: defaultTemplate.is_default,
         order_for_displaying: defaultTemplate.order_for_displaying,
@@ -65,7 +67,7 @@ export const getDefaultTemplateForStudy = async (req, res) => {
 
 }
 
-const MTP1 = {
+const MTP1: MeasurementTemplatePair= {
     key: "key1",
     key_source: "ekg",
     user_input: false,
@@ -74,7 +76,7 @@ const MTP1 = {
     valueB: null,
 };
 
-const MTP2 = {
+const MTP2: MeasurementTemplatePair = {
     key: "key2",
     key_source: "measurements",
     user_input: false,
@@ -83,7 +85,7 @@ const MTP2 = {
     valueB: null
 };
 
-const MT1 = {
+const MT1: MeasurementTemplate= {
     name: "localizer",
     order_for_displaying: 1,
     compulsory: true,
@@ -101,6 +103,13 @@ const MT2 = {
     comment: "Optional",
 }
 
+const MT4 = {
+    name: "test",
+    order_for_displaying: 3,
+    compulsory: false,
+    comment: "Optional",
+}
+
 const MT3 = {
     name: "t2_spc_FLAIR_sag_p2_isoX",
     order_for_displaying: 3,
@@ -113,7 +122,9 @@ const VT1: VersionedTemplate = {
     comment: "",
     measurementTemplates: [
         MT1,
-        MT2
+        MT2,
+        MT3,
+        MT4
     ]
 }
 
@@ -126,13 +137,13 @@ const T1: Template = {
     versioned_templates: [VT1]
 }
 
-const VT2 = {
+const VT2: VersionedTemplate = {
     version: 1,
     comment: "",
     measurementTemplates: []
 }
 
-const T2 = {
+const T2: Template = {
     id: 2,
     name: "Template2",
     is_default: false,
