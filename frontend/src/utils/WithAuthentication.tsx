@@ -8,6 +8,8 @@ function withAuthentication<P extends object>(
 ): React.FunctionComponent<P> {
   const WithAuth: React.FC<P> = (props) => {
     const auth = useAuth();
+    console.log('auth');
+    console.log(auth);
 
     if (!auth.isLoading && !auth.isAuthenticated) {
       console.log('withAuthentication: is not loading and is not authenticated');

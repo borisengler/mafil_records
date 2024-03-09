@@ -8,10 +8,11 @@ const port = process.env.PORT || 4000;
 import fetch from 'node-fetch';
 import { PostStudyCommentProps } from './model/StudyProps';
 import { SeriesDataProps } from './model/SeriesProps';
-import { getStudies, getStudy, postStudyComment } from "./routes/StudyRoutes"
-import { getSeries, getSerie, postSeries } from "./routes/SeriesRoutes"
-import { getPacsSeries, getPacsStudies } from "./routes/PACSRoutes"
-import { getTemplatesForStudy, getTemplate} from './routes/TemplateRoutes'
+import { getStudies, getStudy, postStudyComment } from "./routes/StudyRoutes";
+import { getSeries, getSerie, postSeries } from "./routes/SeriesRoutes";
+import { getPacsSeries, getPacsStudies } from "./routes/PACSRoutes";
+import { getTemplatesForStudy, getDefaultTemplateForStudy} from './routes/TemplateRoutes';
+import { validateSeriesForTemplate } from './routes/ValidationRoutes';
 require('dotenv').config();
 
 app.use(express.json());
@@ -52,4 +53,7 @@ app.get('/api/pacs/series', getPacsSeries);
 
 
 app.get('/api/study/:study_id/template', getTemplatesForStudy);
-app.get('/api/template/:template_id', getTemplate);
+app.get('/api/study/:study_id/default_template', getDefaultTemplateForStudy);
+
+app.post('/api/series/validate', validateSeriesForTemplate);
+

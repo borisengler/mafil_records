@@ -1,28 +1,25 @@
 import React, { useState } from 'react';
 import { IconButton, MenuItem, Select, SelectChangeEvent, Tooltip, FormControl, InputLabel } from '@mui/material';
-import { Template } from "../../shared/Types";
+import { FormattedTemplate } from "../../shared/Types";
 
 
 interface TemplateDropdownProps {
-  selectedTemplate: string | null;
-  handleTemplateChange: (template: string | null) => void;
-  templates: Template[];
+  selectedTemplate: string;
+  handleTemplateChange: (template: string) => void;
+  templates: FormattedTemplate[];
 }
 
 export const TemplateDropdown: React.FC<TemplateDropdownProps> = ({ selectedTemplate, handleTemplateChange, templates }) => {
-  const [template, setTemplate] = useState<string | null>(selectedTemplate);
+  const [template, setTemplate] = useState<string>(selectedTemplate || "");
 
-  const onTemplateChange = (event: SelectChangeEvent<string | null>) => {
+  const onTemplateChange = (event: SelectChangeEvent<string>) => {
     const selectedValue = event.target.value;
     setTemplate(selectedValue);
     handleTemplateChange(selectedValue);
   };
 
-  const isTemplateSelected = (uuid: string | null) => {
-    if (uuid != null && template != null) {
-      return uuid == template;
-    }
-    return true;
+  const isTemplateSelected = (id: string) => {
+    return id == template;
   }
 
   return (
@@ -37,7 +34,7 @@ export const TemplateDropdown: React.FC<TemplateDropdownProps> = ({ selectedTemp
       >
         <MenuItem value="">No template</MenuItem>
         {templates.map((template) => (
-          <MenuItem key={template.uuid} value={template.uuid} selected={isTemplateSelected(template.uuid)}>
+          <MenuItem key={template.id} value={template.id} selected={isTemplateSelected(template.id)}>
             {template.name}
           </MenuItem>
         ))}

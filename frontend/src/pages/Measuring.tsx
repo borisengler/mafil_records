@@ -10,7 +10,7 @@ import SaveButton from '../components/common/SaveButton';
 import SortButton from '../components/common/SortButton';
 import CommonAppBar from '../components/global/AppBarContent';
 import { ResizableSidebar } from '../components/global/ResizableSidebar';
-import { Series, SeriesProps } from '../components/series/Series';
+import { Series } from '../components/series/Series';
 import { TemplateDropdown } from '../components/series/TemplateDropdown';
 import { StudyProps } from '../components/studies/Study';
 import { SidebarProvider } from '../contexts/SidebarContext';
@@ -20,8 +20,9 @@ import removeSeriesFromLocalStorage from '../utils/RemoveSeriesFromLocalStorage'
 import removeStudiesFromLocalStorage from '../utils/RemoveStudiesFromLocalStorage';
 import { saveSeriesData, saveStudyData } from '../utils/Savers';
 import { getStudyData } from '../utils/DatabaseFetchers';
+import { postValidationData } from '../utils/ValidationFetchers';
 import { fetchStudyTemplates } from '../utils/MAFILFetchers';
-import { Template } from "../shared/Types";
+import { FormattedTemplate, SeriesProps } from "../shared/Types";
 
 export interface StudyData {
   study_instance_uid: string;
@@ -58,7 +59,7 @@ function Measuring() {
     const currentStudyString = localStorage.getItem('currentStudy');
     if (currentStudyString) {
       try {
-        const fetchedTemplates: Template[] = await fetchStudyTemplates(props.StudyID);
+        const fetchedTemplates: FormattedTemplate[] = await fetchStudyTemplates(props.StudyID);
         setStudyTemplates(fetchedTemplates);
         const currentStudy = JSON.parse(currentStudyString);
         const json = await fetchSeries(currentStudy.AccessionNumber);
@@ -177,8 +178,9 @@ function Measuring() {
     general_comment: '',
   });
 
-  const [studyTemplates, setStudyTemplates] = useState<Template[]>([]);
-  const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
+  const [studyTemplates, setStudyTemplates] = useState<FormattedTemplate[]>([]);
+  const [selectedTemplate, setSelectedTemplate] = useState<string>("");
+  
 
   useEffect(() => {
     (async () => {
@@ -186,6 +188,15 @@ function Measuring() {
       setStudyData(fetchedStudyData);
     })();
   }, [props.StudyInstanceUID]);
+
+  useEffect(() => {
+    const choosenTemplate = studyTemplates.find((template) => template.id === selectedTemplate);
+
+    if (choosenTemplate != null) {
+      postValidationData(seriesJson, choosenTemplate);
+    }
+  
+  }, [studyTemplates, selectedTemplate, seriesJson]);
 
   const handleTextChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = event.target;

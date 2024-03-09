@@ -1,11 +1,17 @@
 
 export interface Template {
-  uuid: string;
+  id: string;
   name: string;
   order_for_displaying: number | null;
   measurement_modality: "MR" | "EF";
+  versioned_templates?: VersionedTemplate[];
+}
+
+export interface VersionedTemplate {
+  version: number,
   comment: string | null;
   measurementTemplates?: MeasurementTemplate[];
+  createdFrom?: Session;
 }
 
 export interface MeasurementTemplate {
@@ -23,6 +29,16 @@ export interface MeasurementTemplatePair {
   type_of_comparison: "equal" | "range";
   valueA: string | null;
   valueB: string | null;
+}
+
+export interface FormattedTemplate {
+  id: string;
+  name: string;
+  version: number;
+  is_default: boolean;
+  order_for_displaying: number | null;
+  comment: string | null;
+  measurementTemplates?: MeasurementTemplate[];
 }
 
 export interface PacsStudyAPI {
@@ -56,4 +72,93 @@ export interface PacsStudy {
   StudyDescription: string;
   StudyID: string;
 
+}
+
+export interface Session {
+  uuid: string;
+}
+
+export interface SeriesData {
+  series_instance_uid: string;
+  seq_state: string;
+  is_selected: boolean;
+  is_expanded: boolean;
+  measured: Date;
+  last_updated: Date;
+  measurement_notes: string;
+  stim_protocol: string;
+  stim_log_file: string;
+  fyzio_raw_file: string;
+  general_eeg: boolean;
+  general_et: boolean;
+  bp_ekg: boolean;
+  bp_resp: boolean;
+  bp_gsr: boolean;
+  bp_acc: boolean;
+  siemens_ekg: boolean;
+  siemens_resp: boolean;
+  siemens_gsr: boolean;
+  siemens_acc: boolean;
+}
+
+export interface SeriesProps {
+  SeriesInstanceUID: string;
+  SequenceFileName: string;
+  AcquisitionMatrix: number[];
+  BodyPartExamined: string;
+  FlipAngle: string;
+  ImageType: string[];
+  InversionTime: number | null;
+  NumberOfSeriesRelatedInstances: number;
+  OperatorsName: string;
+  PAT: string;
+  PatientPosition: string;
+  PercentPhaseFieldOfView: string;
+  ProtocolName: string;
+  RepetitionTime: string;
+  SOPClassUID: string;
+  SeriesDescription: string;
+  SeriesNumber: number;
+  SeriesTime: string;
+  SliceThickness: string;
+  SoftwareVersions: string;
+  SpacingBetweenSlices: number | null;
+  StationName: string;
+  onCopy: (seriesId: string) => void; // onCopy handler passed from parent component
+  onPaste: () => string | null; // onPaste handler passed from parent component
+}
+
+
+export interface ValidatedSeries {
+  ValidationResult: "OK" | "NOK" | "NOT_FOUND";
+  UserInput: MeasurementTemplatePair[],
+  SeriesInstanceUID: string;
+  SequenceFileName: string;
+  AcquisitionMatrix: number[];
+  BodyPartExamined: string;
+  FlipAngle: string;
+  ImageType: string[];
+  InversionTime: number | null;
+  NumberOfSeriesRelatedInstances: number;
+  OperatorsName: string;
+  PAT: string;
+  PatientPosition: string;
+  PercentPhaseFieldOfView: string;
+  ProtocolName: string;
+  RepetitionTime: string;
+  SOPClassUID: string;
+  SeriesDescription: string;
+  SeriesNumber: number;
+  SeriesTime: string;
+  SliceThickness: string;
+  SoftwareVersions: string;
+  SpacingBetweenSlices: number | null;
+  StationName: string;
+  onCopy: (seriesId: string) => void; // onCopy handler passed from parent component
+  onPaste: () => string | null; // onPaste handler passed from parent component
+}
+
+export interface MissingSeries {
+  UserInput: MeasurementTemplatePair[],
+  SeriesDescription: string;
 }

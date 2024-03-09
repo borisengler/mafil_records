@@ -11,6 +11,7 @@ import React, { useEffect, useState } from 'react';
 import CommonCard, { ExpandMore } from '../common/CommonCard';
 import { MultiLineInput, MultiLineInputProps, SingleLineInput, SingleLineInputProps } from '../common/Inputs';
 import { getSeriesData } from '../../utils/DatabaseFetchers';
+import { SeriesData, SeriesProps } from "../../shared/Types";
 
 export function SeriesSingleLineInput({ name, label, value, onChange }: SingleLineInputProps) {
   return (
@@ -44,56 +45,6 @@ interface CheckboxInputProps {
   name: string;
 }
 
-export interface SeriesProps {
-  SeriesInstanceUID: string;
-  SequenceFileName: string;
-  AcquisitionMatrix: number[];
-  BodyPartExamined: string;
-  FlipAngle: string;
-  ImageType: string[];
-  InversionTime: number | null;
-  NumberOfSeriesRelatedInstances: number;
-  OperatorsName: string;
-  PAT: string;
-  PatientPosition: string;
-  PercentPhaseFieldOfView: string;
-  ProtocolName: string;
-  RepetitionTime: string;
-  SOPClassUID: string;
-  SeriesDescription: string;
-  SeriesNumber: number;
-  SeriesTime: string;
-  SliceThickness: string;
-  SoftwareVersions: string;
-  SpacingBetweenSlices: number | null;
-  StationName: string;
-  onCopy: (seriesId: string) => void; // onCopy handler passed from parent component
-  onPaste: () => string | null; // onPaste handler passed from parent component
-}
-
-
-export interface SeriesData {
-  series_instance_uid: string;
-  seq_state: string;
-  is_selected: boolean;
-  is_expanded: boolean;
-  measured: Date;
-  last_updated: Date;
-  measurement_notes: string;
-  stim_protocol: string;
-  stim_log_file: string;
-  fyzio_raw_file: string;
-  general_eeg: boolean;
-  general_et: boolean;
-  bp_ekg: boolean;
-  bp_resp: boolean;
-  bp_gsr: boolean;
-  bp_acc: boolean;
-  siemens_ekg: boolean;
-  siemens_resp: boolean;
-  siemens_gsr: boolean;
-  siemens_acc: boolean;
-}
 
 export function Series(props: SeriesProps) {
   type SeriesStateEnum = 'successful' | 'failed' | 'pending';
