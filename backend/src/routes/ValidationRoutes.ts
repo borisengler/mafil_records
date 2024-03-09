@@ -13,8 +13,6 @@ export const validateSeriesForTemplate = async (req, res) => {
     });
 
     const missingSeries = findMissingSeries(series, validationData.template);
-    console.log('missingSeries');
-    console.log(missingSeries);
     const result = {
         validatedSeries: validatedSeries,
         missingSeries: missingSeries

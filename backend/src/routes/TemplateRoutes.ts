@@ -18,7 +18,7 @@ export const getTemplatesForStudy = async (req, res) => {
     const versionedTemplates: FormattedTemplate[] = templates.flatMap((template) => {
         return Array.isArray(template.versioned_templates) 
           ? template.versioned_templates.map((vTemplate) => ({
-              id: `${template.id}-(${vTemplate.version})`,
+              id: getFormattedTemplateId(template.id, vTemplate.version),
               name: `${template.name} (${vTemplate.version})`,
               version: vTemplate.version,
               is_default: template.is_default,
@@ -35,8 +35,6 @@ export const getTemplatesForStudy = async (req, res) => {
         return orderComparison === 0 ? a.version - b.version : orderComparison;
       });
       
-      console.log(versionedTemplates);
-
     res.status(200).json(versionedTemplates);
 }
 
@@ -49,13 +47,17 @@ export const getDefaultTemplateForStudy = async (req, res) => {
     ];
 
     const defaultTemplate: Template = templates.find((template) => template.is_default);
+    if (defaultTemplate == null) {
+        res.status(204).send();
+        return;
+    }
 
     const versionedTemplates: VersionedTemplate[] = defaultTemplate?.versioned_templates || [];
     const sortedVersionedTemplates = versionedTemplates.sort((a, b) => b.version - a.version);
     const latestVersionedTemplate: VersionedTemplate | null = sortedVersionedTemplates[0] || null;
 
     const formattedTemplate: FormattedTemplate = {
-        id: `${defaultTemplate.id.toString()} - ${latestVersionedTemplate.version}`,
+        id: getFormattedTemplateId(defaultTemplate.id, latestVersionedTemplate.version),
         version: latestVersionedTemplate.version,
         name: `${defaultTemplate.name} (${latestVersionedTemplate.version})`,
         is_default: defaultTemplate.is_default,
@@ -66,6 +68,10 @@ export const getDefaultTemplateForStudy = async (req, res) => {
     res.status(200).json(formattedTemplate);
 
 }
+
+const getFormattedTemplateId = (templateId: number, templateVersion: number) : string => {
+    return `${templateId} - ${templateVersion}`;
+};
 
 const MTP1: MeasurementTemplatePair= {
     key: "key1",

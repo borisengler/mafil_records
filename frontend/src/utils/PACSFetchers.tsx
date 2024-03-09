@@ -1,5 +1,5 @@
 import DateRange from '../components/studies/DateRangeSelector';
-import {PacsStudyAPI, PacsStudy} from "../../../shared/Types";
+import {PacsStudyAPI, PacsStudy, SeriesProps} from "../../../shared/Types";
 
 export async function fetchStudies(dateRange: DateRange) {
   const url = `/api/pacs/studies?start=${dateRange.start}&end=${dateRange.end}`;
@@ -16,6 +16,7 @@ export async function fetchStudies(dateRange: DateRange) {
       const parsedDate = new Date(visit.StudyDate.substr(0, 4), parseInt(visit.StudyDate.substr(4, 2)) - 1, visit.StudyDate.substr(6, 2));
       return { ...visit, StudyDate: parsedDate };
     });
+
     return parsedVisits;
   } catch (err) {
     throw err;
@@ -32,7 +33,8 @@ export async function fetchSeries(accessionNumber: string) {
         method: 'GET',
         mode: 'cors',
       });
-    const series = await resp.json();
+    const series: SeriesProps[] = await resp.json();
+    console.log(series);
     return series;
   } catch (err) {
     console.error(err)

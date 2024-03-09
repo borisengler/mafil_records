@@ -10,16 +10,14 @@ interface TemplateDropdownProps {
 }
 
 export const TemplateDropdown: React.FC<TemplateDropdownProps> = ({ selectedTemplate, handleTemplateChange, templates }) => {
-  const [template, setTemplate] = useState<string>(selectedTemplate || "");
 
   const onTemplateChange = (event: SelectChangeEvent<string>) => {
     const selectedValue = event.target.value;
-    setTemplate(selectedValue);
     handleTemplateChange(selectedValue);
   };
 
   const isTemplateSelected = (id: string) => {
-    return id == template;
+    return id == selectedTemplate;
   }
 
   return (
@@ -28,7 +26,7 @@ export const TemplateDropdown: React.FC<TemplateDropdownProps> = ({ selectedTemp
       <Select
         labelId="template-dropdown-label"
         id="template-dropdown"
-        value={template}
+        value={selectedTemplate}
         onChange={onTemplateChange}
         label="Select Template"
       >

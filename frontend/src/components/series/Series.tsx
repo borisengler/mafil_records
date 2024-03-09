@@ -99,6 +99,7 @@ export function Series(props: SeriesProps) {
 
   useEffect(() => {
     localStorage.setItem(`series-${props.SeriesInstanceUID}`, JSON.stringify(seriesData))
+    console.log(seriesData);
   }, [seriesData]);
 
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {

@@ -21,8 +21,8 @@ import removeStudiesFromLocalStorage from '../utils/RemoveStudiesFromLocalStorag
 import { saveSeriesData, saveStudyData } from '../utils/Savers';
 import { getStudyData } from '../utils/DatabaseFetchers';
 import { postValidationData } from '../utils/ValidationFetchers';
-import { fetchStudyTemplates } from '../utils/MAFILFetchers';
-import { FormattedTemplate, SeriesProps } from '../../../shared/Types';
+import { fetchStudyDefaultTemplates, fetchStudyTemplates } from '../utils/MAFILFetchers';
+import { FormattedTemplate, MissingSeries, SeriesProps, ValidatedSeries } from '../../../shared/Types';
 
 export interface StudyData {
   study_instance_uid: string;
@@ -33,13 +33,26 @@ function Measuring() {
   const auth = useAuth();
   const [open, setOpen] = React.useState(true);
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
-  const [seriesJson, setSeriesJson] = useState<SeriesProps[]>([]);
+  const [pacsSeries, setPacsSeries] = useState<SeriesProps[]>([]);
+  const [validatedSeries, setValidatedSeries] = useState<ValidatedSeries[]>([]);
+  const [missingSeries, setMissingSeries] = useState<MissingSeries[]>([]);
   const [selectedSeqId, setSelectedSeqId] = React.useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'success' | 'failed'>('idle');
   const [fetchStatus, setFetchStatus] = useState<'idle' | 'saving' | 'success' | 'failed'>('idle');
   const [fetchError, setFetchError] = useState<string | null>(null);
+  const [props, setProps] = useState<StudyProps>(() => {
+    const localStudy = localStorage.getItem(`currentStudy`);
+    return localStudy ? JSON.parse(localStudy) : {};
+  });
 
+  const [studyData, setStudyData] = useState<StudyData>({
+    study_instance_uid: props.StudyInstanceUID,
+    general_comment: '',
+  });
+
+  const [studyTemplates, setStudyTemplates] = useState<FormattedTemplate[]>([]);
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string>("");
   async function saveRecords(): Promise<boolean> {
     setSaveStatus('saving');
     const seriesSuccess = await saveSeriesData(props.StudyInstanceUID);
@@ -61,13 +74,18 @@ function Measuring() {
       try {
         const fetchedTemplates: FormattedTemplate[] = await fetchStudyTemplates(props.StudyID);
         setStudyTemplates(fetchedTemplates);
+        const defaultTemplate = await fetchStudyDefaultTemplates(props.StudyID);
+        if (defaultTemplate !== undefined && selectedTemplateId === '') {
+          setSelectedTemplateId(defaultTemplate.id);
+        }
+
         const currentStudy = JSON.parse(currentStudyString);
         const json = await fetchSeries(currentStudy.AccessionNumber);
         // Sort the series by series number, highest (newly added) first
         json.sort((a: SeriesProps, b: SeriesProps) => a.SeriesNumber - b.SeriesNumber);
         setFetchError(null);
         setFetchStatus('success');
-        setSeriesJson(json);
+        setPacsSeries(json);
       } catch (error) {
         setFetchStatus('failed');
         setFetchError('Fetching series failed, check internet connection and try again. If problem persists, contact your system administrator.');
@@ -95,13 +113,13 @@ function Measuring() {
     const newSortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
     setSortOrder(newSortOrder);
 
-    const sortedData = [...seriesJson];
+    const sortedData = [...pacsSeries];
     if (newSortOrder === 'asc') {
       sortedData.sort((a: SeriesProps, b: SeriesProps) => a.SeriesNumber - b.SeriesNumber);
     } else {
       sortedData.sort((a: SeriesProps, b: SeriesProps) => b.SeriesNumber - a.SeriesNumber);
     }
-    setSeriesJson(sortedData);
+    setPacsSeries(sortedData);
   };
 
   useEffect(() => {
@@ -137,7 +155,7 @@ function Measuring() {
   };
 
   function listSeries() {
-    return seriesJson.map((series) => (
+    return pacsSeries.map((series) => (
       <Series
         key={series.SeriesInstanceUID}
         SeriesInstanceUID={series.SeriesInstanceUID}
@@ -168,21 +186,7 @@ function Measuring() {
     ));
   }
 
-  const [props, setProps] = useState<StudyProps>(() => {
-    const localStudy = localStorage.getItem(`currentStudy`);
-    return localStudy ? JSON.parse(localStudy) : {};
-  });
-
-  const [studyData, setStudyData] = useState<StudyData>({
-    study_instance_uid: props.StudyInstanceUID,
-    general_comment: '',
-  });
-
-  const [studyTemplates, setStudyTemplates] = useState<FormattedTemplate[]>([]);
-  const [selectedTemplate, setSelectedTemplate] = useState<string>("");
-  
-
-  useEffect(() => {
+ useEffect(() => {
     (async () => {
       const fetchedStudyData = await getStudyData(props.StudyInstanceUID);
       setStudyData(fetchedStudyData);
@@ -190,13 +194,17 @@ function Measuring() {
   }, [props.StudyInstanceUID]);
 
   useEffect(() => {
-    const choosenTemplate = studyTemplates.find((template) => template.id === selectedTemplate);
+    (async () => {
+      const choosenTemplate = studyTemplates.find((template) => template.id === selectedTemplateId);
 
-    if (choosenTemplate != null) {
-      postValidationData(seriesJson, choosenTemplate);
-    }
+      if (choosenTemplate != null) {
+        const {validatedSeries, missingSeries} = await postValidationData(pacsSeries, choosenTemplate);
+        setValidatedSeries(validatedSeries);
+        setMissingSeries(missingSeries);
+      }
+    })()
   
-  }, [studyTemplates, selectedTemplate, seriesJson]);
+  }, [studyTemplates, selectedTemplateId, pacsSeries]);
 
   const handleTextChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = event.target;
@@ -234,8 +242,8 @@ function Measuring() {
           <InfoItem label="Study UID" text={props.StudyInstanceUID} />
           <InfoItem label="Patient name" text={props.PatientName} />
           <TemplateDropdown
-            selectedTemplate={selectedTemplate}
-            handleTemplateChange={setSelectedTemplate}
+            selectedTemplate={selectedTemplateId}
+            handleTemplateChange={setSelectedTemplateId}
             templates={studyTemplates}
           />
           <MultiLineInput

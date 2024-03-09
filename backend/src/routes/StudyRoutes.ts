@@ -1,3 +1,5 @@
+import { PostStudyCommentProps } from "../model/StudyProps";
+
 const { Pool } = require('pg');
 
 const connectionString = process.env.DATABASE_URL;
@@ -15,10 +17,8 @@ export const getStudies = async (req, res) => {
   }
 }
 
-export const postStudyComment = async (req: Request<{}, {}, PostStudyCommentProps>, res) => {
+export const postStudyComment = async (req, res) => {
   const studyData: PostStudyCommentProps = req.body;
-
-  console.log("studyData: ", studyData);
 
   try {
     await pool.query(
@@ -32,7 +32,6 @@ export const postStudyComment = async (req: Request<{}, {}, PostStudyCommentProp
         studyData.general_comment,
       ]
     );
-    console.log("ok");
     res.status(200).send();
   } catch (err) {
     console.error(err);
