@@ -1,7 +1,7 @@
-import { SeriesProps, FormattedTemplate, ValidatedSeries, MissingSeries} from "../../../shared/Types"
+import { PACSSeries, FormattedTemplate, ValidatedSeries, MissingSeries} from "../../../shared/Types"
 
 
-export async function postValidationData(series: SeriesProps[], template: FormattedTemplate)
+export async function postValidationData(series: PACSSeries[], template: FormattedTemplate)
   : Promise<{validatedSeries: ValidatedSeries[], missingSeries: MissingSeries[]}> {
     const url = `/api/series/validate`;
 

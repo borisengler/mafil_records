@@ -1,7 +1,7 @@
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { IconButton, MenuItem, Select, SelectChangeEvent, Tooltip } from '@mui/material';
+import { Icon, IconButton, MenuItem, Select, SelectChangeEvent, Tooltip, breadcrumbsClasses } from '@mui/material';
 import Box from '@mui/material/Box';
 import CardActions from '@mui/material/CardActions';
 import Checkbox from '@mui/material/Checkbox';
@@ -11,7 +11,10 @@ import React, { useEffect, useState } from 'react';
 import CommonCard, { ExpandMore } from '../common/CommonCard';
 import { MultiLineInput, MultiLineInputProps, SingleLineInput, SingleLineInputProps } from '../common/Inputs';
 import { getSeriesData } from '../../utils/DatabaseFetchers';
-import { SeriesData, SeriesProps } from "../../../../shared/Types";
+import { SeriesData, PACSSeries, SeriesProps } from "../../../../shared/Types";
+import { getClockNumberUtilityClass } from '@mui/x-date-pickers/TimeClock/clockNumberClasses';
+import { Cancel, CancelRounded, CheckCircle, CheckCircleOutline, Help, HelpRounded, Warning, WarningRounded } from '@mui/icons-material';
+import { CalendarIcon } from '@mui/x-date-pickers';
 
 export function SeriesSingleLineInput({ name, label, value, onChange }: SingleLineInputProps) {
   return (
@@ -66,7 +69,7 @@ export function Series(props: SeriesProps) {
 
   const [seriesData, setSeriesData] = useState<SeriesData>({
     // Default values
-    series_instance_uid: props.SeriesInstanceUID,
+    series_instance_uid: props.validatedSerie ? props.validatedSerie.SeriesInstanceUID : "",
     seq_state: 'pending',
     is_selected: false,
     is_expanded: false,
@@ -86,20 +89,25 @@ export function Series(props: SeriesProps) {
     siemens_resp: false,
     siemens_gsr: false,
     siemens_acc: false,
+    validation_status: props.validatedSerie ? props.validatedSerie.ValidationResult : 'MISSING',
   });
 
   useEffect(() => {
     const fetchData = async () => {
-      const fetchedSeriesData = await getSeriesData(props.SeriesInstanceUID);
-      setSeriesData(fetchedSeriesData);
+      if (props.validatedSerie !== null) {
+        const fetchedSeriesData = await getSeriesData(props.validatedSerie.SeriesInstanceUID);
+        fetchedSeriesData.validation_status = props.validatedSerie ? props.validatedSerie.ValidationResult : 'MISSING';
+        setSeriesData(fetchedSeriesData);
+      }
     };
 
     fetchData();
-  }, [props.SeriesInstanceUID]);
+  }, [props.validatedSerie && props.validatedSerie.SeriesInstanceUID]);
 
   useEffect(() => {
-    localStorage.setItem(`series-${props.SeriesInstanceUID}`, JSON.stringify(seriesData))
-    console.log(seriesData);
+    if (props.validatedSerie !== null) {
+      localStorage.setItem(`series-${props.validatedSerie.SeriesInstanceUID}`, JSON.stringify(seriesData))
+    }
   }, [seriesData]);
 
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -135,11 +143,13 @@ export function Series(props: SeriesProps) {
   }
 
   const handleSeriesCopy = () => {
-    setSeriesData({
-      ...seriesData,
-      is_selected: !seriesData.is_selected
-    });
-    props.onCopy(`series-${props.SeriesInstanceUID}`); // invoke parent onCopy handler
+    if (props.validatedSerie !== null && props.validatedSerie.SeriesInstanceUID !== null) {
+      setSeriesData({
+        ...seriesData,
+        is_selected: !seriesData.is_selected
+      });
+    props.onCopy(`series-${props.validatedSerie.SeriesInstanceUID}`); // invoke parent onCopy handler
+    }
   };
 
   const handleSeriesPaste = () => {
@@ -191,6 +201,36 @@ export function Series(props: SeriesProps) {
     }
   }
 
+  const description = props.validatedSerie ? props.validatedSerie.SeriesDescription : (props.missingSerie ? props.missingSerie.SeriesDescription : '');
+  const seriesNumber = props.validatedSerie ? props.validatedSerie.SeriesNumber : '';
+
+  const measured = props.validatedSerie !== null ? seriesData.measured.toLocaleString() : '-';
+  const last_updated = props.validatedSerie !== null ? seriesData.last_updated.toLocaleString() : '-';
+  const num_of_instances = props.validatedSerie !== null ? props.validatedSerie.NumberOfSeriesRelatedInstances : '-';
+  
+  const disableInteractions = props.validatedSerie === null;
+
+  let status_icon;
+  let status_text;
+  switch (seriesData.validation_status) {
+    case "OK":
+      status_icon = <CheckCircle/>;
+      status_text = "Valid";
+      break;
+    case "NOK":
+      status_icon = <CancelRounded/>;
+      status_text = "Invalid";
+      break;
+    case "NOT_FOUND":
+      status_icon = <HelpRounded/>;
+      status_text = "Not found in template";
+      break;
+    case "MISSING":
+      status_icon = <WarningRounded/>;
+      status_text = "Missing to fill template";
+      break;
+  }
+
   return (
     <CommonCard>
       <Box>
@@ -198,28 +238,28 @@ export function Series(props: SeriesProps) {
 
           <Box
             fontWeight={'bold'}
-            width={Math.max(38, props.SeriesDescription.length + props.SeriesNumber.toString.length) + 'ch'}
+            width={Math.max(38, description.length + seriesNumber.toString.length) + 'ch'}
             fontSize={18}
             whiteSpace={'break-spaces'}
           >
-            {props.SeriesNumber} | {props.SeriesDescription}
+            {`${seriesNumber ? seriesNumber + " | " : ''}`}{description}
           </Box>
 
-          <Box color={'grey'} justifyContent='flex-start' fontWeight={'lighter'} fontSize={12}>
-            <Box>Measured: {seriesData.measured.toLocaleString()}</Box>
-            <Box>Last updated: {seriesData.last_updated.toLocaleString()}</Box>
-            <Box>Number of instances: {props.NumberOfSeriesRelatedInstances}</Box>
+          <Box color={'grey'} justifyContent='flex-start' fontWeight={'lighter'} fontSize={12} width={'38ch'}>
+            <Box>Measured: {measured}</Box>
+            <Box>Last updated: {last_updated}</Box>
+            <Box>Number of instances: {num_of_instances}</Box>
           </Box>
 
           <Box display={'flex'} justifyContent='flex-start' flexDirection={'row'}>
             <CardActions disableSpacing>
               <Tooltip title={'Select this measurement for copying of records'}>
-                <IconButton size='large' onClick={handleSeriesCopy}>
-                  <ContentCopyIcon />
+                <IconButton size='large' onClick={handleSeriesCopy} disabled={disableInteractions}>
+                  <ContentCopyIcon/>
                 </IconButton>
               </Tooltip>
               <Tooltip title={'Paste records from the selected measurement into this one'}>
-                <IconButton size='large' onClick={handleSeriesPaste}>
+                <IconButton size='large' onClick={handleSeriesPaste} disabled={disableInteractions}>
                   <ContentPasteIcon />
                 </IconButton>
               </Tooltip>
@@ -233,17 +273,28 @@ export function Series(props: SeriesProps) {
               value={seriesData.seq_state}
               onChange={handleSeqStateChange}
               sx={{ color: getSelectColor }}
+              disabled={disableInteractions}
             >
               <MenuItem value={'successful'}>Successful</MenuItem>
               <MenuItem value={'failed'}>Failed</MenuItem>
               <MenuItem value={'pending'}>Pending</MenuItem>
             </Select>
           </Box>
+          <Box display={'flex'} justifyContent='flex-start' flexDirection={'row'}>
+          <CardActions disableSpacing>
+            <Tooltip title={status_text}>
+              <Icon>
+                {status_icon}
+              </Icon>
+            </Tooltip>
+            </CardActions>
+          </Box>
           <CardActions disableSpacing>
             <ExpandMore
               expand={seriesData.is_expanded}
               onClick={handleSeriesClick}
               aria-expanded={seriesData.is_expanded}
+              disabled={disableInteractions}
             >
               <ExpandMoreIcon />
             </ExpandMore>

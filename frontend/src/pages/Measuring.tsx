@@ -22,7 +22,7 @@ import { saveSeriesData, saveStudyData } from '../utils/Savers';
 import { getStudyData } from '../utils/DatabaseFetchers';
 import { postValidationData } from '../utils/ValidationFetchers';
 import { fetchStudyDefaultTemplates, fetchStudyTemplates } from '../utils/MAFILFetchers';
-import { FormattedTemplate, MissingSeries, SeriesProps, ValidatedSeries } from '../../../shared/Types';
+import { FormattedTemplate, MissingSeries, PACSSeries, ValidatedSeries } from '../../../shared/Types';
 
 export interface StudyData {
   study_instance_uid: string;
@@ -33,7 +33,7 @@ function Measuring() {
   const auth = useAuth();
   const [open, setOpen] = React.useState(true);
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
-  const [pacsSeries, setPacsSeries] = useState<SeriesProps[]>([]);
+  const [pacsSeries, setPacsSeries] = useState<PACSSeries[]>([]);
   const [validatedSeries, setValidatedSeries] = useState<ValidatedSeries[]>([]);
   const [missingSeries, setMissingSeries] = useState<MissingSeries[]>([]);
   const [selectedSeqId, setSelectedSeqId] = React.useState<string | null>(null);
@@ -82,7 +82,7 @@ function Measuring() {
         const currentStudy = JSON.parse(currentStudyString);
         const json = await fetchSeries(currentStudy.AccessionNumber);
         // Sort the series by series number, highest (newly added) first
-        json.sort((a: SeriesProps, b: SeriesProps) => a.SeriesNumber - b.SeriesNumber);
+        json.sort((a: PACSSeries, b: PACSSeries) => a.SeriesNumber - b.SeriesNumber);
         setFetchError(null);
         setFetchStatus('success');
         setPacsSeries(json);
@@ -115,9 +115,9 @@ function Measuring() {
 
     const sortedData = [...pacsSeries];
     if (newSortOrder === 'asc') {
-      sortedData.sort((a: SeriesProps, b: SeriesProps) => a.SeriesNumber - b.SeriesNumber);
+      sortedData.sort((a: PACSSeries, b: PACSSeries) => a.SeriesNumber - b.SeriesNumber);
     } else {
-      sortedData.sort((a: SeriesProps, b: SeriesProps) => b.SeriesNumber - a.SeriesNumber);
+      sortedData.sort((a: PACSSeries, b: PACSSeries) => b.SeriesNumber - a.SeriesNumber);
     }
     setPacsSeries(sortedData);
   };
@@ -155,35 +155,24 @@ function Measuring() {
   };
 
   function listSeries() {
-    return pacsSeries.map((series) => (
-      <Series
-        key={series.SeriesInstanceUID}
-        SeriesInstanceUID={series.SeriesInstanceUID}
-        SequenceFileName={series.SequenceFileName}
-        AcquisitionMatrix={series.AcquisitionMatrix}
-        BodyPartExamined={series.BodyPartExamined}
-        FlipAngle={series.FlipAngle}
-        ImageType={series.ImageType}
-        InversionTime={series.InversionTime}
-        NumberOfSeriesRelatedInstances={series.NumberOfSeriesRelatedInstances}
-        OperatorsName={series.OperatorsName}
-        PAT={series.PAT}
-        PatientPosition={series.PatientPosition}
-        PercentPhaseFieldOfView={series.PercentPhaseFieldOfView}
-        ProtocolName={series.ProtocolName}
-        RepetitionTime={series.RepetitionTime}
-        SOPClassUID={series.SOPClassUID}
-        SeriesDescription={series.SeriesDescription}
-        SeriesNumber={series.SeriesNumber}
-        SeriesTime={series.SeriesTime}
-        SliceThickness={series.SliceThickness}
-        SoftwareVersions={series.SoftwareVersions}
-        SpacingBetweenSlices={series.SpacingBetweenSlices}
-        StationName={series.StationName}
-        onCopy={handleSeriesCopy}
-        onPaste={handleSeriesPaste}
-      />
-    ));
+    return [
+      ...validatedSeries.map((series) => (
+        <Series
+          validatedSerie={series}
+          missingSerie={null}
+          onCopy={handleSeriesCopy}
+          onPaste={handleSeriesPaste}
+        />
+      )),
+      ...missingSeries.map((series) => (
+        <Series
+          validatedSerie={null}
+          missingSerie={series}
+          onCopy={handleSeriesCopy}
+          onPaste={handleSeriesPaste}
+        />
+      )),
+    ];
   }
 
  useEffect(() => {

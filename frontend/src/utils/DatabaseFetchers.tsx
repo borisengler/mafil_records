@@ -1,3 +1,5 @@
+import { SeriesData } from "../../../shared/Types";
+
 export async function getStudyData(study_instance_uid: string) {
   // First, try to get the data from localStorage
   let studyData = localStorage.getItem(`study-${study_instance_uid}`);
@@ -29,6 +31,7 @@ export async function getStudyData(study_instance_uid: string) {
 export async function getSeriesData(seriesInstanceUID: string) {
   // First, try to get the data from localStorage
   let seriesData = localStorage.getItem(`series-${seriesInstanceUID}`);
+  console.log(seriesData);
   if (seriesData) {
     return JSON.parse(seriesData);
   }
@@ -43,7 +46,7 @@ export async function getSeriesData(seriesInstanceUID: string) {
   if (response.ok) {
     seriesData = await response.json();
     if (seriesData !== null) {
-      return seriesData;
+      return JSON.parse(seriesData);
     }
   }
 
@@ -69,6 +72,7 @@ export async function getSeriesData(seriesInstanceUID: string) {
     siemens_resp: false,
     siemens_gsr: false,
     siemens_acc: false,
+    validation_status: 'NOT_FOUND'
   };
 }
 

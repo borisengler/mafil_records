@@ -100,9 +100,10 @@ export interface SeriesData {
   siemens_resp: boolean;
   siemens_gsr: boolean;
   siemens_acc: boolean;
+  validation_status: "OK" | "NOK"  | "NOT_FOUND" | "MISSING";
 }
 
-export interface SeriesProps {
+export interface PACSSeries {
   SeriesInstanceUID: string;
   SequenceFileName: string;
   AcquisitionMatrix: number[];
@@ -125,8 +126,6 @@ export interface SeriesProps {
   SoftwareVersions: string;
   SpacingBetweenSlices: number | null;
   StationName: string;
-  onCopy: (seriesId: string) => void; // onCopy handler passed from parent component
-  onPaste: () => string | null; // onPaste handler passed from parent component
 }
 
 
@@ -156,12 +155,18 @@ export interface ValidatedSeries {
   SoftwareVersions: string;
   SpacingBetweenSlices: number | null;
   StationName: string;
-  onCopy: (seriesId: string) => void; // onCopy handler passed from parent component
-  onPaste: () => string | null; // onPaste handler passed from parent component
 }
 
 export interface MissingSeries {
+  ValidationResult: "MISSING";
   UserInput: MeasurementTemplatePair[],
   SeriesDescription: string;
   OrderForDisplaying: number;
+}
+
+export interface SeriesProps {
+  validatedSerie: ValidatedSeries | null;
+  missingSerie: MissingSeries | null;
+  onCopy: (seriesId: string) => void; // onCopy handler passed from parent component
+  onPaste: () => string | null; // onPaste handler passed from parent component
 }
