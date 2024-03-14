@@ -11,7 +11,7 @@ import Measuring from './pages/Measuring';
 import OIDCCallback from './pages/OidcCallback';
 import OidcLogout from './pages/OidcLogout';
 import Studies from './pages/Studies';
-import SuccessfulVisit from './pages/SuccessfulVisit'; 
+import SuccessfulVisit from './pages/SuccessfulVisit';
 
 const App = () => {
   return (
