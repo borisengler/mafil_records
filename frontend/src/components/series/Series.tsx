@@ -269,31 +269,37 @@ export function Series(props: SeriesProps) {
           <Box display={'flex'} justifyContent='flex-start' flexDirection={'row'}>
             <CardActions disableSpacing>
               <Tooltip title={'Select this measurement for copying of records'}>
-                <IconButton size='large' onClick={handleSeriesCopy} disabled={disableInteractions}>
-                  <ContentCopyIcon/>
-                </IconButton>
+                <span>
+                  <IconButton size='large' onClick={handleSeriesCopy} disabled={disableInteractions}>
+                    <ContentCopyIcon/>
+                  </IconButton>
+                </span>
               </Tooltip>
               <Tooltip title={'Paste records from the selected measurement into this one'}>
-                <IconButton size='large' onClick={handleSeriesPaste} disabled={disableInteractions}>
-                  <ContentPasteIcon />
-                </IconButton>
+                <span>
+                  <IconButton size='large' onClick={handleSeriesPaste} disabled={disableInteractions}>
+                    <ContentPasteIcon />
+                  </IconButton>
+                </span>
               </Tooltip>
             </CardActions>
           </Box>
           <Box minWidth={140} sx={{
             background: getPaperBackgroundColor,
           }}>
-            <Select fullWidth
-              defaultValue={'pending'}
-              value={seriesData.seq_state}
-              onChange={handleSeqStateChange}
-              sx={{ color: getSelectColor }}
-              disabled={disableInteractions}
-            >
-              <MenuItem value={'successful'}>Successful</MenuItem>
-              <MenuItem value={'failed'}>Failed</MenuItem>
-              <MenuItem value={'pending'}>Pending</MenuItem>
-            </Select>
+            <span>
+              <Select fullWidth
+                defaultValue={'pending'}
+                value={seriesData.seq_state}
+                onChange={handleSeqStateChange}
+                sx={{ color: getSelectColor }}
+                disabled={disableInteractions}
+              >
+                <MenuItem value={'successful'}>Successful</MenuItem>
+                <MenuItem value={'failed'}>Failed</MenuItem>
+                <MenuItem value={'pending'}>Pending</MenuItem>
+              </Select>
+            </span>
           </Box>
           <Box display={'flex'} justifyContent='flex-start' flexDirection={'row'}>
           <CardActions disableSpacing>
@@ -305,14 +311,16 @@ export function Series(props: SeriesProps) {
             </CardActions>
           </Box>
           <CardActions disableSpacing>
-            <ExpandMore
-              expand={seriesData.is_expanded}
-              onClick={handleSeriesClick}
-              aria-expanded={seriesData.is_expanded}
-              disabled={disableInteractions}
-            >
-              <ExpandMoreIcon />
-            </ExpandMore>
+            <span>
+              <ExpandMore
+                expand={seriesData.is_expanded}
+                onClick={handleSeriesClick}
+                aria-expanded={seriesData.is_expanded}
+                disabled={disableInteractions}
+              >
+                <ExpandMoreIcon />
+              </ExpandMore>
+            </span>
           </CardActions>
 
         </Box>
