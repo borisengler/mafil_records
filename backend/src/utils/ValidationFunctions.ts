@@ -67,7 +67,7 @@ export const findMissingSeries = (series: PACSSeries[], template: FormattedTempl
     const measurementTemplates: MeasurementTemplate[] = template.measurementTemplates;
 
     const missingTemplates = measurementTemplates.filter((template) => {
-        return !series.some((serie) => serie.SeriesDescription === template.name);
+        return !series.some((serie) => serie.SeriesDescription.startsWith(template.name));
     });
 
     return missingTemplates.map((template) => missingTemplatesToMissingSeries(template));
