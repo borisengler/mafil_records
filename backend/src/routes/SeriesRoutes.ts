@@ -22,11 +22,16 @@ export const getSerie = async (req, res) => {
     try {
       const { rows } = await pool.query('SELECT * FROM seriesdt WHERE series_instance_uid = $1', [series_instance_uid]);
       const seriesData = rows.find(row => row.series_instance_uid === series_instance_uid);
-      const result = {
-        ...seriesData,
-        validation_status: "NOT_FOUND",
-        is_selected: false,
-        is_expanded: false,
+      let result;
+      if (seriesData !== undefined) {
+        result = {
+          ...seriesData,
+          validation_status: "NOT_FOUND",
+          is_selected: false,
+          is_expanded: false,
+        };
+      } else {
+        result = undefined;
       }
 
       res.status(200).json(result ?? null);

@@ -1,19 +1,18 @@
-import { MissingSeries, SeriesProps, ValidatedSeries, MeasurementTemplate,MeasurementTemplatePair, FormattedTemplate} from '../../../shared/Types';
+import { MissingSeries, SeriesProps, ValidatedSeries, MeasurementTemplate,MeasurementTemplatePair, FormattedTemplate, PACSSeries} from '../../../shared/Types';
 
-export const validateSeriesWithMeasurementTemplate = (serie: SeriesProps, template: FormattedTemplate) : ValidatedSeries=> {
-
-    const assignedTemplate: MeasurementTemplate = template.measurementTemplates.find((template) => template.name === serie.SeriesDescription);
+export const validateSeriesWithMeasurementTemplate = (serie: PACSSeries, template: FormattedTemplate) : ValidatedSeries=> {
+    const assignedTemplate: MeasurementTemplate = template.measurementTemplates.find((template) => serie.SeriesDescription.startsWith(template.name));
 
     if (assignedTemplate === undefined) {
         return {
             ...serie,
             ValidationResult: "NOT_FOUND",
             UserInput: [],
-            OrderForDisplaying: 1000
+            OrderForDisplaying: 1000 + serie.SeriesNumber
         };
     }
 
-    const userInput = assignedTemplate?.measurementTemplatePairs?.filter(pair => pair.user_input === true) || [];
+    const userInput = assignedTemplate?.measurement_template_pairs?.filter(pair => pair.user_input === true) || [];
     const isValid = validateSeriesWithTemplate(serie, assignedTemplate);
     if (isValid) {
         return {
@@ -32,11 +31,11 @@ export const validateSeriesWithMeasurementTemplate = (serie: SeriesProps, templa
     }
 };
 
-const validateSeriesWithTemplate = (serie: SeriesProps, template: MeasurementTemplate) : boolean => {
-    if (template.measurementTemplatePairs == null) {
+const validateSeriesWithTemplate = (serie: PACSSeries, template: MeasurementTemplate) : boolean => {
+    if (template.measurement_template_pairs == null) {
         return true;
     }
-    for (const pair of template.measurementTemplatePairs) {
+    for (const pair of template.measurement_template_pairs) {
         
         if (!validateSeriesWithPair(serie, pair)) {
             return false;
@@ -45,7 +44,7 @@ const validateSeriesWithTemplate = (serie: SeriesProps, template: MeasurementTem
 
     return true;
 }
-const validateSeriesWithPair = (serie: SeriesProps, pair: MeasurementTemplatePair): boolean => {
+const validateSeriesWithPair = (serie: PACSSeries, pair: MeasurementTemplatePair): boolean => {
     if (!pair.user_input) {
         if (pair.type_of_comparison == "equal") {
             if (serie[pair.key_source] != pair.valueA) {
@@ -64,7 +63,7 @@ const validateSeriesWithPair = (serie: SeriesProps, pair: MeasurementTemplatePai
     return true;
 }
 
-export const findMissingSeries = (series: SeriesProps[], template: FormattedTemplate): MissingSeries[] => {
+export const findMissingSeries = (series: PACSSeries[], template: FormattedTemplate): MissingSeries[] => {
     const measurementTemplates: MeasurementTemplate[] = template.measurementTemplates;
 
     const missingTemplates = measurementTemplates.filter((template) => {
@@ -75,10 +74,11 @@ export const findMissingSeries = (series: SeriesProps[], template: FormattedTemp
 }
 
 const missingTemplatesToMissingSeries = (template: MeasurementTemplate): MissingSeries => {
-    const userInputPairs = template.measurementTemplatePairs?.filter(pair => pair.user_input === true) || [];
+    const userInputPairs = template.measurement_template_pairs?.filter(pair => pair.user_input === true) || [];
     return {
         UserInput: userInputPairs,
         SeriesDescription: template.name,
-        OrderForDisplaying: template.order_for_displaying
+        OrderForDisplaying: template.order_for_displaying,
+        ValidationResult: 'MISSING'
     }
 }

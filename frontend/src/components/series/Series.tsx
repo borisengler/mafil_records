@@ -95,8 +95,16 @@ export function Series(props: SeriesProps) {
   useEffect(() => {
     const fetchData = async () => {
       if (props.validatedSerie !== null) {
-        const fetchedSeriesData = await getSeriesData(props.validatedSerie.SeriesInstanceUID);
+        type key = "stim_protocol" | "stim_log_file"
+        const fetchedSeriesData: SeriesData = await getSeriesData(props.validatedSerie.SeriesInstanceUID);
         fetchedSeriesData.validation_status = props.validatedSerie ? props.validatedSerie.ValidationResult : 'MISSING';
+        props.validatedSerie.UserInput.forEach(element => {
+          if (["stim_protocol", "stim_log_file", "fyzio_raw_file"].includes(element.key)) {
+            fetchedSeriesData[element.key] = element.valueA;
+          } else if (["general_eeg", "general_et", "bp_ekg", "bp_resp", "bp_gsr", "bp_acc", "siemens_ekg", "siemens_resp", "siemens_gsr", "siemens_acc"].includes(element.key)) {
+            fetchedSeriesData[element.key] = element.valueA == "true";
+          }
+        });
         setSeriesData(fetchedSeriesData);
       }
     };
@@ -201,6 +209,34 @@ export function Series(props: SeriesProps) {
     }
   }
 
+  function getIcon() {
+    if (props.validatedSerie) {
+      switch (props.validatedSerie.ValidationResult) {
+        case "OK":
+          return <CheckCircle/>;
+        case "NOK":
+          return <CancelRounded/>;
+        case "NOT_FOUND":
+          return <HelpRounded/>;
+      }
+  }
+    return <WarningRounded/>;
+  }
+
+  function getIconText() {
+    if (props.validatedSerie) {
+      switch (props.validatedSerie.ValidationResult) {
+        case "OK":
+          return "Valid";
+        case "NOK":
+          return "Invalid";
+        case "NOT_FOUND":
+          return "Not found in template";
+      }
+    }
+    return "Missing to fill template";
+  }
+
   const description = props.validatedSerie ? props.validatedSerie.SeriesDescription : (props.missingSerie ? props.missingSerie.SeriesDescription : '');
   const seriesNumber = props.validatedSerie ? props.validatedSerie.SeriesNumber : '';
 
@@ -209,27 +245,6 @@ export function Series(props: SeriesProps) {
   const num_of_instances = props.validatedSerie !== null ? props.validatedSerie.NumberOfSeriesRelatedInstances : '-';
   
   const disableInteractions = props.validatedSerie === null;
-
-  let status_icon;
-  let status_text;
-  switch (seriesData.validation_status) {
-    case "OK":
-      status_icon = <CheckCircle/>;
-      status_text = "Valid";
-      break;
-    case "NOK":
-      status_icon = <CancelRounded/>;
-      status_text = "Invalid";
-      break;
-    case "NOT_FOUND":
-      status_icon = <HelpRounded/>;
-      status_text = "Not found in template";
-      break;
-    case "MISSING":
-      status_icon = <WarningRounded/>;
-      status_text = "Missing to fill template";
-      break;
-  }
 
   return (
     <CommonCard>
@@ -282,9 +297,9 @@ export function Series(props: SeriesProps) {
           </Box>
           <Box display={'flex'} justifyContent='flex-start' flexDirection={'row'}>
           <CardActions disableSpacing>
-            <Tooltip title={status_text}>
+            <Tooltip title={getIconText()}>
               <Icon>
-                {status_icon}
+                {getIcon()}
               </Icon>
             </Tooltip>
             </CardActions>

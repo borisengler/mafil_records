@@ -45,6 +45,7 @@ function Measuring() {
     const localStudy = localStorage.getItem(`currentStudy`);
     return localStudy ? JSON.parse(localStudy) : {};
   });
+  const [listSeries, setListSeries] = useState<React.JSX.Element[]>([]);
 
   const [studyData, setStudyData] = useState<StudyData>({
     study_instance_uid: props.StudyInstanceUID,
@@ -154,27 +155,6 @@ function Measuring() {
     return selectedSeqId;
   };
 
-  function listSeries() {
-    return [
-      ...validatedSeries.map((series) => (
-        <Series
-          validatedSerie={series}
-          missingSerie={null}
-          onCopy={handleSeriesCopy}
-          onPaste={handleSeriesPaste}
-        />
-      )),
-      ...missingSeries.map((series) => (
-        <Series
-          validatedSerie={null}
-          missingSerie={series}
-          onCopy={handleSeriesCopy}
-          onPaste={handleSeriesPaste}
-        />
-      )),
-    ];
-  }
-
  useEffect(() => {
     (async () => {
       const fetchedStudyData = await getStudyData(props.StudyInstanceUID);
@@ -190,6 +170,7 @@ function Measuring() {
         const {validatedSeries, missingSeries} = await postValidationData(pacsSeries, choosenTemplate);
         setValidatedSeries(validatedSeries);
         setMissingSeries(missingSeries);
+        console.log('Changed templaate');
       }
     })()
   
@@ -206,6 +187,31 @@ function Measuring() {
   useEffect(() => {
     localStorage.setItem(`study-${props.StudyInstanceUID}`, JSON.stringify({ ...studyData }))
   }, [studyData]);
+
+  useEffect(() => {
+    console.log("aaaaaaaaa");
+    console.log(validatedSeries);
+    setListSeries([
+      ...validatedSeries.map((series) => (
+        <Series
+          validatedSerie={series}
+          missingSerie={null}
+          onCopy={handleSeriesCopy}
+          onPaste={handleSeriesPaste}
+        />
+      )),
+      ...missingSeries.map((series) => (
+        <Series
+          validatedSerie={null}
+          missingSerie={series}
+          onCopy={handleSeriesCopy}
+          onPaste={handleSeriesPaste}
+        />
+      )),
+    ]);
+    console.log(listSeries);
+
+  }, [missingSeries, validatedSeries])
 
   return (
     <SidebarProvider>
@@ -249,7 +255,7 @@ function Measuring() {
         </ResizableSidebar>
           <ListItems
             loading={loading}
-            list={listSeries()}
+            list={listSeries}
             errorMessage={fetchError}
             loadingMessage={`Fetching series...`}
           />

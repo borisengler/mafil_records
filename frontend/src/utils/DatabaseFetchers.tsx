@@ -31,7 +31,6 @@ export async function getStudyData(study_instance_uid: string) {
 export async function getSeriesData(seriesInstanceUID: string) {
   // First, try to get the data from localStorage
   let seriesData = localStorage.getItem(`series-${seriesInstanceUID}`);
-  console.log(seriesData);
   if (seriesData) {
     return JSON.parse(seriesData);
   }
@@ -46,7 +45,7 @@ export async function getSeriesData(seriesInstanceUID: string) {
   if (response.ok) {
     seriesData = await response.json();
     if (seriesData !== null) {
-      return JSON.parse(seriesData);
+      return seriesData;
     }
   }
 

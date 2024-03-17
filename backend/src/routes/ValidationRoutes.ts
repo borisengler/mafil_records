@@ -6,7 +6,6 @@ export const validateSeriesForTemplate = async (req, res) => {
     const validationData: SeriesValidationProps = req.body;
   
     const series = validationData.series;
-    const template = validationData.template;
 
     const validatedSeries: ValidatedSeries[] = validationData.series.map(serie => {
         return validateSeriesWithMeasurementTemplate(serie, validationData.template);

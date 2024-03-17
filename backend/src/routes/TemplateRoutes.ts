@@ -8,12 +8,17 @@ const mafilApiUrl = process.env.MAFIL_API_URL;
 
 export const getTemplatesForStudy = async (req, res) => {
 
+
     const { study_id } = req.params;
+
+    // TODO get from api and FILTER based on project id
+    // .filter(template => template.project === projectId)
     
     const templates: Template[] = [
         T1,
         T2
     ];
+
 
     const versionedTemplates: FormattedTemplate[] = templates.flatMap((template) => {
         return Array.isArray(template.versioned_templates) 
@@ -24,7 +29,7 @@ export const getTemplatesForStudy = async (req, res) => {
               is_default: template.is_default,
               order_for_displaying: template.order_for_displaying || 0,
               comment: vTemplate.comment || null,
-              measurementTemplates: vTemplate.measurementTemplates || [],
+              measurementTemplates: vTemplate.measurement_templates || [],
             }))
           : [];
       });
@@ -63,7 +68,7 @@ export const getDefaultTemplateForStudy = async (req, res) => {
         is_default: defaultTemplate.is_default,
         order_for_displaying: defaultTemplate.order_for_displaying,
         comment: latestVersionedTemplate.comment,
-        measurementTemplates: latestVersionedTemplate.measurementTemplates,
+        measurementTemplates: latestVersionedTemplate.measurement_templates,
     }
     res.status(200).json(formattedTemplate);
 
@@ -91,33 +96,66 @@ const MTP2: MeasurementTemplatePair = {
     valueB: null
 };
 
+const MTP3: MeasurementTemplatePair = {
+    key: "general_eeg",
+    key_source: "",
+    user_input: true,
+    type_of_comparison: "equal",
+    valueA: "true",
+    valueB: null
+};
+
+const MTP4: MeasurementTemplatePair = {
+    key: "general_et",
+    key_source: "",
+    user_input: true,
+    type_of_comparison: "equal",
+    valueA: "false",
+    valueB: null
+};
+
+
+const MTP5: MeasurementTemplatePair = {
+    key: "stim_protocol",
+    key_source: "",
+    user_input: true,
+    type_of_comparison: "equal",
+    valueA: "Stim protocol name",
+    valueB: null
+};
+
 const MT1: MeasurementTemplate= {
     name: "localizer",
     order_for_displaying: 1,
     compulsory: true,
     comment: null,
-    measurementTemplatePairs: [
+    measurement_template_pairs: [
         MTP1,
         MTP2
     ]
 }
 
-const MT2 = {
-    name: "t1_mprage_sag_p2_1iso",
+const MT2: MeasurementTemplate = {
+    name: "t1_mprage_sag",
     order_for_displaying: 2,
     compulsory: false,
     comment: "Optional",
 }
 
-const MT4 = {
-    name: "test",
+const MT4: MeasurementTemplate = {
+    name: "tra",
     order_for_displaying: 3,
     compulsory: false,
     comment: "Optional",
+    measurement_template_pairs: [
+        MTP3,
+        MTP4,
+        MTP5
+    ]
 }
 
-const MT3 = {
-    name: "t2_spc_FLAIR_sag_p2_isoX",
+const MT3: MeasurementTemplate = {
+    name: "t2_spc_FLAIR_sag_p2",
     order_for_displaying: 3,
     compulsory: false,
     comment: "Optional",
@@ -126,7 +164,7 @@ const MT3 = {
 const VT1: VersionedTemplate = {
     version: 2,
     comment: "",
-    measurementTemplates: [
+    measurement_templates: [
         MT1,
         MT2,
         MT3,
@@ -146,7 +184,7 @@ const T1: Template = {
 const VT2: VersionedTemplate = {
     version: 1,
     comment: "",
-    measurementTemplates: []
+    measurement_templates: []
 }
 
 const T2: Template = {

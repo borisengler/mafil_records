@@ -1,5 +1,8 @@
+import axios from "axios";
 import { PostStudyCommentProps } from "../model/StudyProps";
+require('dotenv').config();
 
+const mafilApiUrl = process.env.MAFIL_API_URL;
 const { Pool } = require('pg');
 
 const connectionString = process.env.DATABASE_URL;

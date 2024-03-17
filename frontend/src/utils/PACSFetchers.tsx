@@ -34,7 +34,6 @@ export async function fetchSeries(accessionNumber: string) {
         mode: 'cors',
       });
     const series: PACSSeries[] = await resp.json();
-    console.log(series);
     return series;
   } catch (err) {
     console.error(err)

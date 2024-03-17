@@ -11,7 +11,7 @@ export interface Template {
 export interface VersionedTemplate {
   version: number,
   comment: string | null;
-  measurementTemplates?: MeasurementTemplate[];
+  measurement_templates?: MeasurementTemplate[];
   createdFrom?: Session;
 }
 
@@ -20,7 +20,7 @@ export interface MeasurementTemplate {
   order_for_displaying: number | null;
   compulsory: boolean;
   comment: string | null;
-  measurementTemplatePairs?: MeasurementTemplatePair[];
+  measurement_template_pairs?: MeasurementTemplatePair[];
 }
 
 export interface MeasurementTemplatePair {
