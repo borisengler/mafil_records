@@ -45,7 +45,6 @@ function Measuring() {
     const localStudy = localStorage.getItem(`currentStudy`);
     return localStudy ? JSON.parse(localStudy) : {};
   });
-  const [listSeries, setListSeries] = useState<React.JSX.Element[]>([]);
 
   const [studyData, setStudyData] = useState<StudyData>({
     study_instance_uid: props.StudyInstanceUID,
@@ -188,10 +187,8 @@ function Measuring() {
     localStorage.setItem(`study-${props.StudyInstanceUID}`, JSON.stringify({ ...studyData }))
   }, [studyData]);
 
-  useEffect(() => {
-    console.log("aaaaaaaaa");
-    console.log(validatedSeries);
-    setListSeries([
+  function listSeries() {
+    return [
       ...validatedSeries.map((series) => (
         <Series
           validatedSerie={series}
@@ -208,10 +205,8 @@ function Measuring() {
           onPaste={handleSeriesPaste}
         />
       )),
-    ]);
-    console.log(listSeries);
-
-  }, [missingSeries, validatedSeries])
+    ];
+  }
 
   return (
     <SidebarProvider>
@@ -255,7 +250,7 @@ function Measuring() {
         </ResizableSidebar>
           <ListItems
             loading={loading}
-            list={listSeries}
+            list={listSeries()}
             errorMessage={fetchError}
             loadingMessage={`Fetching series...`}
           />
