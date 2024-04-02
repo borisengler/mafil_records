@@ -51,6 +51,7 @@ function Measuring() {
     general_comment: '',
   });
 
+
   const [studyTemplates, setStudyTemplates] = useState<FormattedTemplate[]>([]);
   const [selectedTemplateId, setSelectedTemplateId] = useState<string>("");
   async function saveRecords(): Promise<boolean> {
@@ -73,11 +74,11 @@ function Measuring() {
     if (currentStudyString) {
       try {
         const fetchedTemplates: FormattedTemplate[] = await fetchStudyTemplates(props.StudyID);
-        setStudyTemplates(fetchedTemplates);
         const defaultTemplate = await fetchStudyDefaultTemplates(props.StudyID);
-        if (defaultTemplate !== undefined && selectedTemplateId === '') {
+        if (defaultTemplate !== undefined && selectedTemplateId == '') {
           setSelectedTemplateId(defaultTemplate.id);
         }
+        setStudyTemplates(fetchedTemplates);
 
         const currentStudy = JSON.parse(currentStudyString);
         const json = await fetchSeries(currentStudy.AccessionNumber);
@@ -103,7 +104,7 @@ function Measuring() {
     return () => {
       clearInterval(interval);
     };
-  }, []);
+  }, [selectedTemplateId]);
 
   const toggleDrawer = () => {
     setOpen(!open);
@@ -169,7 +170,6 @@ function Measuring() {
         const {validatedSeries, missingSeries} = await postValidationData(pacsSeries, choosenTemplate);
         setValidatedSeries(validatedSeries);
         setMissingSeries(missingSeries);
-        console.log('Changed templaate');
       }
     })()
   

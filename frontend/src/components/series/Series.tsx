@@ -95,13 +95,16 @@ export function Series(props: SeriesProps) {
   useEffect(() => {
     const fetchData = async () => {
       if (props.validatedSerie !== null) {
-        type key = "stim_protocol" | "stim_log_file"
         const fetchedSeriesData: SeriesData = await getSeriesData(props.validatedSerie.SeriesInstanceUID);
         fetchedSeriesData.validation_status = props.validatedSerie ? props.validatedSerie.ValidationResult : 'MISSING';
         props.validatedSerie.UserInput.forEach(element => {
-          if (["stim_protocol", "stim_log_file", "fyzio_raw_file"].includes(element.key)) {
+          if ((element.key == "stim_protocol" || element.key == "stim_log_file" || element.key == "fyzio_raw_file") && element.valueA !== null) {
             fetchedSeriesData[element.key] = element.valueA;
-          } else if (["general_eeg", "general_et", "bp_ekg", "bp_resp", "bp_gsr", "bp_acc", "siemens_ekg", "siemens_resp", "siemens_gsr", "siemens_acc"].includes(element.key)) {
+          } else if ((element.key == "general_eeg" || element.key == "general_et" || element.key == "bp_ekg"
+            || element.key == "bp_resp" || element.key == "bp_gsr" || element.key == "bp_acc"
+            || element.key == "siemens_ekg" || element.key == "siemens_resp" || element.key == "siemens_gsr" || element.key == "siemens_acc")
+            && element.valueA !== null
+          ) {
             fetchedSeriesData[element.key] = element.valueA == "true";
           }
         });

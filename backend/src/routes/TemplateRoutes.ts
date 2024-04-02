@@ -79,11 +79,11 @@ const getFormattedTemplateId = (templateId: number, templateVersion: number) : s
 };
 
 const MTP1: MeasurementTemplatePair= {
-    key: "key1",
-    key_source: "ekg",
-    user_input: false,
+    key: "general_eeg",
+    key_source: "general_eeg",
+    user_input: true,
     type_of_comparison: "equal",
-    valueA: "500",
+    valueA: "true",
     valueB: null,
 };
 
@@ -92,8 +92,8 @@ const MTP2: MeasurementTemplatePair = {
     key_source: "measurements",
     user_input: false,
     type_of_comparison: "range",
-    valueA: "350",
-    valueB: null
+    valueA: "1",
+    valueB: "10"
 };
 
 const MTP3: MeasurementTemplatePair = {

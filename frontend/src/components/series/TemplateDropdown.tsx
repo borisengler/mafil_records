@@ -26,7 +26,7 @@ export const TemplateDropdown: React.FC<TemplateDropdownProps> = ({ selectedTemp
       <Select
         labelId="template-dropdown-label"
         id="template-dropdown"
-        value={selectedTemplate}
+        value={selectedTemplate || ''}
         onChange={onTemplateChange}
         label="Select Template"
       >
