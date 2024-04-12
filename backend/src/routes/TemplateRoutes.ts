@@ -43,6 +43,36 @@ export const getTemplatesForStudy = async (req, res) => {
     res.status(200).json(versionedTemplates);
 }
 
+export const getTemplates = async (req, res) => {
+    const templates: Template[] = [
+        T1,
+        T2
+    ];
+
+
+    const versionedTemplates: FormattedTemplate[] = templates.flatMap((template) => {
+        return Array.isArray(template.versioned_templates) 
+          ? template.versioned_templates.map((vTemplate) => ({
+              id: getFormattedTemplateId(template.id, vTemplate.version),
+              name: `${template.name} (${vTemplate.version})`,
+              version: vTemplate.version,
+              is_default: template.is_default,
+              order_for_displaying: template.order_for_displaying || 0,
+              comment: vTemplate.comment || null,
+              measurementTemplates: vTemplate.measurement_templates || [],
+            }))
+          : [];
+      });
+
+      versionedTemplates.sort((a, b) => {
+        const orderComparison = a.order_for_displaying - b.order_for_displaying;
+      
+        return orderComparison === 0 ? a.version - b.version : orderComparison;
+      });
+      
+    res.status(200).json(versionedTemplates);
+}
+
 export const getDefaultTemplateForStudy = async (req, res) => {
     const { study_id } = req.params;
 

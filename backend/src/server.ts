@@ -11,7 +11,7 @@ import { SeriesDataProps } from './model/SeriesProps';
 import { getStudies, getStudy, postStudyComment } from "./routes/StudyRoutes";
 import { getSeries, getSerie, postSeries } from "./routes/SeriesRoutes";
 import { getPacsSeries, getPacsStudies } from "./routes/PACSRoutes";
-import { getTemplatesForStudy, getDefaultTemplateForStudy} from './routes/TemplateRoutes';
+import { getTemplatesForStudy, getDefaultTemplateForStudy, getTemplates} from './routes/TemplateRoutes';
 import { validateSeriesForTemplate } from './routes/ValidationRoutes';
 require('dotenv').config();
 
@@ -53,6 +53,7 @@ app.get('/api/pacs/series', getPacsSeries);
 
 
 app.get('/api/study/:study_id/template', getTemplatesForStudy);
+app.get('/api/template', getTemplates);
 app.get('/api/study/:study_id/default_template', getDefaultTemplateForStudy);
 
 app.post('/api/series/validate', validateSeriesForTemplate);

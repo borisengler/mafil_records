@@ -17,6 +17,23 @@ export async function fetchStudyTemplates(study_id: string) {
     }
   }
 
+  export async function fetchTemplates() {
+    const url = `/api/template`;
+    try {
+      const response = await fetch(
+        url,
+        {
+          method: 'GET',
+          mode: 'cors',
+        });
+
+      const templates: FormattedTemplate[] = await response.json();
+      return templates;
+    } catch (err) {
+      throw err;
+    }
+  }
+
 export async function fetchStudyDefaultTemplates(study_id: string) {
   const url = `/api/study/${study_id}/default_template`;
   try {

@@ -12,6 +12,8 @@ import OIDCCallback from './pages/OidcCallback';
 import OidcLogout from './pages/OidcLogout';
 import Studies from './pages/Studies';
 import SuccessfulVisit from './pages/SuccessfulVisit';
+import Templates from './pages/Templates';
+import EditTemplate from './pages/EditTemplate';
 
 const App = () => {
   return (
@@ -26,6 +28,8 @@ const App = () => {
             <Route path='/studies' element={<Studies />} />
             <Route path='/measuring' element={<Measuring />} />
             <Route path='/success' element={<SuccessfulVisit />} />
+            <Route path='/templates' element={<Templates />} />
+            <Route path='/template-edit' element={<EditTemplate />} />
           </Routes>
         </BrowserRouter>
       </AuthProvider>

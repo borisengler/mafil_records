@@ -99,6 +99,7 @@ function Studies() {
               fetchData={fetchData}
             />
             {localStorage.getItem('currentStudy') && <BlueButton text="Open last accessed study" path="/measuring" />}
+            {<BlueButton text="Template administration" path="/templates" />}
           </ResizableSidebar>
           <ListItems
             loading={loading}

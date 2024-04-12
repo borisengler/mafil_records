@@ -53,3 +53,32 @@ export async function saveStudyData(StudyInstanceUID: string): Promise<boolean> 
 
   return success;
 }
+
+export async function saveTemplatesData(StudyInstanceUID: string): Promise<boolean> {
+  let success = false;
+
+  try {
+    const studyDataString = localStorage.getItem(`template-${StudyInstanceUID}`);
+    const studyDataArray = studyDataString ? JSON.parse(studyDataString) : {};
+
+    const response = await fetch('/api/study', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(studyDataArray),
+    });
+
+    if (response.ok) {
+      success = true;
+      console.log('Sucessfuly saved study data to database');
+    } else {
+      console.error('Failed to save study data to the database');
+    }
+  } catch (error) {
+    console.error('Error saving study data:', error);
+  }
+
+  return success;
+}
+
