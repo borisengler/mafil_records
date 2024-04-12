@@ -17,5 +17,4 @@ export const validateSeriesForTemplate = async (req, res) => {
         missingSeries: missingSeries
     }
     res.status(200).json(result);
-  
   }

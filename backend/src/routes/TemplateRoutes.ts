@@ -79,11 +79,11 @@ const getFormattedTemplateId = (templateId: number, templateVersion: number) : s
 };
 
 const MTP1: MeasurementTemplatePair= {
-    key: "general_eeg",
+    key: "stim_protocol",
     key_source: "general_eeg",
     user_input: true,
     type_of_comparison: "equal",
-    valueA: "true",
+    valueA: "Test protocol",
     valueB: null,
 };
 
@@ -131,7 +131,8 @@ const MT1: MeasurementTemplate= {
     comment: null,
     measurement_template_pairs: [
         MTP1,
-        MTP2
+        MTP2,
+        MTP3
     ]
 }
 
@@ -175,7 +176,7 @@ const VT1: VersionedTemplate = {
 const T1: Template = {
     id: 1,
     name: "Template1",
-    is_default: true,
+    is_default: false,
     order_for_displaying: 1,
     measurement_modality: "MR",
     versioned_templates: [VT1]
@@ -190,7 +191,7 @@ const VT2: VersionedTemplate = {
 const T2: Template = {
     id: 2,
     name: "Template2",
-    is_default: false,
+    is_default: true,
     order_for_displaying: 2,
     measurement_modality: "MR",
     versioned_templates: [VT2]

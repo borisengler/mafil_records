@@ -191,6 +191,7 @@ function Measuring() {
     return [
       ...validatedSeries.map((series) => (
         <Series
+          key={`validated-${series.SeriesInstanceUID}`}
           validatedSerie={series}
           missingSerie={null}
           onCopy={handleSeriesCopy}
@@ -199,6 +200,7 @@ function Measuring() {
       )),
       ...missingSeries.map((series) => (
         <Series
+          key={`missing-${series.SeriesDescription}`}
           validatedSerie={null}
           missingSerie={series}
           onCopy={handleSeriesCopy}
