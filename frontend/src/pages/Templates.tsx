@@ -52,7 +52,7 @@ function Templates() {
 
       function listTemplates() {
         return [...templates.map((template) => (
-            <TemplateCard template={template}/>
+            <TemplateCard template={template} key={`${template.id}-${template.version}`}/>
         ))]
       }
 

@@ -20,7 +20,7 @@ export interface MeasurementTemplate {
   order_for_displaying: number | null;
   compulsory: boolean;
   comment: string | null;
-  measurement_template_pairs?: MeasurementTemplatePair[];
+  measurement_template_pairs: MeasurementTemplatePair[];
 }
 
 export interface MeasurementTemplatePair {
@@ -39,7 +39,7 @@ export interface FormattedTemplate {
   is_default: boolean;
   order_for_displaying: number | null;
   comment: string | null;
-  measurementTemplates?: MeasurementTemplate[];
+  measurementTemplates: MeasurementTemplate[];
 }
 
 export interface PacsStudyAPI {

@@ -11,7 +11,7 @@ interface TemplateCardProps {
 
 export default function TemplateCard (props: TemplateCardProps) {
     const handleClick = () => {
-        localStorage.setItem('currentTemplate', JSON.stringify(props));
+        localStorage.setItem('currentTemplate', JSON.stringify(props.template));
       };
 
     return (

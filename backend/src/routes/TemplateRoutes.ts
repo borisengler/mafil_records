@@ -171,6 +171,7 @@ const MT2: MeasurementTemplate = {
     order_for_displaying: 2,
     compulsory: false,
     comment: "Optional",
+    measurement_template_pairs: []
 }
 
 const MT4: MeasurementTemplate = {
@@ -190,6 +191,7 @@ const MT3: MeasurementTemplate = {
     order_for_displaying: 3,
     compulsory: false,
     comment: "Optional",
+    measurement_template_pairs: []
 }
 
 const VT1: VersionedTemplate = {

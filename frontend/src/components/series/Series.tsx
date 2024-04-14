@@ -95,7 +95,6 @@ export function Series(props: SeriesProps) {
   useEffect(() => {
     const fetchData = async () => {
       if (props.validatedSerie !== null) {
-        console.log(props.validatedSerie.SeriesDescription); 
         const fetchedSeriesData: SeriesData = await getSeriesData(props.validatedSerie.SeriesInstanceUID);
         fetchedSeriesData.validation_status = props.validatedSerie ? props.validatedSerie.ValidationResult : 'MISSING';
         props.validatedSerie.UserInput.forEach(element => {
@@ -110,8 +109,6 @@ export function Series(props: SeriesProps) {
           }
         });
   
-        console.log("seriedata");
-        console.log(fetchedSeriesData);
         setSeriesData(fetchedSeriesData);
       }
     };

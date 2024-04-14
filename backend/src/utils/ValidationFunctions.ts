@@ -3,9 +3,6 @@ import { MissingSeries, SeriesProps, ValidatedSeries, MeasurementTemplate,Measur
 export const validateSeriesWithMeasurementTemplate = (serie: PACSSeries, template: FormattedTemplate) : ValidatedSeries=> {
     const assignedTemplate: MeasurementTemplate = template.measurementTemplates.find((template) => serie.SeriesDescription.startsWith(template.name));
 
-    console.log("assigned template:", assignedTemplate?.name);
-    console.log("serie:", serie?.SeriesDescription);
-    console.log("\n\n\n");
     if (assignedTemplate === undefined) {
         return {
             ...serie,
@@ -15,12 +12,8 @@ export const validateSeriesWithMeasurementTemplate = (serie: PACSSeries, templat
         };
     }
 
-    console.log("pair");
-    console.log(assignedTemplate?.measurement_template_pairs);
     const userInput = assignedTemplate?.measurement_template_pairs?.filter(pair => pair.user_input === true) || [];
     const isValid = validateSeriesWithTemplate(serie, assignedTemplate);
-    console.log("user input");
-    console.log(userInput);
     if (isValid) {
         return {
             ...serie,

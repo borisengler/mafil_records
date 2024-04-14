@@ -1,5 +1,5 @@
 import { Box, Divider } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { BlueButton, RedButton } from "../components/common/Buttons";
 import InfoItem from "../components/common/InfoItem";
 import { MultiLineInput } from "../components/common/Inputs";
@@ -13,11 +13,14 @@ import { SidebarProvider } from "../contexts/SidebarContext";
 import CommonAppBar from '../components/global/AppBarContent';
 import { useAuth } from "react-oidc-context";
 import { FormattedTemplate } from "../../../shared/Types";
+import { TemplateItemCard } from "../components/templates/TemplateItemCard";
 
 
 export default function EditTemplate() {
 
-    const auth = useAuth();
+  const auth = useAuth();
+  const [loading, setLoading] = useState<boolean>(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   const [open, setOpen] = React.useState(true);
   const toggleDrawer = () => {
@@ -26,8 +29,15 @@ export default function EditTemplate() {
 
   const [props, setProps] = useState<FormattedTemplate>(() => {
     const currentTemplate = localStorage.getItem(`currentTemplate`);
-    return currentTemplate ? JSON.parse(currentTemplate) : {};
+    const template: FormattedTemplate = currentTemplate ? JSON.parse(currentTemplate) : {};
+    setLoading(false);
+    return template;
   });
+
+  const handleDelete = (name: string) => {
+    const newTemplates = props.measurementTemplates.filter((template) => template.name !== name)
+    setProps({...props, measurementTemplates: newTemplates});
+  };
 
   const saveTemplate = () => {
     console.log("saving template")
@@ -35,6 +45,18 @@ export default function EditTemplate() {
 
   const handleBackToTemplates = () => {
     localStorage.setItem('currentTemplate', "");
+  }
+
+  const listTemplates = () => {
+    if (props.measurementTemplates == undefined) {
+      return [];
+    }
+    return [
+      ...props.measurementTemplates.map((template) => (
+        <TemplateItemCard {...{template: template, onDelete: handleDelete, key: template.name}}
+        />
+      ))
+    ];
   }
 
     return (
@@ -63,12 +85,12 @@ export default function EditTemplate() {
           </Box>
           <Divider sx={{ my: 3 }} />
         </ResizableSidebar>
-          {/* <ListItems
+        <ListItems
             loading={loading}
-            list={listSeries()}
+            list={listTemplates()}
             errorMessage={fetchError}
-            loadingMessage={`Fetching series...`}
-          /> */}
+            loadingMessage={`Fetching template...`}
+          />
       </React.Fragment>
     </SidebarProvider >
     )
