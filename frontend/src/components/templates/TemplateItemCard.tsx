@@ -1,7 +1,7 @@
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { Icon, IconButton, MenuItem, Select, SelectChangeEvent, Tooltip, breadcrumbsClasses } from '@mui/material';
+import { Button, Icon, IconButton, MenuItem, Select, SelectChangeEvent, Tooltip, breadcrumbsClasses } from '@mui/material';
 import Box from '@mui/material/Box';
 import CardActions from '@mui/material/CardActions';
 import Checkbox from '@mui/material/Checkbox';
@@ -13,11 +13,14 @@ import { MultiLineInput, MultiLineInputProps, SingleLineInput, SingleLineInputPr
 import { getSeriesData } from '../../utils/DatabaseFetchers';
 import { SeriesData, PACSSeries, SeriesProps, FormattedTemplate, MeasurementTemplate, MeasurementTemplatePair } from "../../../../shared/Types";
 import { getClockNumberUtilityClass } from '@mui/x-date-pickers/TimeClock/clockNumberClasses';
-import { Cancel, CancelRounded, CheckCircle, CheckCircleOutline, Help, HelpRounded, Warning, WarningRounded } from '@mui/icons-material';
+import { Cancel, CancelRounded, CheckCircle, CheckCircleOutline, Help, HelpRounded, PaidRounded, Warning, WarningRounded } from '@mui/icons-material';
 import { CalendarIcon } from '@mui/x-date-pickers';
 import { SeriesMultiLineInput, SeriesSingleLineInput } from '../series/Series';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { DeleteDialog } from './DeleteDialog';
+import AddIcon from '@mui/icons-material/Add';
+import TemplatePairCard from './TemplatePairCard';
+import ListItems from '../common/ListItems';
 
 interface CheckboxInputProps {
   text: string;
@@ -28,6 +31,11 @@ interface CheckboxInputProps {
 export interface TemplateItemProps {
     template: MeasurementTemplate,
     onDelete: (name: string) => void    
+}
+
+export interface AddedMeasurementTemplatePairs {
+  index: number;
+  pair: MeasurementTemplatePair
 }
 
 export function TemplateItemCard(props: TemplateItemProps) {
@@ -53,6 +61,16 @@ export function TemplateItemCard(props: TemplateItemProps) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState("");
 
+  const [addedPairsIndex, setAddedPairsIndex] = useState(0);
+  const [addedPairs, setAddedPairs] = useState<AddedMeasurementTemplatePairs[]>(() => {
+    var pairs: AddedMeasurementTemplatePairs[] = []
+    props.template.measurement_template_pairs.filter((pair) => !pair.user_input).forEach(pair => {
+      pairs = [...pairs, {index: addedPairsIndex, pair: pair}]
+      setAddedPairsIndex((prev) => prev + 1);
+    });
+    return pairs;
+  });
+
   useEffect(() => {
     const fetchData = async () => {
     };
@@ -74,6 +92,20 @@ export function TemplateItemCard(props: TemplateItemProps) {
   function closeDeleteDialog() {
     setIsDeleteDialogOpen(false);
     setItemToDelete("");
+  }
+
+  const onAddTemplateClick = () => {
+    const new_pair: MeasurementTemplatePair = {
+      key: "",
+      user_input: false,
+      type_of_comparison: "equal",
+      valueA: null,
+      valueB: null
+    }
+    setAddedPairs((prev) => [...prev, {index: addedPairsIndex, pair: new_pair}]);
+    setAddedPairsIndex((prev) => prev+1);
+    setTemplate(prevTemplate => ({...prevTemplate, measurement_template_pairs: [...prevTemplate.measurement_template_pairs, new_pair]}))
+    console.log({...template, measurement_template_pairs: [...template.measurement_template_pairs, new_pair]});
   }
 
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -120,6 +152,20 @@ export function TemplateItemCard(props: TemplateItemProps) {
     }
   };
 
+  const savePair = (pair: AddedMeasurementTemplatePairs) => {
+    const updatedPair = pair.pair;
+    const oldPair = addedPairs.find((addedPair) => addedPair.index === pair.index);
+    const oldPairs = addedPairs.filter((oldPair) => oldPair.index !== pair.index)
+    setAddedPairs([...oldPairs, pair]);
+    if (oldPair == undefined) return;
+    const index = template.measurement_template_pairs.findIndex(newPair => newPair.key === oldPair.pair.key);
+    if (index !== -1) {
+      const updatedTemplate = { ...template };
+      updatedTemplate.measurement_template_pairs[index] = updatedPair
+      setTemplate(updatedTemplate);
+    }
+  };
+
   function handleSeriesClick() {
     setIsExpanded(!isExpanded);
   }
@@ -137,6 +183,14 @@ export function TemplateItemCard(props: TemplateItemProps) {
       return "";
     }
     return pair.valueA ? pair.valueA : "";
+  }
+
+  const listTemplatePairs = () => {
+    return [
+      ...addedPairs.sort((a, b) => a.index - b.index).map((pair) => (
+        <TemplatePairCard {...{addedPair: pair, savePair: savePair, key: pair.index}}></TemplatePairCard>
+      ))
+    ];
   }
 
   return (
@@ -159,6 +213,13 @@ export function TemplateItemCard(props: TemplateItemProps) {
               onClick={() => onDeleteClick(props.template.name)}
             >
               <DeleteIcon />
+            </IconButton>
+            <IconButton
+              aria-label="add"
+              onClick={onAddTemplateClick}
+            >
+              <AddIcon />
+
             </IconButton>
               <ExpandMore
                 expand={isExpanded}
@@ -223,6 +284,14 @@ export function TemplateItemCard(props: TemplateItemProps) {
                 <CheckboxInput text='ACC' checked={isChecked("siemens_acc")} name="siemens_acc" />
               </Box>
             </Box>
+          </Box>
+          <Box display={'flex'}>
+            <ListItems
+              loading={false}
+              list={listTemplatePairs()}
+              errorMessage={""}
+              loadingMessage={`Fetching template...`}
+            />
           </Box>
         </Collapse>
       </Box>
