@@ -9,9 +9,10 @@ interface ListItemsProps {
   list: JSX.Element[];
   loadingMessage: string;
   errorMessage: string | null;
+  hasToolbar?: boolean;
 }
 
-const ListItems: React.FC<ListItemsProps> = ({ loading, list, loadingMessage, errorMessage }) => {
+const ListItems: React.FC<ListItemsProps> = ({ loading, list, loadingMessage, errorMessage, hasToolbar = true }) => {
   const theme = useTheme();
 
   return (
@@ -20,10 +21,11 @@ const ListItems: React.FC<ListItemsProps> = ({ loading, list, loadingMessage, er
       sx={{
         flexGrow: 1,
         overflow: 'auto',
-        height: '100vh',
+        maxHeight: '100vh',
+        height: 'auto',
       }}
     >
-      <Toolbar sx={{ minHeight: theme.mixins.toolbar.minHeight }} />
+      { hasToolbar && <Toolbar sx={{ minHeight: theme.mixins.toolbar.minHeight }} /> }
       {loading ? (
         <LoadingBox loadingMessage={loadingMessage} />
       ) : errorMessage ? (

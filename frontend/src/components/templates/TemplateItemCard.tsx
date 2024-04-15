@@ -13,7 +13,7 @@ import { MultiLineInput, MultiLineInputProps, SingleLineInput, SingleLineInputPr
 import { getSeriesData } from '../../utils/DatabaseFetchers';
 import { SeriesData, PACSSeries, SeriesProps, FormattedTemplate, MeasurementTemplate, MeasurementTemplatePair } from "../../../../shared/Types";
 import { getClockNumberUtilityClass } from '@mui/x-date-pickers/TimeClock/clockNumberClasses';
-import { Cancel, CancelRounded, CheckCircle, CheckCircleOutline, Help, HelpRounded, PaidRounded, Warning, WarningRounded } from '@mui/icons-material';
+import { Cancel, CancelRounded, CheckCircle, CheckCircleOutline, Filter, Help, HelpRounded, PaidRounded, Warning, WarningRounded } from '@mui/icons-material';
 import { CalendarIcon } from '@mui/x-date-pickers';
 import { SeriesMultiLineInput, SeriesSingleLineInput } from '../series/Series';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -30,7 +30,7 @@ interface CheckboxInputProps {
 
 export interface TemplateItemProps {
     template: MeasurementTemplate,
-    onDelete: (name: string) => void    
+    onDelete: (name: string) => void
 }
 
 export interface AddedMeasurementTemplatePairs {
@@ -166,6 +166,19 @@ export function TemplateItemCard(props: TemplateItemProps) {
     }
   };
 
+  const onDeleteNewPair = (pairIndex: number) => {
+    const pairToDelete = addedPairs.find((pair) => pair.index == pairIndex);
+    if (pairToDelete === undefined) return;
+    const newPairs = addedPairs.filter((pair) => pair.index !== pairIndex)
+    setAddedPairs(newPairs);
+
+    const newPairs2 = template.measurement_template_pairs.filter((pair) => pair.user_input).concat(newPairs.map((newPair) => newPair.pair));
+    const updatedTemplate = { ...template, ...{measurement_template_pairs: newPairs2} };
+    console.log(updatedTemplate);
+    setTemplate(updatedTemplate);
+    return;
+  }
+
   function handleSeriesClick() {
     setIsExpanded(!isExpanded);
   }
@@ -188,7 +201,7 @@ export function TemplateItemCard(props: TemplateItemProps) {
   const listTemplatePairs = () => {
     return [
       ...addedPairs.sort((a, b) => a.index - b.index).map((pair) => (
-        <TemplatePairCard {...{addedPair: pair, savePair: savePair, key: pair.index}}></TemplatePairCard>
+        <TemplatePairCard {...{addedPair: pair, savePair: savePair, key: pair.index, onDelete: onDeleteNewPair}}></TemplatePairCard>
       ))
     ];
   }
@@ -284,14 +297,25 @@ export function TemplateItemCard(props: TemplateItemProps) {
                 <CheckboxInput text='ACC' checked={isChecked("siemens_acc")} name="siemens_acc" />
               </Box>
             </Box>
-          </Box>
-          <Box display={'flex'}>
-            <ListItems
-              loading={false}
-              list={listTemplatePairs()}
-              errorMessage={""}
-              loadingMessage={`Fetching template...`}
-            />
+            {
+              listTemplatePairs().length > 0 &&
+                <Box>
+                  <Box m={1}
+                    sx={{
+                      fontWeight: 'bold'
+                    }}
+                  >
+                  Validation pairs
+              </Box>
+                <ListItems
+                    loading={false}
+                    list={listTemplatePairs()}
+                    errorMessage={""}
+                    loadingMessage={`Fetching template...`}
+                    hasToolbar={false}
+                  />
+                </Box>
+            }
           </Box>
         </Collapse>
       </Box>

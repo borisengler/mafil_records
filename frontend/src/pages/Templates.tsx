@@ -99,7 +99,7 @@ function Templates() {
                 list={listTemplates()}
                 errorMessage={fetchError}
                 loadingMessage={`Fetching templates...`}
-            />
+                />
             </React.Fragment>
           </LocalizationProvider>
         </SidebarProvider>
