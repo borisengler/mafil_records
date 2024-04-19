@@ -141,8 +141,8 @@ export default function EditTemplate() {
           </Box>
           <Divider sx={{ my: 3 }} />
         </ResizableSidebar>
-        <React.Fragment>
         <AddMeasurementTemplateDialog open={isAddMeasurementDialogOpen} onClose={closeDialog} onConfirm={addMeasurementTemplate}></AddMeasurementTemplateDialog>
+        <React.Fragment>
           <Box width={'100%'}>
             <Toolbar sx={{ minHeight: theme.mixins.toolbar.minHeight }} />
 
@@ -185,7 +185,6 @@ export default function EditTemplate() {
                 } label='Is default' />
                 </Box>
                 <Box display={'flex'} flexDirection={'row'} mt={2}>
-
                 <Box sx={{width: '600px', marginRight: '10px'}}>
                   <MultiLineInput
                     name="comment"
@@ -195,7 +194,6 @@ export default function EditTemplate() {
                   />
                 </Box>                
                 <Box sx={{width: '100px'}}>
-                
                   <SingleLineInput
                     name="order_for_displaying"
                     type="number"
@@ -205,12 +203,7 @@ export default function EditTemplate() {
                   />
                 </Box>
               </Box>
-                
-
-              {/* Add textarea for comment */}
-              
             </Box>
-
             <Box sx={{marginLeft: 2}}
               fontWeight={'bold'}
               fontSize={20}
@@ -234,6 +227,7 @@ export default function EditTemplate() {
                   errorMessage={''}
                   loadingMessage={`Fetching template...`}
                   hasToolbar={false}
+                  maxHeight="55vh"
                 />              
             </Box>
 
