@@ -290,7 +290,9 @@ export function TemplateItemCard(props: TemplateItemProps) {
                 <CheckboxInput text='ACC' checked={isChecked("siemens_acc")} name="siemens_acc" />
               </Box>
             </Box>
-            <Box>
+            
+          </Box>
+          <Box>
               <Box m={1}
                 sx={{
                   fontWeight: 'bold'
@@ -304,7 +306,7 @@ export function TemplateItemCard(props: TemplateItemProps) {
                   <AddIcon />
 
                 </IconButton>
-          </Box>
+              </Box>
             <ListItems
                 loading={false}
                 list={listTemplatePairs()}
@@ -313,7 +315,6 @@ export function TemplateItemCard(props: TemplateItemProps) {
                 hasToolbar={false}
               />
             </Box>
-          </Box>
         </Collapse>
       </Box>
     </CommonCard >

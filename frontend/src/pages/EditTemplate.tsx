@@ -21,6 +21,7 @@ export default function EditTemplate() {
   const auth = useAuth();
   const [loading, setLoading] = useState<boolean>(true);
   const [isAddMeasurementDialogOpen, setIsAddMeasurementDialogOpen] = useState(false);
+  const [isNew, setIsNew] = useState(false);
 
   const [open, setOpen] = React.useState(true);
   const toggleDrawer = () => {
@@ -29,7 +30,18 @@ export default function EditTemplate() {
 
   const [props, setProps] = useState<FormattedTemplate>(() => {
     const currentTemplate = localStorage.getItem(`currentTemplate`);
-    const template: FormattedTemplate = currentTemplate ? JSON.parse(currentTemplate) : {};
+    const template: FormattedTemplate = currentTemplate ? JSON.parse(currentTemplate) : {
+      name: "",
+      version: 1,
+      id: '',
+      is_default: false,
+      order_for_displaying: null,
+      comment: null,
+      measurementTemplates: []
+    };
+    if (template.name == '') {
+      setIsNew(true);
+    }
     setLoading(false);
     return template;
   });
@@ -43,6 +55,7 @@ export default function EditTemplate() {
   };
 
   const saveTemplate = () => {
+    setIsNew(false);
     console.log("saving template")
   };
 
@@ -102,6 +115,7 @@ export default function EditTemplate() {
   };
 
   function addMeasurementTemplate(name: string) {
+    console.log("aaaa");
     const templates = [...props.measurementTemplates,{
       name: name,
       order_for_displaying: null,
@@ -109,7 +123,10 @@ export default function EditTemplate() {
       comment: null,
       measurement_template_pairs: []
     }];
+    console.log("bbbb");
+
     setProps({...props, measurementTemplates: templates});
+    console.log("cccc");
     setIsAddMeasurementDialogOpen(false);
   }
 
@@ -153,7 +170,18 @@ export default function EditTemplate() {
                 whiteSpace={'break-spaces'}
                 flexDirection={'row'}
               >
-                Name: {props.name} | Version: {props.version}
+                {!isNew ? 
+                  `Name: ${props.name} | Version: ${props.version}` :
+                  <Box width={'65%'}>
+                    <SingleLineInput
+                    name="name"
+                    label="Name"
+                    value={props.name}
+                    onChange={handleTextChange}
+                  />
+                  </Box>
+                }
+                
               </Box>
 
               <Box display={'flex'} flexDirection={'row'} mt={2}>
