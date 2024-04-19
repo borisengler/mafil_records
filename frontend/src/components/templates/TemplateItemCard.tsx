@@ -227,13 +227,6 @@ export function TemplateItemCard(props: TemplateItemProps) {
             >
               <DeleteIcon />
             </IconButton>
-            <IconButton
-              aria-label="add"
-              onClick={onAddTemplateClick}
-            >
-              <AddIcon />
-
-            </IconButton>
               <ExpandMore
                 expand={isExpanded}
                 onClick={handleSeriesClick}
@@ -297,25 +290,29 @@ export function TemplateItemCard(props: TemplateItemProps) {
                 <CheckboxInput text='ACC' checked={isChecked("siemens_acc")} name="siemens_acc" />
               </Box>
             </Box>
-            {
-              listTemplatePairs().length > 0 &&
-                <Box>
-                  <Box m={1}
-                    sx={{
-                      fontWeight: 'bold'
-                    }}
-                  >
-                  Validation pairs
-              </Box>
-                <ListItems
-                    loading={false}
-                    list={listTemplatePairs()}
-                    errorMessage={""}
-                    loadingMessage={`Fetching template...`}
-                    hasToolbar={false}
-                  />
-                </Box>
-            }
+            <Box>
+              <Box m={1}
+                sx={{
+                  fontWeight: 'bold'
+                }}
+              >
+                Validation pairs
+                <IconButton
+                  aria-label="add"
+                  onClick={onAddTemplateClick}
+                >
+                  <AddIcon />
+
+                </IconButton>
+          </Box>
+            <ListItems
+                loading={false}
+                list={listTemplatePairs()}
+                errorMessage={""}
+                loadingMessage={`Fetching template...`}
+                hasToolbar={false}
+              />
+            </Box>
           </Box>
         </Collapse>
       </Box>

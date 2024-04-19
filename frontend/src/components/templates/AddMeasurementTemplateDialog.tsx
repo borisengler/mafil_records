@@ -23,10 +23,10 @@ export default function AddMeasurementTemplateDialog(props: AddMeasurementTempla
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">{"Confirm Deletion"}</DialogTitle>
+        <DialogTitle id="alert-dialog-title">{"Add new measurement template"}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Add new measurement template
+            Add new measurement template. Fill the name.
           </DialogContentText>
           <TextField
             autoFocus
@@ -44,7 +44,7 @@ export default function AddMeasurementTemplateDialog(props: AddMeasurementTempla
             Cancel
           </Button>
           <Button onClick={() => {props.onConfirm(name)}} color="primary" autoFocus>
-            Delete
+            Add
           </Button>
         </DialogActions>
       </Dialog>

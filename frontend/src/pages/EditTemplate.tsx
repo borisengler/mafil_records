@@ -12,7 +12,7 @@ import { TemplateItemCard } from "../components/templates/TemplateItemCard";
 import { fetchProjects } from "../utils/MAFILFetchers";
 import { MultiLineInput, SingleLineInput } from "../components/common/Inputs";
 import AddIcon from '@mui/icons-material/Add';
-import { AddMeasurementTemplateDialog } from '../components/templates/AddMeasurementTemplateDialog';
+import AddMeasurementTemplateDialog from '../components/templates/AddMeasurementTemplateDialog';
 
 
 export default function EditTemplate() {
@@ -101,15 +101,20 @@ export default function EditTemplate() {
     setSelectedProjectId(selectedValue);
   };
 
-  function addMeasurementTemplate() {
+  function addMeasurementTemplate(name: string) {
     const templates = [...props.measurementTemplates,{
-      name: '',
+      name: name,
       order_for_displaying: null,
       compulsory: true,
       comment: null,
       measurement_template_pairs: []
     }];
     setProps({...props, measurementTemplates: templates});
+    setIsAddMeasurementDialogOpen(false);
+  }
+
+  function closeDialog() {
+    setIsAddMeasurementDialogOpen(false);
   }
 
     return (
@@ -137,7 +142,7 @@ export default function EditTemplate() {
           <Divider sx={{ my: 3 }} />
         </ResizableSidebar>
         <React.Fragment>
-        <AddMeasurementTemplateDialog open={isDeleteDialogOpen} onClose={closeDeleteDialog} onConfirm={deleteItem}></AddMeasurementTemplateDialog>
+        <AddMeasurementTemplateDialog open={isAddMeasurementDialogOpen} onClose={closeDialog} onConfirm={addMeasurementTemplate}></AddMeasurementTemplateDialog>
           <Box width={'100%'}>
             <Toolbar sx={{ minHeight: theme.mixins.toolbar.minHeight }} />
 
@@ -215,7 +220,7 @@ export default function EditTemplate() {
                 Measurements
               <IconButton
                 aria-label="add"
-                onClick={addMeasurementTemplate}
+                onClick={() => setIsAddMeasurementDialogOpen(true)}
               >
                 <AddIcon />
 
