@@ -33,7 +33,7 @@ export const TemplateDropdown: React.FC<TemplateDropdownProps> = ({ selectedTemp
         <MenuItem value="">No template</MenuItem>
         {templates.map((template) => (
           <MenuItem key={template.id} value={template.id} selected={isTemplateSelected(template.id)}>
-            {template.name}
+            {`${template.name} (${template.version})`}
           </MenuItem>
         ))}
       </Select>

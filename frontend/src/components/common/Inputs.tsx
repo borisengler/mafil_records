@@ -6,9 +6,10 @@ export interface SingleLineInputProps {
   label: string;
   value: string;
   onChange: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+  type?: string;
 }
 
-export function SingleLineInput({ name, label, value, onChange }: SingleLineInputProps) {
+export function SingleLineInput({ name, label, value, onChange, type="text" }: SingleLineInputProps) {
   const handleTextChange = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
     onChange(event);
   };
@@ -22,6 +23,7 @@ export function SingleLineInput({ name, label, value, onChange }: SingleLineInpu
       onChange={handleTextChange}
       fullWidth
       variant="outlined"
+      type={type}
     />
   )
 }

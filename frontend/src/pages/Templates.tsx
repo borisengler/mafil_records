@@ -15,8 +15,8 @@ import TemplateCard from '../components/templates/TemplateCard'
 import { useAuth } from 'react-oidc-context';
 import SaveButton from '../components/common/SaveButton';
 import { saveTemplatesData } from '../utils/Savers';
-import { FormattedTemplate } from '../../../shared/Types';
-import { fetchStudyTemplates, fetchTemplates } from '../utils/MAFILFetchers';
+import { FormattedTemplate, Project } from '../../../shared/Types';
+import { fetchTemplates } from '../utils/MAFILFetchers';
 import { Box } from '@mui/material';
 
 function Templates() {
@@ -31,79 +31,78 @@ function Templates() {
 
   const [fetchStatus, setFetchStatus] = useState<'idle' | 'saving' | 'success' | 'failed'>('idle');
 
-  const [templates, setTemplates] = React.useState<FormattedTemplate[]>([]);
+  const [templates, setTemplates] = useState<FormattedTemplate[]>([]);
 
-    async function fetchData() {
-        setFetchStatus('saving');
-        const currentStudyString = localStorage.getItem('currentStudy');
-        if (currentStudyString) {
-          try {
-            const fetchedTemplates: FormattedTemplate[] = await fetchTemplates();
-            setTemplates(fetchedTemplates);
-            setFetchStatus('success');
-            setFetchError(null);
-          } catch (error) {
-            setFetchStatus('failed');
-            setFetchError('Fetching templates failed, check internet connection and try again. If problem persists, contact your system administrator.');
-          }
-        }
-        setLoading(false);
-      }
 
-      function listTemplates() {
-        return [...templates.map((template) => (
-            <TemplateCard template={template} key={`${template.id}-${template.version}`}/>
-        ))]
-      }
+  async function fetchData() {
+    setFetchStatus('saving');
+    try {
+      const fetchedTemplates: FormattedTemplate[] = await fetchTemplates();
 
-      useEffect(() => {
-        const interval = setInterval(() => {
-          fetchData();
-        }, 30 * 1000);
-    
-        return () => {
-          clearInterval(interval);
-        };
-      }, []);
+      setTemplates(fetchedTemplates);
+      setFetchStatus('success');
+      setFetchError(null);
+    } catch (error) {
+      setFetchStatus('failed');
+      setFetchError('Fetching templates failed, check internet connection and try again. If problem persists, contact your system administrator.');
+    }
+    setLoading(false);
+  }
 
-      useEffect(() => {
-          fetchData();
-      }, []);
+  function listTemplates() {
+    return [...templates.map((template) => (
+        <TemplateCard template={template} key={`${template.id}-${template.version}`}/>
+    ))]
+  }
 
-      const handleClick = () => {
-        localStorage.setItem('currentTemplate', "");
-      };
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchData();
+    }, 30 * 1000);
 
-    return (
-        <SidebarProvider>
-          <LocalizationProvider dateAdapter={AdapterDateFns}>
-            <React.Fragment>
-              <CommonAppBar
-                open={open}
-                toggleDrawer={toggleDrawer}
-                pageTitle='Template administration'
-                content={
-                    <></>
-                }
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
+
+  useEffect(() => {
+      fetchData();
+  }, []);
+
+  const handleClick = () => {
+    localStorage.setItem('currentTemplate', "");
+  };
+
+  return (
+      <SidebarProvider>
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <React.Fragment>
+            <CommonAppBar
+              open={open}
+              toggleDrawer={toggleDrawer}
+              pageTitle='Template administration'
+              content={
+                  <></>
+              }
+            />
+            <ResizableSidebar
+              open={open}
+              toggleDrawer={toggleDrawer}
+            >
+              <InfoItem label="Measuring operator" text={auth.user ? auth.user.profile.name : ''} />
+              <BlueButton text="Create template" path="/template-edit" onClick={handleClick}/>
+              <RedButton text="Back to studies" path="/studies" />
+            </ResizableSidebar>
+            <ListItems
+              loading={loading}
+              list={listTemplates()}
+              errorMessage={fetchError}
+              loadingMessage={`Fetching templates...`}
               />
-              <ResizableSidebar
-                open={open}
-                toggleDrawer={toggleDrawer}
-              >
-                <InfoItem label="Measuring operator" text={auth.user ? auth.user.profile.name : ''} />
-                <BlueButton text="Create template" path="/template-edit" onClick={handleClick}/>
-                <RedButton text="Back to studies" path="/studies" />
-              </ResizableSidebar>
-              <ListItems
-                loading={loading}
-                list={listTemplates()}
-                errorMessage={fetchError}
-                loadingMessage={`Fetching templates...`}
-                />
-            </React.Fragment>
-          </LocalizationProvider>
-        </SidebarProvider>
-      );
+          </React.Fragment>
+        </LocalizationProvider>
+      </SidebarProvider>
+    );
 }
 
 const ProtectedTemplates = withAuthentication(Templates);

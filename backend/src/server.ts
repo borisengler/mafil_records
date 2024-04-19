@@ -5,14 +5,12 @@ const axios = require('axios');
 const app = express();
 const port = process.env.PORT || 4000;
 
-import fetch from 'node-fetch';
-import { PostStudyCommentProps } from './model/StudyProps';
-import { SeriesDataProps } from './model/SeriesProps';
 import { getStudies, getStudy, postStudyComment } from "./routes/StudyRoutes";
 import { getSeries, getSerie, postSeries } from "./routes/SeriesRoutes";
 import { getPacsSeries, getPacsStudies } from "./routes/PACSRoutes";
 import { getTemplatesForStudy, getDefaultTemplateForStudy, getTemplates} from './routes/TemplateRoutes';
 import { validateSeriesForTemplate } from './routes/ValidationRoutes';
+import { getProjects } from './routes/ProjectRoutes'
 require('dotenv').config();
 
 app.use(express.json());
@@ -58,3 +56,4 @@ app.get('/api/study/:study_id/default_template', getDefaultTemplateForStudy);
 
 app.post('/api/series/validate', validateSeriesForTemplate);
 
+app.get('/api/project', getProjects);

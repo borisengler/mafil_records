@@ -54,7 +54,7 @@ export const getTemplates = async (req, res) => {
         return Array.isArray(template.versioned_templates) 
           ? template.versioned_templates.map((vTemplate) => ({
               id: getFormattedTemplateId(template.id, vTemplate.version),
-              name: `${template.name} (${vTemplate.version})`,
+              name: template.name,
               version: vTemplate.version,
               is_default: template.is_default,
               order_for_displaying: template.order_for_displaying || 0,
@@ -94,7 +94,7 @@ export const getDefaultTemplateForStudy = async (req, res) => {
     const formattedTemplate: FormattedTemplate = {
         id: getFormattedTemplateId(defaultTemplate.id, latestVersionedTemplate.version),
         version: latestVersionedTemplate.version,
-        name: `${defaultTemplate.name} (${latestVersionedTemplate.version})`,
+        name: defaultTemplate.name,
         is_default: defaultTemplate.is_default,
         order_for_displaying: defaultTemplate.order_for_displaying,
         comment: latestVersionedTemplate.comment,
@@ -205,13 +205,23 @@ const VT1: VersionedTemplate = {
     ]
 }
 
+const VT3: VersionedTemplate = {
+    version: 1,
+    comment: "",
+    measurement_templates: [
+        MT1,
+        MT2,
+        MT4
+    ]
+}
+
 const T1: Template = {
     id: 1,
     name: "Template1",
     is_default: false,
     order_for_displaying: 1,
     measurement_modality: "MR",
-    versioned_templates: [VT1]
+    versioned_templates: [VT1, VT3]
 }
 
 const VT2: VersionedTemplate = {

@@ -170,3 +170,8 @@ export interface SeriesProps {
   onCopy: (seriesId: string) => void; // onCopy handler passed from parent component
   onPaste: () => string | null; // onPaste handler passed from parent component
 }
+
+export interface Project {
+  uuid: string;
+  acronym: string;
+}

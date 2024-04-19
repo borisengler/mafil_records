@@ -1,4 +1,5 @@
-import { FormattedTemplate } from "../../../shared/Types";
+import { FormattedTemplate, Project } from "../../../shared/Types";
+const axios = require('axios');
 
 export async function fetchStudyTemplates(study_id: string) {
     const url = `/api/study/${study_id}/template`;
@@ -17,22 +18,40 @@ export async function fetchStudyTemplates(study_id: string) {
     }
   }
 
-  export async function fetchTemplates() {
-    const url = `/api/template`;
-    try {
-      const response = await fetch(
-        url,
-        {
-          method: 'GET',
-          mode: 'cors',
-        });
+export async function fetchTemplates() {
+  const url = `/api/template`;
+  try {
+    const response = await fetch(
+      url,
+      {
+        method: 'GET',
+        mode: 'cors',
+      });
 
-      const templates: FormattedTemplate[] = await response.json();
-      return templates;
-    } catch (err) {
-      throw err;
-    }
+    const templates: FormattedTemplate[] = await response.json();
+    return templates;
+  } catch (err) {
+    throw err;
   }
+}
+  
+  
+export async function fetchProjects(token: string | undefined) {
+  const url = `/api/project?token=${token}`;
+  try {
+    const response = await fetch(
+      url,
+      {
+        method: 'GET',
+        mode: 'cors',
+      });
+
+    const projects: Project[] = await response.json();
+    return projects;
+  } catch (err) {
+    throw err;
+  }
+}
 
 export async function fetchStudyDefaultTemplates(study_id: string) {
   const url = `/api/study/${study_id}/default_template`;

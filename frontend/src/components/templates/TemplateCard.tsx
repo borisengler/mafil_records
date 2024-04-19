@@ -1,6 +1,6 @@
 import React from 'react';
 import CommonCard, { ExpandMore } from '../common/CommonCard';
-import { FormattedTemplate } from '../../../../shared/Types';
+import { FormattedTemplate, Project } from '../../../../shared/Types';
 import Box from '@mui/material/Box';
 import { Link } from 'react-router-dom';
 
@@ -18,7 +18,7 @@ export default function TemplateCard (props: TemplateCardProps) {
     <Link to='/template-edit' style={{ textDecoration: 'none' }} onClick={handleClick}>
 
         <CommonCard>
-            <Box>{props.template.name}</Box>
+            <Box>{`${props.template.name} (${props.template.version})`}</Box>
         </CommonCard>
     </Link>
     )

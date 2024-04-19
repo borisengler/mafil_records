@@ -16,7 +16,7 @@ import { getClockNumberUtilityClass } from '@mui/x-date-pickers/TimeClock/clockN
 import { Cancel, CancelRounded, CheckCircle, CheckCircleOutline, Help, HelpRounded, Warning, WarningRounded } from '@mui/icons-material';
 import { CalendarIcon } from '@mui/x-date-pickers';
 
-export function SeriesSingleLineInput({ name, label, value, onChange }: SingleLineInputProps) {
+export function SeriesSingleLineInput({ name, label, value, onChange, type="text"}: SingleLineInputProps) {
   return (
     <Box m={1} flexGrow={1}>
       <SingleLineInput
