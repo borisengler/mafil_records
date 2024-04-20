@@ -73,14 +73,15 @@ function Measuring() {
     const currentStudyString = localStorage.getItem('currentStudy');
     if (currentStudyString) {
       try {
-        const fetchedTemplates: FormattedTemplate[] = await fetchStudyTemplates(props.StudyID);
-        const defaultTemplate = await fetchStudyDefaultTemplates(props.StudyID);
+        const fetchedTemplates: FormattedTemplate[] = await fetchStudyTemplates(props.StudyID, auth.user ? auth.user.access_token : '');
+        const defaultTemplate = await fetchStudyDefaultTemplates(props.StudyID, auth.user ? auth.user.access_token : '');
         if (defaultTemplate !== undefined && selectedTemplateId == '') {
           setSelectedTemplateId(defaultTemplate.id);
         }
         setStudyTemplates(fetchedTemplates);
 
         const currentStudy = JSON.parse(currentStudyString);
+        console.log(currentStudy);
         const json = await fetchSeries(currentStudy.AccessionNumber);
         // Sort the series by series number, highest (newly added) first
         json.sort((a: PACSSeries, b: PACSSeries) => a.SeriesNumber - b.SeriesNumber);

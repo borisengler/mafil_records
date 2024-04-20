@@ -16,7 +16,7 @@ export async function fetchStudies(dateRange: DateRange) {
       const parsedDate = new Date(visit.StudyDate.substr(0, 4), parseInt(visit.StudyDate.substr(4, 2)) - 1, visit.StudyDate.substr(6, 2));
       return { ...visit, StudyDate: parsedDate };
     });
-
+    console.log(parsedVisits);
     return parsedVisits;
   } catch (err) {
     throw err;

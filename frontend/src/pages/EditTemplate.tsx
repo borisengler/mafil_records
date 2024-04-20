@@ -205,7 +205,7 @@ export default function EditTemplate() {
                 <div style={{ marginLeft: '10px' }} />
                 <FormControlLabel control={
                   <Checkbox
-                    checked={false}
+                    checked={props.is_default}
                     onChange={handleIsDefaultChange}
                     name="is_default"
                     color="primary"

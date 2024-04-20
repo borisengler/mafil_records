@@ -37,7 +37,7 @@ function Templates() {
   async function fetchData() {
     setFetchStatus('saving');
     try {
-      const fetchedTemplates: FormattedTemplate[] = await fetchTemplates();
+      const fetchedTemplates: FormattedTemplate[] = await fetchTemplates(auth.user ? auth.user.access_token : '');
 
       setTemplates(fetchedTemplates);
       setFetchStatus('success');

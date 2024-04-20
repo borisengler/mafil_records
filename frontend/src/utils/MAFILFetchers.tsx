@@ -1,34 +1,30 @@
 import { FormattedTemplate, Project } from "../../../shared/Types";
-const axios = require('axios');
+import axios from 'axios';
 
-export async function fetchStudyTemplates(study_id: string) {
+export async function fetchStudyTemplates(study_id: string, token: string | undefined) {
     const url = `/api/study/${study_id}/template`;
     try {
-      const response = await fetch(
-        url,
-        {
-          method: 'GET',
-          mode: 'cors',
-        });
+      const headers = {
+        'token': token
+      };
+      const response = await axios.get(url, { headers });
+      const templates: FormattedTemplate[] = await response.data;
 
-      const templates: FormattedTemplate[] = await response.json();
       return templates;
     } catch (err) {
       throw err;
     }
   }
 
-export async function fetchTemplates() {
+export async function fetchTemplates(token: string | undefined) {
   const url = `/api/template`;
   try {
-    const response = await fetch(
-      url,
-      {
-        method: 'GET',
-        mode: 'cors',
-      });
+    const headers = {
+      'token': token
+    };
+    const response = await axios.get(url, { headers });
 
-    const templates: FormattedTemplate[] = await response.json();
+    const templates: FormattedTemplate[] = await response.data;
     return templates;
   } catch (err) {
     throw err;
@@ -37,36 +33,33 @@ export async function fetchTemplates() {
   
   
 export async function fetchProjects(token: string | undefined) {
-  const url = `/api/project?token=${token}`;
-  try {
-    const response = await fetch(
-      url,
-      {
-        method: 'GET',
-        mode: 'cors',
-      });
+  const url = `/api/project`;
 
-    const projects: Project[] = await response.json();
+  try {
+    const headers = {
+      'token': token
+    };
+    const response = await axios.get(url, { headers });
+
+    const projects: Project[] = await response.data;
     return projects;
   } catch (err) {
     throw err;
   }
 }
 
-export async function fetchStudyDefaultTemplates(study_id: string) {
+export async function fetchStudyDefaultTemplates(study_id: string, token: string | undefined) {
   const url = `/api/study/${study_id}/default_template`;
   try {
-    const response = await fetch(
-      url,
-      {
-        method: 'GET',
-        mode: 'cors',
-      });
+    const headers = {
+      'token': token
+    };
+    const response = await axios.get(url, { headers });
 
     if (response.status == 204) {
       return;
     }
-    const template: FormattedTemplate = await response.json();
+    const template: FormattedTemplate = await response.data;
     return template;
   } catch (err) {
     throw err;
