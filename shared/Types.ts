@@ -5,6 +5,7 @@ export interface Template {
   order_for_displaying: number | null;
   measurement_modality: "MR" | "EF";
   versioned_templates?: VersionedTemplate[];
+  project: Project;
   is_default: boolean;
 }
 
@@ -40,6 +41,7 @@ export interface FormattedTemplate {
   order_for_displaying: number | null;
   comment: string | null;
   measurementTemplates: MeasurementTemplate[];
+  project_uuid: string;
 }
 
 export interface PacsStudyAPI {
@@ -174,4 +176,10 @@ export interface SeriesProps {
 export interface Project {
   uuid: string;
   acronym: string;
+}
+
+export interface Visit {
+  uuid: string;
+  visit_name: string;
+  description: string;
 }

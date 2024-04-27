@@ -30,7 +30,8 @@ interface CheckboxInputProps {
 
 export interface TemplateItemProps {
     template: MeasurementTemplate,
-    onDelete: (name: string) => void
+    onDelete: (name: string) => void,
+    onChange: (template: MeasurementTemplate) => any
 }
 
 export interface AddedMeasurementTemplatePairs {
@@ -78,6 +79,10 @@ export function TemplateItemCard(props: TemplateItemProps) {
 
     fetchData();
   }, []);
+
+  useEffect(() => {
+    props.onChange(template);
+  }, [template])
 
   const onDeleteClick = (name: string) => {
     setItemToDelete(name)

@@ -12,7 +12,7 @@ export const getProjects = async (req, res) => {
 
     try {
         const headers = {
-            'Cookie': 'sessionid=b1636ckl9oeerzk92rb4y5ktkrtinv4h'
+            'Authorization': `Bearer ${token}`
           };
         const response = await axios.get(mafilApiUrl + 'projects', { headers });
         const projects = response.data;

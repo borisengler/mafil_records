@@ -21,7 +21,7 @@ import removeStudiesFromLocalStorage from '../utils/RemoveStudiesFromLocalStorag
 import { saveSeriesData, saveStudyData } from '../utils/Savers';
 import { getStudyData } from '../utils/DatabaseFetchers';
 import { postValidationData } from '../utils/ValidationFetchers';
-import { fetchStudyDefaultTemplates, fetchStudyTemplates } from '../utils/MAFILFetchers';
+import { fetchProjects, fetchStudyDefaultTemplates, fetchStudyTemplates } from '../utils/MAFILFetchers';
 import { FormattedTemplate, MissingSeries, PACSSeries, ValidatedSeries } from '../../../shared/Types';
 
 export interface StudyData {
@@ -68,18 +68,25 @@ function Measuring() {
     return false;
   }
 
+  async function fetchMafilData() {
+    try {
+      const fetchedTemplates: FormattedTemplate[] = await fetchStudyTemplates(props.StudyID, auth.user ? auth.user.access_token : '');
+      const defaultTemplate = await fetchStudyDefaultTemplates(props.StudyID, auth.user ? auth.user.access_token : '');
+      if (defaultTemplate !== undefined && selectedTemplateId == '') {
+        setSelectedTemplateId(defaultTemplate.id);
+      }
+      setStudyTemplates(fetchedTemplates);
+    } catch(err) {
+
+    }
+
+  }
+
   async function fetchData() {
     setFetchStatus('saving');
     const currentStudyString = localStorage.getItem('currentStudy');
     if (currentStudyString) {
       try {
-        const fetchedTemplates: FormattedTemplate[] = await fetchStudyTemplates(props.StudyID, auth.user ? auth.user.access_token : '');
-        const defaultTemplate = await fetchStudyDefaultTemplates(props.StudyID, auth.user ? auth.user.access_token : '');
-        if (defaultTemplate !== undefined && selectedTemplateId == '') {
-          setSelectedTemplateId(defaultTemplate.id);
-        }
-        setStudyTemplates(fetchedTemplates);
-
         const currentStudy = JSON.parse(currentStudyString);
         console.log(currentStudy);
         const json = await fetchSeries(currentStudy.AccessionNumber);
@@ -100,6 +107,7 @@ function Measuring() {
     // Every 30 seconds, fetch series from PACS-API
     const interval = setInterval(() => {
       fetchData();
+      fetchMafilData();
     }, 30 * 1000);
 
     return () => {
@@ -126,10 +134,12 @@ function Measuring() {
 
   useEffect(() => {
     fetchData();
+    fetchMafilData();
   }, []);
 
   function handleRefresh() {
     fetchData();
+    fetchMafilData();
   };
 
   async function handleFinishStudy() {

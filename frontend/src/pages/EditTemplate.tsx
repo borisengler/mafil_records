@@ -7,9 +7,9 @@ import { ResizableSidebar } from "../components/global/ResizableSidebar";
 import { SidebarProvider } from "../contexts/SidebarContext";
 import CommonAppBar from '../components/global/AppBarContent';
 import { useAuth } from "react-oidc-context";
-import { FormattedTemplate, Project } from "../../../shared/Types";
+import { FormattedTemplate, MeasurementTemplate, Project } from "../../../shared/Types";
 import { TemplateItemCard } from "../components/templates/TemplateItemCard";
-import { fetchProjects } from "../utils/MAFILFetchers";
+import { fetchProjects, postTemplate } from "../utils/MAFILFetchers";
 import { MultiLineInput, SingleLineInput } from "../components/common/Inputs";
 import AddIcon from '@mui/icons-material/Add';
 import AddMeasurementTemplateDialog from '../components/templates/AddMeasurementTemplateDialog';
@@ -47,7 +47,7 @@ export default function EditTemplate() {
   });
 
   const [projects, setProjects] = useState<Project[]>([]);
-  const [selectedProjectId, setSelectedProjectId] = useState<string>("");
+  const [selectedProjectId, setSelectedProjectId] = useState<string>('');
 
   const handleDelete = (name: string) => {
     const newTemplates = props.measurementTemplates.filter((template) => template.name !== name)
@@ -55,9 +55,14 @@ export default function EditTemplate() {
   };
 
   const saveTemplate = () => {
-    setIsNew(false);
-    console.log("saving template")
+    // setIsNew(false);
+    postTemplate(auth.user ? auth.user.access_token : '', props)
   };
+
+  const saveMeasurement = (changed_template: MeasurementTemplate) => {
+    const oldMeasurementTemplates = props.measurementTemplates.filter((template) => template.name != changed_template.name)
+    setProps({...props, measurementTemplates: [...oldMeasurementTemplates, changed_template]});
+  }
 
   const handleBackToTemplates = () => {
     localStorage.setItem('currentTemplate', "");
@@ -69,7 +74,7 @@ export default function EditTemplate() {
     }
     return [
       ...props.measurementTemplates.map((template) => (
-        <TemplateItemCard {...{template: template, onDelete: handleDelete, key: template.name}}
+        <TemplateItemCard {...{template: template, onChange: saveMeasurement, onDelete: handleDelete, key: template.name}}
         />
       ))
     ];
@@ -78,6 +83,7 @@ export default function EditTemplate() {
   async function fetchData() {
     const fetchedProjects: Project[] = await fetchProjects(auth.user ? auth.user.access_token : '');
     setProjects(fetchedProjects);
+    setSelectedProjectId(props.project_uuid);
   }
 
   useEffect(() => {
@@ -112,6 +118,10 @@ export default function EditTemplate() {
   const onProjectChanged = (event: SelectChangeEvent<string>) => {
     const selectedValue = event.target.value;
     setSelectedProjectId(selectedValue);
+    setProps({
+      ...props,
+      project_uuid: selectedValue
+    })
   };
 
   function addMeasurementTemplate(name: string) {
@@ -120,7 +130,7 @@ export default function EditTemplate() {
       name: name,
       order_for_displaying: null,
       compulsory: true,
-      comment: null,
+      comment: "",
       measurement_template_pairs: []
     }];
     console.log("bbbb");
@@ -153,7 +163,7 @@ export default function EditTemplate() {
         >
           <InfoItem label="Measuring operator" text={auth.user ? auth.user.profile.name : ''} />
           <Box gap={2} display='flex' flexDirection="row" flexWrap='wrap' justifyContent="space-between">
-            <BlueButton text="Save template" path="/templates" onClick={saveTemplate} />
+            <BlueButton text="Save template"  onClick={saveTemplate} />
             <RedButton text="Back to templates" path="/templates" onClick={handleBackToTemplates} />
           </Box>
           <Divider sx={{ my: 3 }} />

@@ -7,11 +7,12 @@ require('dotenv').config();
 const mafilApiUrl = process.env.MAFIL_API_URL;
 
 export const getTemplatesForStudy = async (req, res) => {
-    const { study_id } = req.params;    const token = req.headers['token'];
+    const { project_id } = req.params;
+    const token = req.headers['token'];
 
     try {
         const headers = {
-            'Cookie': 'sessionid=b1636ckl9oeerzk92rb4y5ktkrtinv4h'
+            'Authorization': `Bearer ${token}`
           };
         const response = await axios.get(mafilApiUrl + 'templates', { headers });
         const templates = response.data.results;
@@ -47,11 +48,10 @@ export const getTemplates = async (req, res) => {
 
     try {
         const headers = {
-            'Cookie': 'sessionid=b1636ckl9oeerzk92rb4y5ktkrtinv4h'
-          };
+          'Authorization': `Bearer ${token}`
+        };
         const response = await axios.get(mafilApiUrl + 'templates', { headers });
         const templates = response.data.results;
-        console.log(templates);
 
         const versionedTemplates: FormattedTemplate[] = templates.flatMap((template) => {
             return Array.isArray(template.versioned_templates) 
@@ -63,6 +63,7 @@ export const getTemplates = async (req, res) => {
                   order_for_displaying: template.order_for_displaying || 0,
                   comment: vTemplate.comment || null,
                   measurementTemplates: vTemplate.measurement_templates || [],
+                  project_uuid: template.project.uuid
                 }))
               : [];
           });
@@ -75,19 +76,18 @@ export const getTemplates = async (req, res) => {
           
         res.status(200).json(versionedTemplates);
     } catch (err) {
-        console.log(err);
         res.status(500).send();
     }
 }
 
 export const getDefaultTemplateForStudy = async (req, res) => {
-    const { study_id } = req.params;
+    const { project_id } = req.params;
     const token = req.headers['token'];
 
     try {
         const headers = {
-            'Cookie': 'sessionid=b1636ckl9oeerzk92rb4y5ktkrtinv4h'
-          };
+          'Authorization': `Bearer ${token}`
+        };
         const response = await axios.get(mafilApiUrl + 'templates', { headers });
         const templates = response.data.results;
         
@@ -109,6 +109,7 @@ export const getDefaultTemplateForStudy = async (req, res) => {
         order_for_displaying: defaultTemplate.order_for_displaying,
         comment: latestVersionedTemplate.comment,
         measurementTemplates: latestVersionedTemplate.measurement_templates,
+        project_uuid: defaultTemplate.project.uuid
     }
     res.status(200).json(formattedTemplate);
     } catch (err) {
@@ -119,3 +120,23 @@ export const getDefaultTemplateForStudy = async (req, res) => {
 const getFormattedTemplateId = (templateId: number, templateVersion: number) : string => {
     return `${templateId} - ${templateVersion}`;
 };
+
+
+export const postTemplate = async (req, res) => {
+  const token = req.headers['token'];
+
+    try {
+        const headers = {
+          'Authorization': `Bearer ${token}`
+        };
+        const body = req.body;
+
+        console.log(body);
+        
+        const response = await axios.post(mafilApiUrl + 'templates', body, { headers });
+        console.log(response);
+        res.status(200).json();
+    } catch (err) {
+      res.status(500).send();
+    }
+}

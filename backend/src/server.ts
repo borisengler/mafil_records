@@ -8,9 +8,10 @@ const port = process.env.PORT || 4000;
 import { getStudies, getStudy, postStudyComment } from "./routes/StudyRoutes";
 import { getSeries, getSerie, postSeries } from "./routes/SeriesRoutes";
 import { getPacsSeries, getPacsStudies } from "./routes/PACSRoutes";
-import { getTemplatesForStudy, getDefaultTemplateForStudy, getTemplates} from './routes/TemplateRoutes';
+import { getTemplatesForStudy, getDefaultTemplateForStudy, getTemplates, postTemplate } from './routes/TemplateRoutes';
 import { validateSeriesForTemplate } from './routes/ValidationRoutes';
 import { getProjects } from './routes/ProjectRoutes'
+import { getVisit } from "./routes/VisitRoutes";
 require('dotenv').config();
 
 app.use(express.json());
@@ -50,10 +51,13 @@ app.get('/api/pacs/studies', getPacsStudies);
 app.get('/api/pacs/series', getPacsSeries);
 
 
-app.get('/api/study/:study_id/template', getTemplatesForStudy);
+app.get('/api/project/:project_id/template', getTemplatesForStudy);
 app.get('/api/template', getTemplates);
-app.get('/api/study/:study_id/default_template', getDefaultTemplateForStudy);
+app.post('/api/template', postTemplate);
+app.get('/api/project/:project_id/default_template', getDefaultTemplateForStudy);
 
 app.post('/api/series/validate', validateSeriesForTemplate);
 
 app.get('/api/project', getProjects);
+
+app.get('/api/visit/:visit_name', getVisit);
