@@ -16,7 +16,7 @@ import { useAuth } from 'react-oidc-context';
 import SaveButton from '../components/common/SaveButton';
 import { saveTemplatesData } from '../utils/Savers';
 import { FormattedTemplate, Project } from '../../../shared/Types';
-import { fetchTemplates } from '../utils/MAFILFetchers';
+import { deleteTemplate, fetchTemplates } from '../utils/MAFILFetchers';
 import { Box } from '@mui/material';
 
 function Templates() {
@@ -32,6 +32,13 @@ function Templates() {
   const [fetchStatus, setFetchStatus] = useState<'idle' | 'saving' | 'success' | 'failed'>('idle');
 
   const [templates, setTemplates] = useState<FormattedTemplate[]>([]);
+
+  function deleteVersionedTemplate(template: FormattedTemplate) {
+    deleteTemplate(auth.user ? auth.user.access_token : '', template);
+    const newTemplates = templates.filter((t) => t.id != template.id);
+    setTemplates(newTemplates);
+    setTimeout(fetchData, 1000);
+  }
 
 
   async function fetchData() {
@@ -51,7 +58,7 @@ function Templates() {
 
   function listTemplates() {
     return [...templates.map((template) => (
-        <TemplateCard template={template} key={`${template.id}-${template.version}`}/>
+        <TemplateCard template={template} key={`${template.id}-${template.version}`} onDelete={deleteVersionedTemplate}/>
     ))]
   }
 

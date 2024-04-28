@@ -9,14 +9,16 @@ import CommonAppBar from '../components/global/AppBarContent';
 import { useAuth } from "react-oidc-context";
 import { FormattedTemplate, MeasurementTemplate, Project } from "../../../shared/Types";
 import { TemplateItemCard } from "../components/templates/TemplateItemCard";
-import { fetchProjects, postTemplate } from "../utils/MAFILFetchers";
+import { fetchProjects, postTemplate, patchTemplate } from "../utils/MAFILFetchers";
 import { MultiLineInput, SingleLineInput } from "../components/common/Inputs";
 import AddIcon from '@mui/icons-material/Add';
 import AddMeasurementTemplateDialog from '../components/templates/AddMeasurementTemplateDialog';
+import { useNavigate } from "react-router-dom";
 
 
 export default function EditTemplate() {
   const theme = useTheme();
+  const navigate = useNavigate();
 
   const auth = useAuth();
   const [loading, setLoading] = useState<boolean>(true);
@@ -36,7 +38,7 @@ export default function EditTemplate() {
       id: '',
       is_default: false,
       order_for_displaying: null,
-      comment: null,
+      comment: '',
       measurementTemplates: []
     };
     if (template.name == '') {
@@ -54,9 +56,19 @@ export default function EditTemplate() {
     setProps({...props, measurementTemplates: newTemplates});
   };
 
-  const saveTemplate = () => {
-    // setIsNew(false);
-    postTemplate(auth.user ? auth.user.access_token : '', props)
+  async function saveTemplate() {
+    if (isNew) {
+      const newTemplate = await postTemplate(auth.user ? auth.user.access_token : '', props)
+      if (newTemplate !== undefined) {
+        setIsNew(false);
+        navigate('/templates');
+      }
+    } else {
+      const newTemplate = await patchTemplate(auth.user ? auth.user.access_token : '', props)
+      if (newTemplate !== undefined) {
+        navigate('/templates');
+      }
+    }
   };
 
   const saveMeasurement = (changed_template: MeasurementTemplate) => {

@@ -104,8 +104,8 @@ export function TemplateItemCard(props: TemplateItemProps) {
       key: "",
       user_input: false,
       type_of_comparison: "equal",
-      valueA: null,
-      valueB: null
+      valueA: '',
+      valueB: ''
     }
     setAddedPairs((prev) => [...prev, {index: addedPairsIndex, pair: new_pair}]);
     setAddedPairsIndex((prev) => prev+1);
@@ -122,7 +122,7 @@ export function TemplateItemCard(props: TemplateItemProps) {
         user_input: true,
         type_of_comparison: "equal",
         valueA: event.target.checked.toString(),
-        valueB: null
+        valueB: ''
       }
       setTemplate(prevTemplate => ({...prevTemplate, measurement_template_pairs: [...prevTemplate.measurement_template_pairs, new_pair]}))
     } else {
@@ -144,7 +144,7 @@ export function TemplateItemCard(props: TemplateItemProps) {
         user_input: true,
         type_of_comparison: "equal",
         valueA: value,
-        valueB: null
+        valueB: ''
       }
       setTemplate(prevTemplate => ({...prevTemplate, measurement_template_pairs: [...prevTemplate.measurement_template_pairs, new_pair]}))
     } else {
@@ -318,6 +318,7 @@ export function TemplateItemCard(props: TemplateItemProps) {
                 errorMessage={""}
                 loadingMessage={`Fetching template...`}
                 hasToolbar={false}
+                maxHeight={null}
               />
             </Box>
         </Collapse>

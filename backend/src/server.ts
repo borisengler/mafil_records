@@ -8,7 +8,7 @@ const port = process.env.PORT || 4000;
 import { getStudies, getStudy, postStudyComment } from "./routes/StudyRoutes";
 import { getSeries, getSerie, postSeries } from "./routes/SeriesRoutes";
 import { getPacsSeries, getPacsStudies } from "./routes/PACSRoutes";
-import { getTemplatesForStudy, getDefaultTemplateForStudy, getTemplates, postTemplate } from './routes/TemplateRoutes';
+import { getTemplatesForStudy, getDefaultTemplateForStudy, getTemplates, postTemplate, patchTemplate, deleteTemplate } from './routes/TemplateRoutes';
 import { validateSeriesForTemplate } from './routes/ValidationRoutes';
 import { getProjects } from './routes/ProjectRoutes'
 import { getVisit } from "./routes/VisitRoutes";
@@ -54,6 +54,8 @@ app.get('/api/pacs/series', getPacsSeries);
 app.get('/api/project/:project_id/template', getTemplatesForStudy);
 app.get('/api/template', getTemplates);
 app.post('/api/template', postTemplate);
+app.patch('/api/template/:template_id', patchTemplate);
+app.delete('/api/template/:template_id/:version', deleteTemplate);
 app.get('/api/project/:project_id/default_template', getDefaultTemplateForStudy);
 
 app.post('/api/series/validate', validateSeriesForTemplate);
