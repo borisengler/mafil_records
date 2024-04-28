@@ -42,6 +42,7 @@ export interface FormattedTemplate {
   comment: string;
   measurementTemplates: MeasurementTemplate[];
   project_uuid: string;
+  project_name: string;
 }
 
 export interface PacsStudyAPI {

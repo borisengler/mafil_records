@@ -37,7 +37,6 @@ function Templates() {
     deleteTemplate(auth.user ? auth.user.access_token : '', template);
     const newTemplates = templates.filter((t) => t.id != template.id);
     setTemplates(newTemplates);
-    setTimeout(fetchData, 1000);
   }
 
 

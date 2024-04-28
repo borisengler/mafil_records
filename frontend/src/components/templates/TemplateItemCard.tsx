@@ -73,14 +73,6 @@ export function TemplateItemCard(props: TemplateItemProps) {
   });
 
   useEffect(() => {
-    const fetchData = async () => {
-    };
-    // TODO
-
-    fetchData();
-  }, []);
-
-  useEffect(() => {
     props.onChange(template);
   }, [template])
 
@@ -134,6 +126,11 @@ export function TemplateItemCard(props: TemplateItemProps) {
       setTemplate(updatedTemplate);
     }
   };
+
+  const handleCommentChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = event.target;
+    setTemplate({...template, comment: value});
+  }
 
   const handleTextChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = event.target;
@@ -252,6 +249,14 @@ export function TemplateItemCard(props: TemplateItemProps) {
             <SeriesSingleLineInput label='Stim. log file' name='stim_log_file' value={getStringValue("stim_log_file")} onChange={handleTextChange} />
             <SeriesSingleLineInput label='Fyzio raw file (for BP)' name='fyzio_raw_file' value={getStringValue("fyzio_raw_file")} onChange={handleTextChange} />
             <SeriesMultiLineInput label='Measurement notes' name='measurement_notes' value={getStringValue("measurement_notes")} onChange={handleTextChange} />
+            <Box m={1} sx={{width: '600px', marginRight: '10px'}}>
+              <MultiLineInput
+                name="comment"
+                label="Comment"
+                value={template.comment}
+                onChange={handleCommentChange}
+              />
+            </Box> 
             <Box m={1}>
               <Box
                 sx={{

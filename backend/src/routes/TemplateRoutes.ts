@@ -27,7 +27,8 @@ export const getTemplatesForStudy = async (req, res) => {
                   order_for_displaying: template.order_for_displaying || 0,
                   comment: vTemplate.comment || null,
                   measurementTemplates: vTemplate.measurement_templates || [],
-                  project_uuid: template.project.uuid
+                  project_uuid: template.project.uuid,
+                  project_name: template.project.acronym
                 }))
               : [];
           });
@@ -65,7 +66,8 @@ export const getTemplates = async (req, res) => {
                   order_for_displaying: template.order_for_displaying || 0,
                   comment: vTemplate.comment || null,
                   measurementTemplates: vTemplate.measurement_templates || [],
-                  project_uuid: template.project.uuid
+                  project_uuid: template.project.uuid,
+                  project_name: template.project.acronym
                 }))
               : [];
           });
@@ -111,7 +113,8 @@ export const getDefaultTemplateForStudy = async (req, res) => {
         order_for_displaying: defaultTemplate.order_for_displaying,
         comment: latestVersionedTemplate.comment,
         measurementTemplates: latestVersionedTemplate.measurement_templates,
-        project_uuid: defaultTemplate.project.uuid
+        project_uuid: defaultTemplate.project.uuid,
+        project_name: defaultTemplate.project.acronym
     }
     res.status(200).json(formattedTemplate);
     } catch (err) {

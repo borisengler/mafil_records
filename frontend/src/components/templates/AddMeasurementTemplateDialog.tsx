@@ -29,7 +29,6 @@ export default function AddMeasurementTemplateDialog(props: AddMeasurementTempla
             Add new measurement template. Fill the name.
           </DialogContentText>
           <TextField
-            autoFocus
             margin="dense"
             id="name"
             label="Name"
@@ -43,7 +42,7 @@ export default function AddMeasurementTemplateDialog(props: AddMeasurementTempla
           <Button onClick={props.onClose} color="primary">
             Cancel
           </Button>
-          <Button onClick={() => {props.onConfirm(name)}} color="primary" autoFocus>
+          <Button onClick={() => {props.onConfirm(name)}} color="primary" disabled={name == ''}>
             Add
           </Button>
         </DialogActions>

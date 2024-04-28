@@ -7,12 +7,8 @@ export async function fetchProjectTemplates(project_id: string | undefined, toke
       const headers = {
         'token': token
       };
-      console.log("aaaaaaaaa");
-      console.log("url");
-      console.log(url);
       const response = await axios.get(url, { headers });
       const templates: FormattedTemplate[] = await response.data;
-      console.log(templates);
       return templates;
     } catch (err) {
       return [];
@@ -72,6 +68,7 @@ export async function fetchProjectDefaultTemplates(project_id: string | undefine
 export async function fetchVisit(token: string | undefined, visit_name: string) {
   const url = `/api/visit/${visit_name}`;
 
+  // TODO zatial nepouzivam
   try {
     const headers = {
       'token': token
@@ -135,9 +132,9 @@ export async function patchTemplate(token: string | undefined, template: Formatt
       order_for_displaying: template.order_for_displaying,
       measurement_modality: "mr",
       project: template.project_uuid,
-      comment: template.comment,
+      is_defeault: template.is_default,
       versioned_templates: [{
-        comment: template.comment,
+        comment: template.comment ? template.comment : '',
         version: template.version,
         created_from: null,
         measurement_templates: template.measurementTemplates

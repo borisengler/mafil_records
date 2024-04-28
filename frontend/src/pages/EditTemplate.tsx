@@ -193,7 +193,7 @@ export default function EditTemplate() {
                 flexDirection={'row'}
               >
                 {!isNew ? 
-                  `Name: ${props.name} | Version: ${props.version}` :
+                  `Name: ${props.name} | Version: ${props.version} | Project: ${props.project_name}` :
                   <Box width={'65%'}>
                     <SingleLineInput
                     name="name"
@@ -206,7 +206,9 @@ export default function EditTemplate() {
                 
               </Box>
 
-              <Box display={'flex'} flexDirection={'row'} mt={2}>
+                {
+                  isNew &&
+                <Box display={'flex'} flexDirection={'row'} mt={2}>
                 <FormControl style={{width: '300px'}}>
                   <InputLabel>Select Project</InputLabel>
                   <Select
@@ -224,6 +226,7 @@ export default function EditTemplate() {
                     ))}
                   </Select>
                 </FormControl>
+                
                 <div style={{ marginLeft: '10px' }} />
                 <FormControlLabel control={
                   <Checkbox
@@ -234,12 +237,14 @@ export default function EditTemplate() {
                   />
                 } label='Is default' />
                 </Box>
+                }
+                
                 <Box display={'flex'} flexDirection={'row'} mt={2}>
                 <Box sx={{width: '600px', marginRight: '10px'}}>
                   <MultiLineInput
                     name="comment"
                     label="Comment"
-                    value={props.comment ? props.comment : ""}
+                    value={props.comment}
                     onChange={handleTextChange}
                   />
                 </Box>                
@@ -277,7 +282,7 @@ export default function EditTemplate() {
                   errorMessage={''}
                   loadingMessage={`Fetching template...`}
                   hasToolbar={false}
-                  maxHeight="55vh"
+                  maxHeight={!isNew ? "67vh": "55vh"}
                 />              
             </Box>
 
