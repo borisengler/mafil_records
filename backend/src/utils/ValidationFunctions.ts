@@ -1,6 +1,14 @@
 import { MissingSeries, SeriesProps, ValidatedSeries, MeasurementTemplate,MeasurementTemplatePair, FormattedTemplate, PACSSeries} from '../../../shared/Types';
 
-export const validateSeriesWithMeasurementTemplate = (serie: PACSSeries, template: FormattedTemplate) : ValidatedSeries=> {
+export const validateSeriesWithMeasurementTemplate = (serie: PACSSeries, template: FormattedTemplate | undefined) : ValidatedSeries=> {
+    if (template === undefined) {
+        return {
+            ...serie,
+            ValidationResult: "NOT_FOUND",
+            UserInput: [],
+            OrderForDisplaying: 1000 + serie.SeriesNumber
+        };
+    }
     const assignedTemplate: MeasurementTemplate = template.measurementTemplates.find((template) => serie.SeriesDescription.startsWith(template.name));
 
     if (assignedTemplate === undefined) {
@@ -63,7 +71,8 @@ const validateSeriesWithPair = (serie: PACSSeries, pair: MeasurementTemplatePair
     return true;
 }
 
-export const findMissingSeries = (series: PACSSeries[], template: FormattedTemplate): MissingSeries[] => {
+export const findMissingSeries = (series: PACSSeries[], template: FormattedTemplate | undefined): MissingSeries[] => {
+    if(template === undefined) return [];
     const measurementTemplates: MeasurementTemplate[] = template.measurementTemplates;
 
     const missingTemplates = measurementTemplates.filter((template) => {

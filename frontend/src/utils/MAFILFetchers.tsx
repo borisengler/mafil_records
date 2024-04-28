@@ -1,16 +1,18 @@
 import { FormattedTemplate, Project, Template, Visit } from "../../../shared/Types";
 import axios from 'axios';
 
-export async function fetchStudyTemplates(project_id: string | undefined, token: string | undefined) {
+export async function fetchProjectTemplates(project_id: string | undefined, token: string | undefined) {
     const url = `/api/project/${project_id}/template`;
     try {
       const headers = {
         'token': token
       };
       console.log("aaaaaaaaa");
+      console.log("url");
+      console.log(url);
       const response = await axios.get(url, { headers });
       const templates: FormattedTemplate[] = await response.data;
-
+      console.log(templates);
       return templates;
     } catch (err) {
       return [];
@@ -49,7 +51,7 @@ export async function fetchProjects(token: string | undefined) {
   }
 }
 
-export async function fetchStudyDefaultTemplates(project_id: string | undefined, token: string | undefined) {
+export async function fetchProjectDefaultTemplates(project_id: string | undefined, token: string | undefined) {
   const url = `/api/project/${project_id}/default_template`;
   try {
     const headers = {

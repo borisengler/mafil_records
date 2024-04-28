@@ -21,8 +21,8 @@ import removeStudiesFromLocalStorage from '../utils/RemoveStudiesFromLocalStorag
 import { saveSeriesData, saveStudyData } from '../utils/Savers';
 import { getStudyData } from '../utils/DatabaseFetchers';
 import { postValidationData } from '../utils/ValidationFetchers';
-import { fetchProjects, fetchStudyDefaultTemplates, fetchStudyTemplates } from '../utils/MAFILFetchers';
-import { FormattedTemplate, MissingSeries, PACSSeries, ValidatedSeries } from '../../../shared/Types';
+import { fetchProjectDefaultTemplates, fetchProjectTemplates, fetchProjects } from '../utils/MAFILFetchers';
+import { FormattedTemplate, MissingSeries, PACSSeries, Project, ValidatedSeries } from '../../../shared/Types';
 
 export interface StudyData {
   study_instance_uid: string;
@@ -45,6 +45,8 @@ function Measuring() {
     const localStudy = localStorage.getItem(`currentStudy`);
     return localStudy ? JSON.parse(localStudy) : {};
   });
+  const [projects, setProjects] = useState<Project[]>([]);
+
 
   const [studyData, setStudyData] = useState<StudyData>({
     study_instance_uid: props.StudyInstanceUID,
@@ -70,8 +72,10 @@ function Measuring() {
 
   async function fetchMafilData() {
     try {
-      const fetchedTemplates: FormattedTemplate[] = await fetchStudyTemplates(props.StudyID, auth.user ? auth.user.access_token : '');
-      const defaultTemplate = await fetchStudyDefaultTemplates(props.StudyID, auth.user ? auth.user.access_token : '');
+      const fetchedProjects: Project[] = await fetchProjects(auth.user ? auth.user.access_token : '');
+      const project = fetchedProjects.find((project) => project.acronym == props.ReferringPhysicianName);
+      const fetchedTemplates: FormattedTemplate[] = await fetchProjectTemplates(project ? project.uuid : '', auth.user ? auth.user.access_token : '');
+      const defaultTemplate = await fetchProjectDefaultTemplates(project ? project.uuid : '', auth.user ? auth.user.access_token : '');
       if (defaultTemplate !== undefined && selectedTemplateId == '') {
         setSelectedTemplateId(defaultTemplate.id);
       }
@@ -177,11 +181,9 @@ function Measuring() {
     (async () => {
       const choosenTemplate = studyTemplates.find((template) => template.id === selectedTemplateId);
 
-      if (choosenTemplate != null) {
-        const {validatedSeries, missingSeries} = await postValidationData(pacsSeries, choosenTemplate);
-        setValidatedSeries(validatedSeries);
-        setMissingSeries(missingSeries);
-      }
+      const {validatedSeries, missingSeries} = await postValidationData(pacsSeries, choosenTemplate);
+      setValidatedSeries(validatedSeries);
+      setMissingSeries(missingSeries);
     })()
   
   }, [studyTemplates, selectedTemplateId, pacsSeries]);

@@ -27,16 +27,18 @@ export const getTemplatesForStudy = async (req, res) => {
                   order_for_displaying: template.order_for_displaying || 0,
                   comment: vTemplate.comment || null,
                   measurementTemplates: vTemplate.measurement_templates || [],
+                  project_uuid: template.project.uuid
                 }))
               : [];
           });
-    
-          versionedTemplates.sort((a, b) => {
+          const projectTemplates = versionedTemplates.filter((template) => template.project_uuid == project_id);
+          projectTemplates.sort((a, b) => {
             const orderComparison = a.order_for_displaying - b.order_for_displaying;
             return orderComparison === 0 ? a.version - b.version : orderComparison;
           });
+
           
-        res.status(200).json(versionedTemplates);
+        res.status(200).json(projectTemplates);
     } catch (err) {
         console.log(err);
         res.status(500).send();
