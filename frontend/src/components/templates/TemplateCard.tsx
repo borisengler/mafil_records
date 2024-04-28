@@ -46,22 +46,36 @@ export default function TemplateCard (props: TemplateCardProps) {
     <>
       <DeleteDialog open={isDeleteDialogOpen} onClose={closeDeleteDialog} onConfirm={deleteItem}></DeleteDialog>
       <CommonCard>
-          <Box>{`${props.template.name} (v${props.template.version})`}</Box>
-          <CardActions disableSpacing>
-              <IconButton
-                aria-label="edit"
-                onClick={handleClick}>
-                <EditIcon />
+        
+        <Box>
+          <Box m={1} mb={0} display={'flex'} justifyContent={'space-between'} flexDirection={'row'} flexWrap={'wrap'}>
 
-              </IconButton>
-              <IconButton
-                  aria-label="delete"
-                  onClick={() => onDeleteClick(props.template)}
-                  >
+            <Box
+              fontWeight={'bold'}
+              fontSize={18}
+              whiteSpace={'break-spaces'}
+            >
+              {`${props.template.name} (v${props.template.version})`}
+              </Box>
+            <CardActions disableSpacing>
+              <span>
+                <IconButton
+                  aria-label="edit"
+                  onClick={handleClick}>
+                  <EditIcon />
+
+                </IconButton>
+                <IconButton
+                    aria-label="delete"
+                    onClick={() => onDeleteClick(props.template)}
+                    >
                   <DeleteIcon />
-              </IconButton>
-          </CardActions>
-      </CommonCard>
+                </IconButton>
+              </span>
+            </CardActions>
+        </Box>
+      </Box>
+    </CommonCard>
     </>
   )
 }

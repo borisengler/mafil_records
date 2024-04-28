@@ -105,6 +105,7 @@ function Templates() {
               list={listTemplates()}
               errorMessage={fetchError}
               loadingMessage={`Fetching templates...`}
+              emptyMessage={'There are no templates'}
               />
           </React.Fragment>
         </LocalizationProvider>

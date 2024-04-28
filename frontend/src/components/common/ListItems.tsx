@@ -11,9 +11,10 @@ interface ListItemsProps {
   errorMessage: string | null;
   hasToolbar?: boolean;
   maxHeight?: string | null;
+  emptyMessage?: string | null;
 }
 
-const ListItems: React.FC<ListItemsProps> = ({ loading, list, loadingMessage, errorMessage, hasToolbar = true, maxHeight = '100vh'}) => {
+const ListItems: React.FC<ListItemsProps> = ({ loading, list, loadingMessage, errorMessage, hasToolbar = true, maxHeight = '100vh', emptyMessage = null}) => {
   const theme = useTheme();
 
   return (
@@ -36,6 +37,7 @@ const ListItems: React.FC<ListItemsProps> = ({ loading, list, loadingMessage, er
         </Box>
       ) : (
         <Box flexDirection={'column'}>
+          {list.length == 0 && emptyMessage != null && <Message title={emptyMessage} text={""} />}
           {list}
         </Box>
       )}
