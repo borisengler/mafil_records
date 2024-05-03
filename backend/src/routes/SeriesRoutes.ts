@@ -49,16 +49,16 @@ export const postSeries = async (req, res) => {
       await Promise.all(
         seriesDataArray.map(async (seriesData) => {
           await pool.query(
-            `INSERT INTO seriesdt (series_instance_uid, seq_state, measured, last_updated, measurement_notes,
+            `INSERT INTO seriesdt (series_instance_uid, seq_state, measured, last_updated, comment,
               stim_protocol, stim_log_file, fyzio_raw_file, general_eeg, general_et, bp_ekg, bp_resp, bp_gsr, bp_acc,
-              siemens_ekg, siemens_resp, siemens_gsr, siemens_acc)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)
+              siemens_ekg, siemens_resp, siemens_pt)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
             ON CONFLICT (series_instance_uid)
             DO UPDATE SET
               seq_state = $2,
               measured = $3,
               last_updated = $4,
-              measurement_notes = $5,
+              comment = $5,
               stim_protocol = $6,
               stim_log_file = $7,
               fyzio_raw_file = $8,
@@ -70,14 +70,13 @@ export const postSeries = async (req, res) => {
               bp_acc = $14,
               siemens_ekg = $15,
               siemens_resp = $16,
-              siemens_gsr = $17,
-              siemens_acc = $18`,
+              siemens_pt= $17`,
             [
               seriesData.series_instance_uid,
               seriesData.seq_state,
               seriesData.measured,
               seriesData.last_updated,
-              seriesData.measurement_notes,
+              seriesData.comment,
               seriesData.stim_protocol,
               seriesData.stim_log_file,
               seriesData.fyzio_raw_file,
@@ -89,8 +88,7 @@ export const postSeries = async (req, res) => {
               seriesData.bp_acc,
               seriesData.siemens_ekg,
               seriesData.siemens_resp,
-              seriesData.siemens_gsr,
-              seriesData.siemens_acc,
+              seriesData.siemens_pt,
             ]
           );
         })

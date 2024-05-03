@@ -41,7 +41,6 @@ export const getTemplatesForStudy = async (req, res) => {
           
         res.status(200).json(projectTemplates);
     } catch (err) {
-        console.log(err);
         res.status(500).send();
     }
 }
@@ -89,16 +88,16 @@ export const getDefaultTemplateForStudy = async (req, res) => {
     const token = req.headers['token'];
 
     try {
-        const headers = {
-          'Authorization': `Bearer ${token}`
-        };
-        const response = await axios.get(mafilApiUrl + 'templates', { headers });
-        const templates = response.data.results;
+      const headers = {
+        'Authorization': `Bearer ${token}`
+      };
+      const response = await axios.get(mafilApiUrl + 'templates', { headers });
+      const templates = response.data.results;
         
-    const defaultTemplate: Template = templates.filter((template) => template.project.uuid = project_id).find((template) => template.is_default);
+      const defaultTemplate: Template = templates.filter((template) => template.project.uuid = project_id).find((template) => template.is_default);
     if (defaultTemplate == null) {
-        res.status(204).send();
-        return;
+      res.status(204).send();
+      return;
     }
 
     const versionedTemplates: VersionedTemplate[] = defaultTemplate?.versioned_templates || [];
@@ -142,10 +141,7 @@ export const postTemplate = async (req, res) => {
         };
         const body = req.body;
 
-        console.log(body);
-        
         const response = await axios.post(mafilApiUrl + 'templates', body, { headers });
-        console.log(response);
         res.status(200).json();
     } catch (err) {
       res.status(500).send();
@@ -163,7 +159,6 @@ export const patchTemplate = async (req, res) => {
         const body = req.body;
 
         const response = await axios.patch(mafilApiUrl + `templates/${getIdFromFormattedId(template_id)}`, body, { headers });
-        console.log(response);
         res.status(200).json();
     } catch (err) {
       res.status(500).send();
@@ -180,10 +175,8 @@ export const deleteTemplate = async (req, res) => {
     };
 
     const response = await axios.delete(mafilApiUrl + `templates/${getIdFromFormattedId(template_id)}`, { headers });
-    console.log(response);
     res.status(200).json();
   } catch (err) {
-    console.log(err);
     res.status(500).send();
   }
 }

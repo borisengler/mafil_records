@@ -12,7 +12,6 @@ import CommonAppBar from '../components/global/AppBarContent';
 import { ResizableSidebar } from '../components/global/ResizableSidebar';
 import { Series } from '../components/series/Series';
 import { TemplateDropdown } from '../components/series/TemplateDropdown';
-import { StudyProps } from '../components/studies/Study';
 import { SidebarProvider } from '../contexts/SidebarContext';
 import { fetchSeries } from '../utils/PACSFetchers';
 import { withAuthentication } from '../utils/WithAuthentication';
@@ -22,7 +21,8 @@ import { saveSeriesData, saveStudyData } from '../utils/Savers';
 import { getStudyData } from '../utils/DatabaseFetchers';
 import { postValidationData } from '../utils/ValidationFetchers';
 import { fetchProjectDefaultTemplates, fetchProjectTemplates, fetchProjects } from '../utils/MAFILFetchers';
-import { FormattedTemplate, MissingSeries, PACSSeries, Project, ValidatedSeries } from '../../../shared/Types';
+import { FormattedTemplate, MissingSeries, PACSSeries, Project, StudyProps, ValidatedSeries } from '../../../shared/Types';
+import ExpandButton from '../components/common/ExpandButton';
 
 export interface StudyData {
   study_instance_uid: string;
@@ -46,6 +46,7 @@ function Measuring() {
     return localStudy ? JSON.parse(localStudy) : {};
   });
   const [projects, setProjects] = useState<Project[]>([]);
+  const [expanded, setExpanded] = useState(false);
 
 
   const [studyData, setStudyData] = useState<StudyData>({
@@ -146,6 +147,10 @@ function Measuring() {
     fetchMafilData();
   };
 
+  function toggleExpand() {
+    setExpanded(!expanded);
+  }
+
   async function handleFinishStudy() {
     const saveSuccess = await saveRecords();
     if (saveSuccess) {
@@ -182,6 +187,8 @@ function Measuring() {
       const choosenTemplate = studyTemplates.find((template) => template.id === selectedTemplateId);
 
       const {validatedSeries, missingSeries} = await postValidationData(pacsSeries, choosenTemplate);
+      console.log("validatedSeries");
+      console.log(validatedSeries);
       setValidatedSeries(validatedSeries);
       setMissingSeries(missingSeries);
     })()
@@ -209,6 +216,7 @@ function Measuring() {
           missingSerie={null}
           onCopy={handleSeriesCopy}
           onPaste={handleSeriesPaste}
+          allExpanded={expanded}
         />
       )),
       ...missingSeries.map((series) => (
@@ -218,6 +226,7 @@ function Measuring() {
           missingSerie={series}
           onCopy={handleSeriesCopy}
           onPaste={handleSeriesPaste}
+          allExpanded={expanded}
         />
       )),
     ];
@@ -232,6 +241,7 @@ function Measuring() {
           pageTitle='Measuring and taking notes'
           content={
             <React.Fragment>
+              <ExpandButton expanded={expanded} onClick={toggleExpand}></ExpandButton>
               <SortButton sortOrder={sortOrder} onClick={toggleSortOrder} />
               <SaveButton saveStatus={saveStatus} onClick={saveRecords} />
               <RefreshButton fetchStatus={fetchStatus} onClick={handleRefresh} tooltipTitle='Re-fetch series for current study' />

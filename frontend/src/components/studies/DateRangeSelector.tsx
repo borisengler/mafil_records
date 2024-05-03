@@ -56,8 +56,10 @@ export function DateRangeSelector({ setDateRange, dateRange, fetchData }: DateRa
   const handleCustomDateChange = (start: string, end: string) => {
     const startDate = new Date(start);
     const endDate = new Date(end);
+    startDate.setHours(0, 0, 0, 0);
+    endDate.setHours(23, 59, 59, 999);
     if (!(isNaN(startDate.getTime()) || isNaN(endDate.getTime()))) {
-      setDateRange({ start, end });
+      setDateRange({ start: formatDateToISOString(startDate), end: formatDateToISOString(endDate) });
     }
   };
 

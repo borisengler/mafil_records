@@ -85,7 +85,11 @@ export default function EditTemplate() {
       return [];
     }
     return [
-      ...props.measurementTemplates.map((template) => (
+      ...props.measurementTemplates.sort((a,b) => {
+        const order_a = a.order_for_displaying ? a.order_for_displaying : 100;
+        const order_b = b.order_for_displaying ? b.order_for_displaying : 100;
+        return order_a - order_b;
+      }).map((template) => (
         <TemplateItemCard {...{template: template, onChange: saveMeasurement, onDelete: handleDelete, key: template.name}}
         />
       ))
@@ -137,7 +141,6 @@ export default function EditTemplate() {
   };
 
   function addMeasurementTemplate(name: string) {
-    console.log("aaaa");
     const templates = [...props.measurementTemplates,{
       name: name,
       order_for_displaying: null,
@@ -145,10 +148,8 @@ export default function EditTemplate() {
       comment: "",
       measurement_template_pairs: []
     }];
-    console.log("bbbb");
 
     setProps({...props, measurementTemplates: templates});
-    console.log("cccc");
     setIsAddMeasurementDialogOpen(false);
   }
 

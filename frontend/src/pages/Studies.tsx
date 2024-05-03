@@ -12,6 +12,10 @@ import LoginButton from '../components/common/LoginButton';
 import RefreshButton from '../components/common/RefreshButton';
 import { withAuthentication } from '../utils/WithAuthentication';
 import { BlueButton } from '../components/common/Buttons';
+import { Tooltip } from '@mui/material';
+import InfoIcon from '@mui/icons-material/Info';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+
 
 function Studies() {
   const [open, setOpen] = React.useState(true);
@@ -31,10 +35,14 @@ function Studies() {
     end: formatDateToISOString(endDate),
   });
 
+  useEffect(() => {console.log(dateRange)}, [dateRange])
+
   async function fetchData() {
     setLoading(true);
     setFetchStatus('saving');
     try {
+      console.log("dateRange");
+      console.log(dateRange);
       const json = await fetchStudies(dateRange);
       // Sort the studies by date, newest first
       json.sort((a: { StudyDate: Date; }, b: { StudyDate: Date; }) => new Date(b.StudyDate).getTime() - new Date(a.StudyDate).getTime());
@@ -76,6 +84,9 @@ function Studies() {
     />
   ));
 
+  const lastAccessedStudyJSON = localStorage.getItem('currentStudy');
+  const lastAccessedStudy = lastAccessedStudyJSON ? JSON.parse(lastAccessedStudyJSON) : undefined; 
+
   return (
     <SidebarProvider>
       <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -98,7 +109,27 @@ function Studies() {
               setDateRange={setDateRange}
               fetchData={fetchData}
             />
-            {localStorage.getItem('currentStudy') && <BlueButton text="Open last accessed study" path="/measuring" />}
+            {lastAccessedStudy !== undefined && 
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <BlueButton text="Open last accessed study" path="/measuring" />
+              <div style={{ marginLeft: '4px' }}> 
+                <Tooltip title={
+                  <span>
+                    Project <strong>{lastAccessedStudy.ReferringPhysicianName}</strong>
+                    <br/>
+                    VisitId <strong>{lastAccessedStudy.AccessionNumber}</strong>
+                    <br/>
+                    StudyId <strong>{lastAccessedStudy.StudyInstanceUID}</strong>
+                    <br/>
+                    Patient <strong>{lastAccessedStudy.PatientName}</strong>
+                  </span>}
+                  >
+                  <InfoOutlinedIcon />
+                </Tooltip>
+              </div>
+            </div>
+
+            }
             {<BlueButton text="Template administration" path="/templates" />}
           </ResizableSidebar>
           <ListItems

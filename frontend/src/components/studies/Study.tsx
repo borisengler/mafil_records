@@ -2,22 +2,7 @@ import Box from '@mui/material/Box';
 import { Link } from 'react-router-dom';
 import CommonCard, { Attribute } from '../common/CommonCard';
 import React from 'react';
-
-export interface StudyProps {
-  StudyInstanceUID: string;
-  AccessionNumber: string;
-  InstitutionName: string;
-  NumberOfStudyRelatedSeries: number | null;
-  PatientBirthDate: string;
-  PatientID: string;
-  PatientName: string;
-  PatientSex: string;
-  ReferringPhysicianName: string;
-  StudyDate: Date;
-  StudyTime: string;
-  StudyDescription: string;
-  StudyID: string;
-}
+import { StudyProps } from '../../../../shared/Types';
 
 export function Study(props: StudyProps) {
   const {
@@ -48,10 +33,11 @@ export function Study(props: StudyProps) {
 
             <Attribute title='Name of patient' text={PatientName} />
             <Attribute title='Visit ID' text={AccessionNumber} />
-
+            <Attribute title='Date of visit' text={StudyDate.toLocaleDateString()} />
+{/* 
             <Box color={'grey'} justifyContent='flex-start' fontWeight={'lighter'} fontSize={12}>
               <Box>Date of visit: {StudyDate.toLocaleDateString()}</Box>
-            </Box>
+            </Box> */}
 
           </Box>
         </Box>
@@ -60,3 +46,5 @@ export function Study(props: StudyProps) {
   )
 }
 
+
+export type { StudyProps };

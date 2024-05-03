@@ -1,4 +1,4 @@
-import { FormattedTemplate, Project, Template, Visit } from "../../../shared/Types";
+import { FormattedTemplate, Project, Template, Session } from "../../../shared/Types";
 import axios from 'axios';
 
 export async function fetchProjectTemplates(project_id: string | undefined, token: string | undefined) {
@@ -65,8 +65,8 @@ export async function fetchProjectDefaultTemplates(project_id: string | undefine
   }
 }
 
-export async function fetchVisit(token: string | undefined, visit_name: string) {
-  const url = `/api/visit/${visit_name}`;
+export async function fetchSession(token: string | undefined, studyInstanceUID: string) {
+  const url = `/api/session/${studyInstanceUID}`;
 
   // TODO zatial nepouzivam
   try {
@@ -75,7 +75,7 @@ export async function fetchVisit(token: string | undefined, visit_name: string) 
     };
     const response = await axios.get(url, { headers });
 
-    const visit: Visit = await response.data;
+    const visit: Session = await response.data;
     return visit;
   } catch (err) {
     return [];

@@ -57,7 +57,7 @@ export async function getSeriesData(seriesInstanceUID: string) {
     is_expanded: false,
     measured: new Date().toISOString(),
     last_updated: new Date().toISOString(),
-    measurement_notes: '',
+    comment: '',
     stim_protocol: '',
     stim_log_file: '',
     fyzio_raw_file: '',
@@ -69,8 +69,7 @@ export async function getSeriesData(seriesInstanceUID: string) {
     bp_acc: false,
     siemens_ekg: false,
     siemens_resp: false,
-    siemens_gsr: false,
-    siemens_acc: false,
+    siemens_pt: false,
     validation_status: 'NOT_FOUND'
   };
 }

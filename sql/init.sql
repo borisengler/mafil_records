@@ -15,8 +15,7 @@ CREATE TABLE IF NOT EXISTS seriesdt (
   bp_acc BOOLEAN DEFAULT false,
   siemens_ekg BOOLEAN DEFAULT false,
   siemens_resp BOOLEAN DEFAULT false,
-  siemens_gsr BOOLEAN DEFAULT false,
-  siemens_acc BOOLEAN DEFAULT false
+  siemens_pt BOOLEAN DEFAULT false
 );
 
 CREATE TABLE IF NOT EXISTS studiesdt (

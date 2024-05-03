@@ -1,11 +1,22 @@
 import { MissingSeries, SeriesProps, ValidatedSeries, MeasurementTemplate,MeasurementTemplatePair, FormattedTemplate, PACSSeries} from '../../../shared/Types';
 
+export type ValidationResult = {
+    result: boolean;
+    reasons: string[];
+}
+
+export type ValidationPairResult = {
+    result: boolean;
+    reason?: string;
+}
+
 export const validateSeriesWithMeasurementTemplate = (serie: PACSSeries, template: FormattedTemplate | undefined) : ValidatedSeries=> {
     if (template === undefined) {
         return {
             ...serie,
             ValidationResult: "NOT_FOUND",
             UserInput: [],
+            InvalidReasons: [],
             OrderForDisplaying: 1000 + serie.SeriesNumber
         };
     }
@@ -16,17 +27,19 @@ export const validateSeriesWithMeasurementTemplate = (serie: PACSSeries, templat
             ...serie,
             ValidationResult: "NOT_FOUND",
             UserInput: [],
+            InvalidReasons: [],
             OrderForDisplaying: 1000 + serie.SeriesNumber
         };
     }
 
     const userInput = assignedTemplate?.measurement_template_pairs?.filter(pair => pair.user_input === true) || [];
-    const isValid = validateSeriesWithTemplate(serie, assignedTemplate);
-    if (isValid) {
+    const {result, reasons} = validateSeriesWithTemplate(serie, assignedTemplate);
+    if (result) {
         return {
             ...serie,
             ValidationResult: "OK",
             UserInput: userInput,
+            InvalidReasons: [],
             OrderForDisplaying: assignedTemplate.order_for_displaying
         }
     }
@@ -35,28 +48,32 @@ export const validateSeriesWithMeasurementTemplate = (serie: PACSSeries, templat
         ...serie,
         ValidationResult: "NOK",
         UserInput: userInput,
+        InvalidReasons: reasons,
         OrderForDisplaying: assignedTemplate.order_for_displaying
     }
 };
 
-const validateSeriesWithTemplate = (serie: PACSSeries, template: MeasurementTemplate) : boolean => {
+const validateSeriesWithTemplate = (serie: PACSSeries, template: MeasurementTemplate) : ValidationResult => {
     if (template.measurement_template_pairs == null) {
-        return true;
+        return {result: true, reasons: [] };
     }
+    var return_result = true;
+    var reasons = [];
     for (const pair of template.measurement_template_pairs) {
-        
-        if (!validateSeriesWithPair(serie, pair)) {
-            return false;
+        const {result, reason} = validateSeriesWithPair(serie, pair)
+        if (!result) {
+            return_result = false
+            reasons = [...reasons, reason]
         }
     };
 
-    return true;
+    return {result: return_result, reasons: reasons };
 }
-const validateSeriesWithPair = (serie: PACSSeries, pair: MeasurementTemplatePair): boolean => {
+const validateSeriesWithPair = (serie: PACSSeries, pair: MeasurementTemplatePair): ValidationPairResult => {
     if (!pair.user_input) {
         if (pair.type_of_comparison == "equal") {
             if (serie[pair.key_source] != pair.valueA) {
-                return false;
+                return {result: false, reason: `${pair.key_source} should equal ${pair.valueA}, but is ${serie[pair.key_source]}`};
             }
         }
         if (pair.type_of_comparison == "range") {
@@ -64,11 +81,12 @@ const validateSeriesWithPair = (serie: PACSSeries, pair: MeasurementTemplatePair
                 (pair.valueA != undefined && serie[pair.key_source] < pair.valueA)
                 || (pair.valueB != undefined && serie[pair.key_source] > pair.valueB)
             ) {
-                return false;
+                const interval = `(${pair.valueA ? pair.valueA: '-∞'},${pair.valueB ? pair.valueB: '∞'})`
+                return {result: false, reason: `${pair.key_source} should be in interval ${interval}, but is ${serie[pair.key_source]}`};
             }
         }
     }
-    return true;
+    return {result: true};
 }
 
 export const findMissingSeries = (series: PACSSeries[], template: FormattedTemplate | undefined): MissingSeries[] => {

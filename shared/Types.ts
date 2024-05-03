@@ -78,10 +78,6 @@ export interface PacsStudy {
 
 }
 
-export interface Session {
-  uuid: string;
-}
-
 export interface SeriesData {
   series_instance_uid: string;
   seq_state: string;
@@ -89,7 +85,7 @@ export interface SeriesData {
   is_expanded: boolean;
   measured: Date;
   last_updated: Date;
-  measurement_notes: string;
+  comment: string;
   stim_protocol: string;
   stim_log_file: string;
   fyzio_raw_file: string;
@@ -101,8 +97,7 @@ export interface SeriesData {
   bp_acc: boolean;
   siemens_ekg: boolean;
   siemens_resp: boolean;
-  siemens_gsr: boolean;
-  siemens_acc: boolean;
+  siemens_pt: boolean;
   validation_status: "OK" | "NOK"  | "NOT_FOUND" | "MISSING";
 }
 
@@ -135,6 +130,7 @@ export interface PACSSeries {
 export interface ValidatedSeries {
   ValidationResult: "OK" | "NOK" | "NOT_FOUND";
   UserInput: MeasurementTemplatePair[];
+  InvalidReasons: string[];
   OrderForDisplaying: number;
   SeriesInstanceUID: string;
   SequenceFileName: string;
@@ -172,6 +168,7 @@ export interface SeriesProps {
   missingSerie: MissingSeries | null;
   onCopy: (seriesId: string) => void; // onCopy handler passed from parent component
   onPaste: () => string | null; // onPaste handler passed from parent component
+  allExpanded: boolean;
 }
 
 export interface Project {
@@ -179,8 +176,50 @@ export interface Project {
   acronym: string;
 }
 
-export interface Visit {
+export interface Session {
   uuid: string;
-  visit_name: string;
-  description: string;
+  visit: string;
+  comment: string;
+  measurements: Measurement[];
+}
+
+export interface Measurement {
+  uuid: string;
+  log_file_name: string;
+  stimulation_protocol: string;
+  raw_file_name: string;
+  order_of_measurement: number;
+  comment: string
+  mr_measurements: MrMeasurement[];
+}
+
+export interface MrMeasurement {
+  series_instance_UID: string | undefined;
+  study_id: string | undefined;
+  fyzio_EKG: boolean | undefined;
+  fyzio_respiration_belt: boolean | undefined;
+  fyzio_GSR: boolean | undefined;
+  fyzio_ACC: boolean | undefined;
+  fyzio_pulse_oxymeter: boolean | undefined;
+  fyzio_external: boolean | undefined;
+  siemens_EKG: boolean | undefined;
+  siemens_respiration: boolean | undefined;
+  siemens_PT: boolean | undefined;
+  time_of_measurement: Date | undefined;
+}
+
+export interface StudyProps {
+  StudyInstanceUID: string;
+  AccessionNumber: string;
+  InstitutionName: string;
+  NumberOfStudyRelatedSeries: number | null;
+  PatientBirthDate: string;
+  PatientID: string;
+  PatientName: string;
+  PatientSex: string;
+  ReferringPhysicianName: string;
+  StudyDate: Date;
+  StudyTime: string;
+  StudyDescription: string;
+  StudyID: string;
 }

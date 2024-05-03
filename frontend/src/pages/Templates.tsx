@@ -16,8 +16,8 @@ import { useAuth } from 'react-oidc-context';
 import SaveButton from '../components/common/SaveButton';
 import { saveTemplatesData } from '../utils/Savers';
 import { FormattedTemplate, Project } from '../../../shared/Types';
-import { deleteTemplate, fetchTemplates } from '../utils/MAFILFetchers';
-import { Box } from '@mui/material';
+import { deleteTemplate, fetchProjects, fetchTemplates } from '../utils/MAFILFetchers';
+import { Box, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent } from '@mui/material';
 
 function Templates() {
     const auth = useAuth();
@@ -32,6 +32,8 @@ function Templates() {
   const [fetchStatus, setFetchStatus] = useState<'idle' | 'saving' | 'success' | 'failed'>('idle');
 
   const [templates, setTemplates] = useState<FormattedTemplate[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [selectedProjectId, setSelectedProjectId] = useState<string>('all');
 
   function deleteVersionedTemplate(template: FormattedTemplate) {
     deleteTemplate(auth.user ? auth.user.access_token : '', template);
@@ -44,7 +46,8 @@ function Templates() {
     setFetchStatus('saving');
     try {
       const fetchedTemplates: FormattedTemplate[] = await fetchTemplates(auth.user ? auth.user.access_token : '');
-
+      const fetchedProjects: Project[] = await fetchProjects(auth.user ? auth.user.access_token : '');
+      setProjects(fetchedProjects);
       setTemplates(fetchedTemplates);
       setFetchStatus('success');
       setFetchError(null);
@@ -56,7 +59,8 @@ function Templates() {
   }
 
   function listTemplates() {
-    return [...templates.map((template) => (
+    const filtered_templates = selectedProjectId == 'all' ? templates : templates.filter((template) => template.project_uuid == selectedProjectId);
+    return [...filtered_templates.map((template) => (
         <TemplateCard template={template} key={`${template.id}-${template.version}`} onDelete={deleteVersionedTemplate}/>
     ))]
   }
@@ -79,6 +83,11 @@ function Templates() {
     localStorage.setItem('currentTemplate', "");
   };
 
+  const onProjectChanged = (event: SelectChangeEvent<string>) => {
+    const selectedValue = event.target.value;
+    setSelectedProjectId(selectedValue);
+  };
+
   return (
       <SidebarProvider>
         <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -97,6 +106,23 @@ function Templates() {
             >
               <InfoItem label="Measuring operator" text={auth.user ? auth.user.profile.name : ''} />
               <BlueButton text="Create template" path="/template-edit" onClick={handleClick}/>
+              <FormControl style={{width: '300px'}}>
+                  <InputLabel>Select Project</InputLabel>
+                  <Select
+                    onChange={onProjectChanged}
+                    label="Select Project"
+                    value={selectedProjectId || ''}
+                  >
+                    <MenuItem key="all" value="all">
+                      -All projects-
+                  </MenuItem>
+                    {projects.map((project) => (
+                      <MenuItem key={project.uuid} value={project.uuid} selected={false}>
+                        {project.acronym}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
               <RedButton text="Back to studies" path="/studies" />
             </ResizableSidebar>
             <ListItems

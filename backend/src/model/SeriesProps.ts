@@ -3,7 +3,7 @@ export interface SeriesDataProps {
     seq_state: string;
     measured?: Date;
     last_updated?: Date;
-    measurement_notes?: string;
+    comment?: string;
     stim_protocol?: string;
     stim_log_file?: string;
     fyzio_raw_file?: string;
@@ -15,6 +15,5 @@ export interface SeriesDataProps {
     bp_acc?: boolean;
     siemens_ekg?: boolean;
     siemens_resp?: boolean;
-    siemens_gsr?: boolean;
-    siemens_acc?: boolean;
+    siemens_pt?: boolean;
   }

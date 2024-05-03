@@ -20,7 +20,6 @@ export const getPacsStudies = async (req, res) => {
         }
       );
       const json: any = await response.data;
-      console.log(json);
       res.status(200).json(json);
     } catch (err) {
       console.error("error "  + err);

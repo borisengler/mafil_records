@@ -23,6 +23,7 @@ export function SeriesSingleLineInput({ name, label, value, onChange, type="text
         name={name}
         label={label}
         value={value}
+        type={type}
         onChange={onChange}
       />
     </Box >
@@ -67,6 +68,13 @@ export function Series(props: SeriesProps) {
     )
   }
 
+  useEffect(() => {
+    setSeriesData({
+      ...seriesData,
+      is_expanded: props.allExpanded && props.missingSerie === null
+    });
+  }, [props.allExpanded])
+
   const [seriesData, setSeriesData] = useState<SeriesData>({
     // Default values
     series_instance_uid: props.validatedSerie ? props.validatedSerie.SeriesInstanceUID : "",
@@ -75,7 +83,7 @@ export function Series(props: SeriesProps) {
     is_expanded: false,
     measured: new Date(),
     last_updated: new Date(),
-    measurement_notes: '',
+    comment: '',
     stim_protocol: '',
     stim_log_file: '',
     fyzio_raw_file: '',
@@ -87,8 +95,7 @@ export function Series(props: SeriesProps) {
     bp_acc: false,
     siemens_ekg: false,
     siemens_resp: false,
-    siemens_gsr: false,
-    siemens_acc: false,
+    siemens_pt: false,
     validation_status: props.validatedSerie ? props.validatedSerie.ValidationResult : 'MISSING',
   });
 
@@ -102,7 +109,7 @@ export function Series(props: SeriesProps) {
             fetchedSeriesData[element.key] = element.valueA;
           } else if ((element.key == "general_eeg" || element.key == "general_et" || element.key == "bp_ekg"
             || element.key == "bp_resp" || element.key == "bp_gsr" || element.key == "bp_acc"
-            || element.key == "siemens_ekg" || element.key == "siemens_resp" || element.key == "siemens_gsr" || element.key == "siemens_acc")
+            || element.key == "siemens_ekg" || element.key == "siemens_resp" || element.key == "siemens_pt")
             && element.valueA !== null
           ) {
             fetchedSeriesData[element.key] = element.valueA == "true";
@@ -172,7 +179,7 @@ export function Series(props: SeriesProps) {
 
       setSeriesData({
         ...seriesData,
-        measurement_notes: copy.measurement_notes,
+        comment: copy.comment,
         last_updated: new Date(),
         stim_protocol: copy.stim_protocol,
         stim_log_file: copy.stim_log_file,
@@ -185,8 +192,7 @@ export function Series(props: SeriesProps) {
         bp_acc: copy.bp_acc,
         siemens_ekg: copy.siemens_ekg,
         siemens_resp: copy.siemens_resp,
-        siemens_gsr: copy.siemens_gsr,
-        siemens_acc: copy.siemens_acc,
+        siemens_pt: copy.siemens_pt,
       });
     }
   };
@@ -233,7 +239,8 @@ export function Series(props: SeriesProps) {
         case "OK":
           return "Valid";
         case "NOK":
-          return "Invalid";
+          const elements = props.validatedSerie.InvalidReasons.map((reason) => <>{reason}<br/></>);
+          return <Box flexDirection={'column'}>{elements}</Box>;
         case "NOT_FOUND":
           return "Not found in template";
       }
@@ -334,7 +341,9 @@ export function Series(props: SeriesProps) {
             <SeriesSingleLineInput label='Stim. protocol' name='stim_protocol' value={seriesData.stim_protocol} onChange={handleTextChange} />
             <SeriesSingleLineInput label='Stim. log file' name='stim_log_file' value={seriesData.stim_log_file} onChange={handleTextChange} />
             <SeriesSingleLineInput label='Fyzio raw file (for BP)' name='fyzio_raw_file' value={seriesData.fyzio_raw_file} onChange={handleTextChange} />
-            <SeriesMultiLineInput label='Measurement notes' name='measurement_notes' value={seriesData.measurement_notes} onChange={handleTextChange} />
+            <Box sx={{width: '80ch'}}>
+              <SeriesMultiLineInput label='Comment' name='comment' value={seriesData.comment} onChange={handleTextChange} />
+            </Box>
             <Box m={1}>
               <Box
                 sx={{
@@ -374,8 +383,7 @@ export function Series(props: SeriesProps) {
               <Box display={'flex'} flexDirection={'row'}>
                 <CheckboxInput text='EKG' checked={seriesData.siemens_ekg} name="siemens_ekg" />
                 <CheckboxInput text='Resp.' checked={seriesData.siemens_resp} name="siemens_resp" />
-                <CheckboxInput text='GSR' checked={seriesData.siemens_gsr} name="siemens_gsr" />
-                <CheckboxInput text='ACC' checked={seriesData.siemens_acc} name="siemens_acc" />
+                <CheckboxInput text='PT' checked={seriesData.siemens_pt} name="siemens_pt" />
               </Box>
             </Box>
           </Box>

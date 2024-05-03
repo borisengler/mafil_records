@@ -11,7 +11,7 @@ import { getPacsSeries, getPacsStudies } from "./routes/PACSRoutes";
 import { getTemplatesForStudy, getDefaultTemplateForStudy, getTemplates, postTemplate, patchTemplate, deleteTemplate } from './routes/TemplateRoutes';
 import { validateSeriesForTemplate } from './routes/ValidationRoutes';
 import { getProjects } from './routes/ProjectRoutes'
-import { getVisit } from "./routes/VisitRoutes";
+import { getSession, postSession, patchSession } from './routes/SessionRoutes'
 require('dotenv').config();
 
 app.use(express.json());
@@ -62,4 +62,6 @@ app.post('/api/series/validate', validateSeriesForTemplate);
 
 app.get('/api/project', getProjects);
 
-app.get('/api/visit/:visit_name', getVisit);
+app.get('/api/session/:study_instance_uuid', getSession);
+app.post('/api/session', postSession);
+app.patch('/api/session/:session_uuid', patchSession);
