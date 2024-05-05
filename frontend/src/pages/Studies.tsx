@@ -41,8 +41,6 @@ function Studies() {
     setLoading(true);
     setFetchStatus('saving');
     try {
-      console.log("dateRange");
-      console.log(dateRange);
       const json = await fetchStudies(dateRange);
       // Sort the studies by date, newest first
       json.sort((a: { StudyDate: Date; }, b: { StudyDate: Date; }) => new Date(b.StudyDate).getTime() - new Date(a.StudyDate).getTime());

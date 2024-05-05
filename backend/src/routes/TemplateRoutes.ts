@@ -1,3 +1,4 @@
+import { version } from "os";
 import { Template, FormattedTemplate, VersionedTemplate, MeasurementTemplate, MeasurementTemplatePair } from "../../../shared/Types"
 
 const axios = require('axios');
@@ -76,7 +77,7 @@ export const getTemplates = async (req, res) => {
           
             return orderComparison === 0 ? a.version - b.version : orderComparison;
           });
-          
+
         res.status(200).json(versionedTemplates);
     } catch (err) {
         res.status(500).send();

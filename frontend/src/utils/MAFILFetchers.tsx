@@ -107,7 +107,6 @@ export async function postTemplate(token: string | undefined, template: Formatte
       }]
     };
 
-    console.log(body);
     const response = await axios.post(url, body, { headers });
 
     const newTemplate: Template = await response.data;
@@ -141,7 +140,6 @@ export async function patchTemplate(token: string | undefined, template: Formatt
       }]
     };
 
-    console.log(body);
     const response = await axios.patch(url, body, { headers });
 
     const newTemplate: Template = await response.data;

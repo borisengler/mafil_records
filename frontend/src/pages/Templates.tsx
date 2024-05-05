@@ -106,7 +106,7 @@ function Templates() {
             >
               <InfoItem label="Measuring operator" text={auth.user ? auth.user.profile.name : ''} />
               <BlueButton text="Create template" path="/template-edit" onClick={handleClick}/>
-              <FormControl style={{width: '300px'}}>
+              <FormControl fullWidth>
                   <InputLabel>Select Project</InputLabel>
                   <Select
                     onChange={onProjectChanged}

@@ -59,10 +59,13 @@ export function TemplateItemCard(props: TemplateItemProps) {
   const [addedPairsIndex, setAddedPairsIndex] = useState(0);
   const [addedPairs, setAddedPairs] = useState<AddedMeasurementTemplatePairs[]>(() => {
     var pairs: AddedMeasurementTemplatePairs[] = []
+    var index = 0;
     props.template.measurement_template_pairs.filter((pair) => !pair.user_input).forEach(pair => {
-      pairs = [...pairs, {index: addedPairsIndex, pair: pair}]
-      setAddedPairsIndex((prev) => prev + 1);
+      pairs = [...pairs, {index: index, pair: pair}]
+      index++;
     });
+    setAddedPairsIndex(index);
+
     return pairs;
   });
 
@@ -90,14 +93,15 @@ export function TemplateItemCard(props: TemplateItemProps) {
   const onAddTemplateClick = () => {
     const new_pair: MeasurementTemplatePair = {
       key: "",
+      key_source: "",
       user_input: false,
       type_of_comparison: "equal",
       valueA: '',
       valueB: ''
     }
-    setAddedPairs((prev) => [...prev, {index: addedPairsIndex, pair: new_pair}]);
-    setAddedPairsIndex((prev) => prev+1);
-    setTemplate(prevTemplate => ({...prevTemplate, measurement_template_pairs: [...prevTemplate.measurement_template_pairs, new_pair]}))
+    setAddedPairs([...addedPairs, {index: addedPairsIndex, pair: new_pair}]);
+    setAddedPairsIndex(addedPairsIndex + 1);
+    setTemplate({...template, measurement_template_pairs: [...template.measurement_template_pairs, new_pair]});
   }
 
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -165,18 +169,20 @@ export function TemplateItemCard(props: TemplateItemProps) {
   };
 
   const savePair = (pair: AddedMeasurementTemplatePairs) => {
-    const updatedPair = pair.pair;
     const oldPair = addedPairs.find((addedPair) => addedPair.index === pair.index);
     const oldPairs = addedPairs.filter((oldPair) => oldPair.index !== pair.index)
     setAddedPairs([...oldPairs, pair]);
     if (oldPair == undefined) return;
     const index = template.measurement_template_pairs.findIndex(newPair => newPair.key === oldPair.pair.key);
     if (index !== -1) {
-      const updatedTemplate = { ...template };
-      updatedTemplate.measurement_template_pairs[index] = updatedPair
-      setTemplate(updatedTemplate);
+      const userInputPairs = template.measurement_template_pairs.filter((pair) => pair.user_input);
+      const validationPairs = [...oldPairs, pair].map((pair) => pair.pair);
+      // todo je to nejake spomalene
+      setTemplate({...template, measurement_template_pairs: [...userInputPairs, ...validationPairs]});
     }
   };
+
+
 
   const onDeleteNewPair = (pairIndex: number) => {
     const pairToDelete = addedPairs.find((pair) => pair.index == pairIndex);
@@ -186,7 +192,7 @@ export function TemplateItemCard(props: TemplateItemProps) {
 
     const newPairs2 = template.measurement_template_pairs.filter((pair) => pair.user_input).concat(newPairs.map((newPair) => newPair.pair));
     const updatedTemplate = { ...template, ...{measurement_template_pairs: newPairs2} };
-    setTemplate(updatedTemplate);
+    (updatedTemplate);
     return;
   }
 

@@ -93,7 +93,6 @@ function Measuring() {
     if (currentStudyString) {
       try {
         const currentStudy = JSON.parse(currentStudyString);
-        console.log(currentStudy);
         const json = await fetchSeries(currentStudy.AccessionNumber);
         // Sort the series by series number, highest (newly added) first
         json.sort((a: PACSSeries, b: PACSSeries) => a.SeriesNumber - b.SeriesNumber);
@@ -187,8 +186,6 @@ function Measuring() {
       const choosenTemplate = studyTemplates.find((template) => template.id === selectedTemplateId);
 
       const {validatedSeries, missingSeries} = await postValidationData(pacsSeries, choosenTemplate);
-      console.log("validatedSeries");
-      console.log(validatedSeries);
       setValidatedSeries(validatedSeries);
       setMissingSeries(missingSeries);
     })()

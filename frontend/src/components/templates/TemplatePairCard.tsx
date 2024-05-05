@@ -26,6 +26,8 @@ export default function TemplatePairCard (props: TemplatePairCardProps) {
 
 
     useEffect(() => {
+      console.log("pair");
+      console.log(pair);
         props.savePair({pair: pair, index: props.addedPair.index})
       }, [pair]);
 

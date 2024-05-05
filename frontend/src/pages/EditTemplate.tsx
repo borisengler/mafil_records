@@ -89,10 +89,10 @@ export default function EditTemplate() {
         const order_a = a.order_for_displaying ? a.order_for_displaying : 100;
         const order_b = b.order_for_displaying ? b.order_for_displaying : 100;
         return order_a - order_b;
-      }).map((template) => (
-        <TemplateItemCard {...{template: template, onChange: saveMeasurement, onDelete: handleDelete, key: template.name}}
+      }).map((template) => {
+        return <TemplateItemCard {...{template: template, onChange: saveMeasurement, onDelete: handleDelete, key: template.name}}
         />
-      ))
+  })
     ];
   }
 
