@@ -165,10 +165,13 @@ export interface MissingSeries {
 
 export interface SeriesProps {
   validatedSerie: ValidatedSeries | null;
-  missingSerie: MissingSeries | null;
+  templateSerie: MissingSeries | null;
+  downloadedMeasurement: FormattedMeasurement | null;
   onCopy: (seriesId: string) => void; // onCopy handler passed from parent component
   onPaste: () => string | null; // onPaste handler passed from parent component
   allExpanded: boolean;
+  choosenTemplate: string;
+  // onChange: (measurement: SeriesData) => void;
 }
 
 export interface Project {
@@ -194,6 +197,34 @@ export interface Measurement {
 }
 
 export interface MrMeasurement {
+  series_instance_UID: string | undefined;
+  study_id: string | undefined;
+  fyzio_EKG: boolean | undefined;
+  fyzio_respiration_belt: boolean | undefined;
+  fyzio_GSR: boolean | undefined;
+  fyzio_ACC: boolean | undefined;
+  fyzio_pulse_oxymeter: boolean | undefined;
+  fyzio_external: boolean | undefined;
+  siemens_EKG: boolean | undefined;
+  siemens_respiration: boolean | undefined;
+  siemens_PT: boolean | undefined;
+  time_of_measurement: Date | undefined;
+}
+
+export interface FormattedSession {
+  uuid: string;
+  visit: string;
+  comment: string;
+  measurements: FormattedMeasurement[];
+}
+
+export interface FormattedMeasurement {
+  uuid?: string;
+  log_file_name: string;
+  stimulation_protocol: string;
+  raw_file_name: string;
+  order_of_measurement: number;
+  comment: string;
   series_instance_UID: string | undefined;
   study_id: string | undefined;
   fyzio_EKG: boolean | undefined;

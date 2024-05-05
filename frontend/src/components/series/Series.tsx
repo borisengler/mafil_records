@@ -11,7 +11,7 @@ import React, { useEffect, useState } from 'react';
 import CommonCard, { ExpandMore } from '../common/CommonCard';
 import { MultiLineInput, MultiLineInputProps, SingleLineInput, SingleLineInputProps } from '../common/Inputs';
 import { getSeriesData } from '../../utils/DatabaseFetchers';
-import { SeriesData, PACSSeries, SeriesProps } from "../../../../shared/Types";
+import { SeriesData, PACSSeries, SeriesProps, Measurement, FormattedMeasurement } from "../../../../shared/Types";
 import { getClockNumberUtilityClass } from '@mui/x-date-pickers/TimeClock/clockNumberClasses';
 import { Cancel, CancelRounded, CheckCircle, CheckCircleOutline, Help, HelpRounded, Warning, WarningRounded } from '@mui/icons-material';
 import { CalendarIcon } from '@mui/x-date-pickers';
@@ -69,11 +69,13 @@ export function Series(props: SeriesProps) {
   }
 
   useEffect(() => {
-    setSeriesData({
-      ...seriesData,
-      is_expanded: props.allExpanded && props.missingSerie === null
+    setDisplayData({
+      ...displayData,
+      is_expanded: props.allExpanded && props.templateSerie === null
     });
   }, [props.allExpanded])
+  const[template, setTemplate] = useState('');
+  const [measurement, setMeasurement] = useState<FormattedMeasurement | null>(null);
 
   const [seriesData, setSeriesData] = useState<SeriesData>({
     // Default values
@@ -99,39 +101,129 @@ export function Series(props: SeriesProps) {
     validation_status: props.validatedSerie ? props.validatedSerie.ValidationResult : 'MISSING',
   });
 
+
+  const [displayData, setDisplayData] = useState<SeriesData>({
+    // Default values
+    series_instance_uid: props.validatedSerie ? props.validatedSerie.SeriesInstanceUID : "",
+    seq_state: 'pending',
+    is_selected: false,
+    is_expanded: false,
+    measured: new Date(),
+    last_updated: new Date(),
+    comment: '',
+    stim_protocol: '',
+    stim_log_file: '',
+    fyzio_raw_file: '',
+    general_eeg: false,
+    general_et: false,
+    bp_ekg: false,
+    bp_resp: false,
+    bp_gsr: false,
+    bp_acc: false,
+    siemens_ekg: false,
+    siemens_resp: false,
+    siemens_pt: false,
+    validation_status: props.validatedSerie ? props.validatedSerie.ValidationResult : 'MISSING',
+  });
+
+  const [measurementDownloaded, setMeasurementDownloaded] = useState(false);
+
   useEffect(() => {
+    const triggeredByTemplateChange = template != props.choosenTemplate;
+    setTemplate(props.choosenTemplate);
+    setMeasurementDownloaded(true);
+
     const fetchData = async () => {
       if (props.validatedSerie !== null) {
-        const fetchedSeriesData: SeriesData = await getSeriesData(props.validatedSerie.SeriesInstanceUID);
-        fetchedSeriesData.validation_status = props.validatedSerie ? props.validatedSerie.ValidationResult : 'MISSING';
+      
+      const oldSeriesJSON = localStorage.getItem(`series-${props.validatedSerie.SeriesInstanceUID}`);
+      const oldSeries = JSON.parse(oldSeriesJSON ? oldSeriesJSON : "{}");
+      var newSeriesData: SeriesData = {
+        ...seriesData,
+        series_instance_uid: props.validatedSerie.SeriesInstanceUID,
+      };
+      if (oldSeries != undefined) {
+        var newSeriesData: SeriesData = {
+          ...seriesData,
+          is_expanded: oldSeries.is_expanded,
+          is_selected: oldSeries.is_selected,
+          series_instance_uid: props.validatedSerie.SeriesInstanceUID,
+        };
+        if (!triggeredByTemplateChange) {
+          newSeriesData = {
+            ...newSeriesData,
+            seq_state: oldSeries.seq_state,
+            measured: oldSeries.measured,
+            last_updated: oldSeries.last_updated,
+            comment: oldSeries.comment,
+            stim_protocol: oldSeries.stim_protocol,
+            stim_log_file: oldSeries.stim_log_file,
+            fyzio_raw_file: oldSeries.fyzio_raw_file,
+            general_eeg: oldSeries.general_eeg,
+            general_et: oldSeries.general_et,
+            bp_ekg: oldSeries.bp_ekg,
+            bp_resp: oldSeries.bp_resp,
+            bp_gsr: oldSeries.bp_gsr,
+            bp_acc: oldSeries.bp_acc,
+            siemens_ekg: oldSeries.siemens_ekg,
+            siemens_resp: oldSeries.siemens_resp,
+            siemens_pt: oldSeries.siemens_pt
+          }
+        }
+        }
+        newSeriesData.validation_status = props.validatedSerie ? props.validatedSerie.ValidationResult : 'MISSING';
         props.validatedSerie.UserInput.forEach(element => {
           if ((element.key == "stim_protocol" || element.key == "stim_log_file" || element.key == "fyzio_raw_file") && element.valueA !== null) {
-            fetchedSeriesData[element.key] = element.valueA;
+            if (element.valueA.length > 0 ) newSeriesData[element.key] = element.valueA;
           } else if ((element.key == "general_eeg" || element.key == "general_et" || element.key == "bp_ekg"
             || element.key == "bp_resp" || element.key == "bp_gsr" || element.key == "bp_acc"
             || element.key == "siemens_ekg" || element.key == "siemens_resp" || element.key == "siemens_pt")
-            && element.valueA !== null
           ) {
-            fetchedSeriesData[element.key] = element.valueA == "true";
+            newSeriesData[element.key] = element.valueA == "true";
           }
         });
-  
-        setSeriesData(fetchedSeriesData);
+        if (props.downloadedMeasurement) {
+          if (!measurementDownloaded) {
+            setDisplayData({
+              series_instance_uid: props.validatedSerie ? props.validatedSerie.SeriesInstanceUID : "",
+              seq_state: displayData.seq_state,
+              is_selected: displayData.is_selected,
+              is_expanded: displayData.is_expanded,
+              measured: props.downloadedMeasurement.time_of_measurement ? props.downloadedMeasurement.time_of_measurement : newSeriesData.measured,
+              last_updated: newSeriesData.last_updated,
+              comment: props.downloadedMeasurement.comment,
+              stim_protocol: props.downloadedMeasurement.stimulation_protocol,
+              stim_log_file: props.downloadedMeasurement.log_file_name,
+              fyzio_raw_file: props.downloadedMeasurement.raw_file_name,
+              general_eeg: newSeriesData.general_eeg,
+              general_et: newSeriesData.general_et,
+              bp_ekg: props.downloadedMeasurement.fyzio_EKG ? props.downloadedMeasurement.fyzio_EKG : newSeriesData.bp_ekg,
+              bp_resp: props.downloadedMeasurement.fyzio_respiration_belt ? props.downloadedMeasurement.fyzio_respiration_belt : newSeriesData.bp_resp,
+              bp_gsr: props.downloadedMeasurement.fyzio_GSR ? props.downloadedMeasurement.fyzio_GSR : newSeriesData.bp_gsr,
+              bp_acc: props.downloadedMeasurement.fyzio_ACC ? props.downloadedMeasurement.fyzio_ACC : newSeriesData.bp_acc,
+              siemens_ekg: props.downloadedMeasurement.siemens_EKG ? props.downloadedMeasurement.siemens_EKG : newSeriesData.siemens_ekg,
+              siemens_resp: props.downloadedMeasurement.siemens_respiration ? props.downloadedMeasurement.siemens_respiration : newSeriesData.siemens_resp,
+              siemens_pt: props.downloadedMeasurement.siemens_PT ? props.downloadedMeasurement.siemens_PT : newSeriesData.siemens_pt,
+              validation_status: props.validatedSerie ? props.validatedSerie.ValidationResult : 'MISSING',
+            });
+          }
+        } else {
+          setDisplayData(newSeriesData);
+        }
       }
     };
-
     fetchData();
-  }, [props.validatedSerie && props.validatedSerie.SeriesInstanceUID, props.validatedSerie && props.validatedSerie.UserInput]);
+  }, [props.choosenTemplate, props.downloadedMeasurement, props.templateSerie, props.validatedSerie]);
 
   useEffect(() => {
     if (props.validatedSerie !== null) {
-      localStorage.setItem(`series-${props.validatedSerie.SeriesInstanceUID}`, JSON.stringify(seriesData))
+      localStorage.setItem(`series-${props.validatedSerie.SeriesInstanceUID}`, JSON.stringify(displayData))
     }
-  }, [seriesData]);
+  }, [displayData]);
 
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSeriesData({
-      ...seriesData,
+    setDisplayData({
+      ...displayData,
       [event.target.name]: event.target.checked,
       last_updated: new Date(),
     });
@@ -139,33 +231,33 @@ export function Series(props: SeriesProps) {
 
   const handleTextChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = event.target;
-    setSeriesData({
-      ...seriesData,
+    setDisplayData({
+      ...displayData,
       [name]: value,
       last_updated: new Date(),
     });
   };
 
   function handleSeqStateChange(event: SelectChangeEvent<unknown>) {
-    setSeriesData({
-      ...seriesData,
+    setDisplayData({
+      ...displayData,
       seq_state: event.target.value as SeriesStateEnum,
       last_updated: new Date(),
     });
   }
 
   function handleSeriesClick() {
-    setSeriesData({
-      ...seriesData,
-      is_expanded: !seriesData.is_expanded
+    setDisplayData({
+      ...displayData,
+      is_expanded: !displayData.is_expanded
     });
   }
 
   const handleSeriesCopy = () => {
     if (props.validatedSerie !== null && props.validatedSerie.SeriesInstanceUID !== null) {
-      setSeriesData({
-        ...seriesData,
-        is_selected: !seriesData.is_selected
+      setDisplayData({
+        ...displayData,
+        is_selected: !displayData.is_selected
       });
     props.onCopy(`series-${props.validatedSerie.SeriesInstanceUID}`); // invoke parent onCopy handler
     }
@@ -177,8 +269,8 @@ export function Series(props: SeriesProps) {
       const copyFromSeriesStr = localStorage.getItem(copyFromSeriesId);
       const copy = copyFromSeriesStr ? JSON.parse(copyFromSeriesStr) : {}
 
-      setSeriesData({
-        ...seriesData,
+      setDisplayData({
+        ...displayData,
         comment: copy.comment,
         last_updated: new Date(),
         stim_protocol: copy.stim_protocol,
@@ -198,7 +290,7 @@ export function Series(props: SeriesProps) {
   };
 
   function getPaperBackgroundColor() {
-    switch (seriesData.seq_state) {
+    switch (displayData.seq_state) {
       case 'pending':
         return ('rgb(250, 250, 250);')
       case 'failed':
@@ -209,7 +301,7 @@ export function Series(props: SeriesProps) {
   }
 
   function getSelectColor() {
-    switch (seriesData.seq_state) {
+    switch (displayData.seq_state) {
       case 'pending':
         return ('grey')
       case 'failed':
@@ -239,7 +331,7 @@ export function Series(props: SeriesProps) {
         case "OK":
           return "Valid";
         case "NOK":
-          const elements = props.validatedSerie.InvalidReasons.map((reason) => <>{reason}<br/></>);
+          const elements = props.validatedSerie.InvalidReasons.map((reason) => <React.Fragment key={reason}>{reason}<br/></React.Fragment>);
           return <Box flexDirection={'column'}>{elements}</Box>;
         case "NOT_FOUND":
           return "Not found in template";
@@ -248,11 +340,11 @@ export function Series(props: SeriesProps) {
     return "Missing to fill template";
   }
 
-  const description = props.validatedSerie ? props.validatedSerie.SeriesDescription : (props.missingSerie ? props.missingSerie.SeriesDescription : '');
+  const description = props.validatedSerie ? props.validatedSerie.SeriesDescription : (props.templateSerie ? props.templateSerie.SeriesDescription : '');
   const seriesNumber = props.validatedSerie ? props.validatedSerie.SeriesNumber : '';
 
-  const measured = props.validatedSerie !== null ? seriesData.measured.toLocaleString() : '-';
-  const last_updated = props.validatedSerie !== null ? seriesData.last_updated.toLocaleString() : '-';
+  const measured = props.validatedSerie !== null ? displayData.measured.toLocaleString() : '-';
+  const last_updated = props.validatedSerie !== null ? displayData.last_updated.toLocaleString() : '-';
   const num_of_instances = props.validatedSerie !== null ? props.validatedSerie.NumberOfSeriesRelatedInstances : '-';
   
   const disableInteractions = props.validatedSerie === null;
@@ -301,7 +393,7 @@ export function Series(props: SeriesProps) {
             <span>
               <Select fullWidth
                 defaultValue={'pending'}
-                value={seriesData.seq_state}
+                value={displayData.seq_state}
                 onChange={handleSeqStateChange}
                 sx={{ color: getSelectColor }}
                 disabled={disableInteractions}
@@ -324,9 +416,9 @@ export function Series(props: SeriesProps) {
           <CardActions disableSpacing>
             <span>
               <ExpandMore
-                expand={seriesData.is_expanded}
+                expand={displayData.is_expanded}
                 onClick={handleSeriesClick}
-                aria-expanded={seriesData.is_expanded}
+                aria-expanded={displayData.is_expanded}
                 disabled={disableInteractions}
               >
                 <ExpandMoreIcon />
@@ -336,13 +428,13 @@ export function Series(props: SeriesProps) {
 
         </Box>
 
-        <Collapse in={seriesData.is_expanded} timeout="auto" unmountOnExit>
+        <Collapse in={displayData.is_expanded} timeout="auto" unmountOnExit>
           <Box display={'flex'} flexDirection={'row'} flexWrap={'wrap'}>
-            <SeriesSingleLineInput label='Stim. protocol' name='stim_protocol' value={seriesData.stim_protocol} onChange={handleTextChange} />
-            <SeriesSingleLineInput label='Stim. log file' name='stim_log_file' value={seriesData.stim_log_file} onChange={handleTextChange} />
-            <SeriesSingleLineInput label='Fyzio raw file (for BP)' name='fyzio_raw_file' value={seriesData.fyzio_raw_file} onChange={handleTextChange} />
+            <SeriesSingleLineInput label='Stim. protocol' name='stim_protocol' value={displayData.stim_protocol} onChange={handleTextChange} />
+            <SeriesSingleLineInput label='Stim. log file' name='stim_log_file' value={displayData.stim_log_file} onChange={handleTextChange} />
+            <SeriesSingleLineInput label='Fyzio raw file (for BP)' name='fyzio_raw_file' value={displayData.fyzio_raw_file} onChange={handleTextChange} />
             <Box sx={{width: '80ch'}}>
-              <SeriesMultiLineInput label='Comment' name='comment' value={seriesData.comment} onChange={handleTextChange} />
+              <SeriesMultiLineInput label='Comment' name='comment' value={displayData.comment} onChange={handleTextChange} />
             </Box>
             <Box m={1}>
               <Box
@@ -353,8 +445,8 @@ export function Series(props: SeriesProps) {
                 General
               </Box>
               <Box display={'flex'} flexDirection={'row'}>
-                <CheckboxInput text='EEG' checked={seriesData.general_eeg} name="general_eeg" />
-                <CheckboxInput text='ET' checked={seriesData.general_et} name="general_et" />
+                <CheckboxInput text='EEG' checked={displayData.general_eeg} name="general_eeg" />
+                <CheckboxInput text='ET' checked={displayData.general_et} name="general_et" />
               </Box>
             </Box>
             <Box m={1}>
@@ -366,10 +458,10 @@ export function Series(props: SeriesProps) {
                 BP ExG
               </Box>
               <Box display={'flex'} flexDirection={'row'}>
-                <CheckboxInput text='EKG' checked={seriesData.bp_ekg} name="bp_ekg" />
-                <CheckboxInput text='Resp.' checked={seriesData.bp_resp} name="bp_resp" />
-                <CheckboxInput text='GSR' checked={seriesData.bp_gsr} name="bp_gsr" />
-                <CheckboxInput text='ACC' checked={seriesData.bp_acc} name="bp_acc" />
+                <CheckboxInput text='EKG' checked={displayData.bp_ekg} name="bp_ekg" />
+                <CheckboxInput text='Resp.' checked={displayData.bp_resp} name="bp_resp" />
+                <CheckboxInput text='GSR' checked={displayData.bp_gsr} name="bp_gsr" />
+                <CheckboxInput text='ACC' checked={displayData.bp_acc} name="bp_acc" />
               </Box>
             </Box>
             <Box m={1}>
@@ -381,9 +473,9 @@ export function Series(props: SeriesProps) {
                 Siemens
               </Box>
               <Box display={'flex'} flexDirection={'row'}>
-                <CheckboxInput text='EKG' checked={seriesData.siemens_ekg} name="siemens_ekg" />
-                <CheckboxInput text='Resp.' checked={seriesData.siemens_resp} name="siemens_resp" />
-                <CheckboxInput text='PT' checked={seriesData.siemens_pt} name="siemens_pt" />
+                <CheckboxInput text='EKG' checked={displayData.siemens_ekg} name="siemens_ekg" />
+                <CheckboxInput text='Resp.' checked={displayData.siemens_resp} name="siemens_resp" />
+                <CheckboxInput text='PT' checked={displayData.siemens_pt} name="siemens_pt" />
               </Box>
             </Box>
           </Box>

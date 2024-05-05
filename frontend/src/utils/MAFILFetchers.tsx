@@ -1,4 +1,4 @@
-import { FormattedTemplate, Project, Template, Session } from "../../../shared/Types";
+import { FormattedTemplate, Project, Template, Session, FormattedSession } from "../../../shared/Types";
 import axios from 'axios';
 
 export async function fetchProjectTemplates(project_id: string | undefined, token: string | undefined) {
@@ -68,20 +68,51 @@ export async function fetchProjectDefaultTemplates(project_id: string | undefine
 export async function fetchSession(token: string | undefined, studyInstanceUID: string) {
   const url = `/api/session/${studyInstanceUID}`;
 
-  // TODO zatial nepouzivam
   try {
     const headers = {
       'token': token
     };
     const response = await axios.get(url, { headers });
 
-    const visit: Session = await response.data;
+    const visit: FormattedSession = await response.data;
     return visit;
   } catch (err) {
-    return [];
+    throw err;
   }
 }
 
+export async function patchSession(token: string | undefined, session: FormattedSession) {
+  const url = `/api/session/${session.uuid}`;
+
+  try {
+    const headers = {
+      'token': token
+    };
+    const response = await axios.patch(url, session, { headers });
+
+    const visit: FormattedSession = await response.data;
+    return visit;
+  } catch (err) {
+    throw err;
+  }
+}
+
+
+export async function postSession(token: string | undefined, session: FormattedSession) {
+  const url = `/api/session/`;
+
+  try {
+    const headers = {
+      'token': token
+    };
+    const response = await axios.post(url, session, { headers });
+
+    const visit: FormattedSession = await response.data;
+    return visit;
+  } catch (err) {
+    throw err;
+  }
+}
 
 
 export async function postTemplate(token: string | undefined, template: FormattedTemplate) {

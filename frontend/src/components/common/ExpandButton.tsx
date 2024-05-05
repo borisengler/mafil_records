@@ -3,12 +3,12 @@ import React from 'react';
 import { ExpandMore } from './CommonCard';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
-interface SortButtonProps {
+interface ExpandButtonProps {
   expanded: boolean;
   onClick?: () => void;
 }
 
-function SortButton({ expanded, onClick }: SortButtonProps) {
+function ExpandButton({ expanded, onClick }: ExpandButtonProps) {
   const tooltipText = expanded ? 'Collapse all' : 'Expand all';
 
   return (
@@ -24,4 +24,4 @@ function SortButton({ expanded, onClick }: SortButtonProps) {
   )
 }
 
-export default SortButton;
+export default ExpandButton;

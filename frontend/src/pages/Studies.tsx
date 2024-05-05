@@ -35,8 +35,6 @@ function Studies() {
     end: formatDateToISOString(endDate),
   });
 
-  useEffect(() => {console.log(dateRange)}, [dateRange])
-
   async function fetchData() {
     setLoading(true);
     setFetchStatus('saving');

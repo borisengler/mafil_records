@@ -20,8 +20,8 @@ import removeStudiesFromLocalStorage from '../utils/RemoveStudiesFromLocalStorag
 import { saveSeriesData, saveStudyData } from '../utils/Savers';
 import { getStudyData } from '../utils/DatabaseFetchers';
 import { postValidationData } from '../utils/ValidationFetchers';
-import { fetchProjectDefaultTemplates, fetchProjectTemplates, fetchProjects } from '../utils/MAFILFetchers';
-import { FormattedTemplate, MissingSeries, PACSSeries, Project, StudyProps, ValidatedSeries } from '../../../shared/Types';
+import { fetchProjectDefaultTemplates, fetchProjectTemplates, fetchProjects, fetchSession, patchSession } from '../utils/MAFILFetchers';
+import { FormattedMeasurement, FormattedSession, FormattedTemplate, MissingSeries, PACSSeries, Project, StudyProps, ValidatedSeries } from '../../../shared/Types';
 import ExpandButton from '../components/common/ExpandButton';
 
 export interface StudyData {
@@ -34,6 +34,13 @@ function Measuring() {
   const [open, setOpen] = React.useState(true);
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [pacsSeries, setPacsSeries] = useState<PACSSeries[]>([]);
+  const [mafilMeasurements, setMafilMeasurements] = useState<FormattedMeasurement[]>([]);
+  const [session, setSession] = useState<FormattedSession>({
+    uuid: '',
+    visit: '',
+    comment: '',
+    measurements: []
+  });
   const [validatedSeries, setValidatedSeries] = useState<ValidatedSeries[]>([]);
   const [missingSeries, setMissingSeries] = useState<MissingSeries[]>([]);
   const [selectedSeqId, setSelectedSeqId] = React.useState<string | null>(null);
@@ -45,7 +52,6 @@ function Measuring() {
     const localStudy = localStorage.getItem(`currentStudy`);
     return localStudy ? JSON.parse(localStudy) : {};
   });
-  const [projects, setProjects] = useState<Project[]>([]);
   const [expanded, setExpanded] = useState(false);
 
 
@@ -59,6 +65,9 @@ function Measuring() {
   const [selectedTemplateId, setSelectedTemplateId] = useState<string>("");
   async function saveRecords(): Promise<boolean> {
     setSaveStatus('saving');
+    console.log('aaaaaa');
+    const result = await patchSession(auth.user ? auth.user.access_token : '', session);
+
     const seriesSuccess = await saveSeriesData(props.StudyInstanceUID);
     const studySuccess = await saveStudyData(props.StudyInstanceUID);
 
@@ -99,6 +108,10 @@ function Measuring() {
         setFetchError(null);
         setFetchStatus('success');
         setPacsSeries(json);
+
+        const session = await fetchSession(auth.user ? auth.user.access_token : '', currentStudy.StudyInstanceUID);
+        setMafilMeasurements(session.measurements);
+        setSession(session);
       } catch (error) {
         setFetchStatus('failed');
         setFetchError('Fetching series failed, check internet connection and try again. If problem persists, contact your system administrator.');
@@ -194,6 +207,7 @@ function Measuring() {
 
   const handleTextChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = event.target;
+    setSession({...session, [name]: value});
     setStudyData({
       ...studyData,
       [name]: value,
@@ -210,20 +224,24 @@ function Measuring() {
         <Series
           key={`validated-${series.SeriesInstanceUID}`}
           validatedSerie={series}
-          missingSerie={null}
+          templateSerie={null}
+          downloadedMeasurement={mafilMeasurements.filter((measurement) => measurement.series_instance_UID ==series.SeriesInstanceUID)[0]}
           onCopy={handleSeriesCopy}
           onPaste={handleSeriesPaste}
           allExpanded={expanded}
+          choosenTemplate={selectedTemplateId}
         />
       )),
       ...missingSeries.map((series) => (
         <Series
           key={`missing-${series.SeriesDescription}`}
           validatedSerie={null}
-          missingSerie={series}
+          templateSerie={series}
+          downloadedMeasurement={null}
           onCopy={handleSeriesCopy}
           onPaste={handleSeriesPaste}
           allExpanded={expanded}
+          choosenTemplate={selectedTemplateId}
         />
       )),
     ];
@@ -238,8 +256,8 @@ function Measuring() {
           pageTitle='Measuring and taking notes'
           content={
             <React.Fragment>
-              <ExpandButton expanded={expanded} onClick={toggleExpand}></ExpandButton>
               <SortButton sortOrder={sortOrder} onClick={toggleSortOrder} />
+              <ExpandButton expanded={expanded} onClick={toggleExpand}/>
               <SaveButton saveStatus={saveStatus} onClick={saveRecords} />
               <RefreshButton fetchStatus={fetchStatus} onClick={handleRefresh} tooltipTitle='Re-fetch series for current study' />
             </React.Fragment>
@@ -259,13 +277,13 @@ function Measuring() {
             templates={studyTemplates}
           />
           <MultiLineInput
-            label="General comment to study"
-            name="general_comment"
-            value={studyData.general_comment}
+            label="General comment to session"
+            name="comment"
+            value={session.comment}
             onChange={handleTextChange}
           />
           <Box gap={2} display='flex' flexDirection="row" flexWrap='wrap' justifyContent="space-between">
-            <BlueButton text="Finish study" path="/success" onClick={handleFinishStudy} />
+            <BlueButton text="Finish study"  onClick={handleFinishStudy} />
             <RedButton text="Back to studies" path="/studies" onClick={handleBackToStudies} />
           </Box>
           <Divider sx={{ my: 3 }} />
