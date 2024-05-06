@@ -131,10 +131,9 @@ export function Series(props: SeriesProps) {
   useEffect(() => {
     const triggeredByTemplateChange = template != props.choosenTemplate;
     setTemplate(props.choosenTemplate);
-    setMeasurementDownloaded(true);
 
     const fetchData = async () => {
-      if (props.validatedSerie !== null) {
+    if (props.validatedSerie !== null) {
       
       const oldSeriesJSON = localStorage.getItem(`series-${props.validatedSerie.SeriesInstanceUID}`);
       const oldSeries = JSON.parse(oldSeriesJSON ? oldSeriesJSON : "{}");
@@ -169,19 +168,22 @@ export function Series(props: SeriesProps) {
             siemens_resp: oldSeries.siemens_resp,
             siemens_pt: oldSeries.siemens_pt
           }
+        } else {
+          newSeriesData.validation_status = props.validatedSerie ? props.validatedSerie.ValidationResult : 'MISSING';
+          props.validatedSerie.UserInput.forEach(element => {
+            if ((element.key == "stim_protocol" || element.key == "stim_log_file" || element.key == "fyzio_raw_file") && element.valueA !== null) {
+              if (element.valueA.length > 0 ) newSeriesData[element.key] = element.valueA;
+            } else if ((element.key == "general_eeg" || element.key == "general_et" || element.key == "bp_ekg"
+              || element.key == "bp_resp" || element.key == "bp_gsr" || element.key == "bp_acc"
+              || element.key == "siemens_ekg" || element.key == "siemens_resp" || element.key == "siemens_pt")
+            ) {
+              newSeriesData[element.key] = element.valueA == "true";
+            }
+          });
+
         }
         }
-        newSeriesData.validation_status = props.validatedSerie ? props.validatedSerie.ValidationResult : 'MISSING';
-        props.validatedSerie.UserInput.forEach(element => {
-          if ((element.key == "stim_protocol" || element.key == "stim_log_file" || element.key == "fyzio_raw_file") && element.valueA !== null) {
-            if (element.valueA.length > 0 ) newSeriesData[element.key] = element.valueA;
-          } else if ((element.key == "general_eeg" || element.key == "general_et" || element.key == "bp_ekg"
-            || element.key == "bp_resp" || element.key == "bp_gsr" || element.key == "bp_acc"
-            || element.key == "siemens_ekg" || element.key == "siemens_resp" || element.key == "siemens_pt")
-          ) {
-            newSeriesData[element.key] = element.valueA == "true";
-          }
-        });
+
         if (props.downloadedMeasurement) {
           if (!measurementDownloaded) {
             setDisplayData({
@@ -207,13 +209,14 @@ export function Series(props: SeriesProps) {
               validation_status: props.validatedSerie ? props.validatedSerie.ValidationResult : 'MISSING',
             });
           }
+          setMeasurementDownloaded(true);
         } else {
           setDisplayData(newSeriesData);
         }
       }
     };
     fetchData();
-  }, [props.choosenTemplate, props.downloadedMeasurement, props.templateSerie, props.validatedSerie]);
+  }, [props.downloadedMeasurement, props.validatedSerie]);
 
   useEffect(() => {
     if (props.validatedSerie !== null) {
