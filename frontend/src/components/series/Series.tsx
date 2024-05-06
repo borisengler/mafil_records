@@ -221,6 +221,7 @@ export function Series(props: SeriesProps) {
   useEffect(() => {
     if (props.validatedSerie !== null) {
       localStorage.setItem(`series-${props.validatedSerie.SeriesInstanceUID}`, JSON.stringify(displayData))
+      props.onChange(displayData);
     }
   }, [displayData]);
 

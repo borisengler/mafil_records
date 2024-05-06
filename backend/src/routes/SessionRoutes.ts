@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { FormattedMeasurement, FormattedSession, Measurement, Session } from '../../../shared/Types';
+import * as fs from 'fs';
 
 require('dotenv').config();
 const mafilApiUrl = process.env.MAFIL_API_URL;
@@ -19,27 +20,31 @@ export const getSession = async (req, res) => {
             res.status(200).json();
         }
         const session = sessions[0];
-        const measurements: FormattedMeasurement[] = session.measurements.filter((measurement) => measurement.mr_measurements.length > 0).map((measuremnt) => {
-            const mrMeasurement = measuremnt.mr_measurements[0];
+        const measurements: FormattedMeasurement[] = session.measurements.filter(
+            (measurement) => {
+                const mrMeasurementWithSeries = measurement.mr_measurements.filter((m) => m.series_instance_UID && m.series_instance_UID.length > 0);
+                return mrMeasurementWithSeries.length > 0
+            }).map((measuremnt) => {
+            const mrMeasurement = measuremnt.mr_measurements.filter((m) => m.series_instance_UID.length > 0)[0];
             return {
-            uuid: measuremnt.uuid,
-            log_file_name: measuremnt.log_file_name,
-            stimulation_protocol: measuremnt.stimulation_protocol,
-            raw_file_name: measuremnt.raw_file_name,
-            order_of_measurement: measuremnt.order_of_measurement,
-            comment: measuremnt.comment,
-            series_instance_UID: mrMeasurement.series_instance_UID,
-            study_id: mrMeasurement.study_id,
-            fyzio_EKG: mrMeasurement.fyzio_EKG,
-            fyzio_respiration_belt: mrMeasurement.fyzio_respiration_belt,
-            fyzio_GSR: mrMeasurement.fyzio_GSR,
-            fyzio_ACC: mrMeasurement.fyzio_ACC,
-            fyzio_pulse_oxymeter: mrMeasurement.fyzio_pulse_oxymeter,
-            fyzio_external: mrMeasurement.fyzio_external,
-            siemens_EKG: mrMeasurement.siemens_EKG,
-            siemens_respiration: mrMeasurement.siemens_respiration,
-            siemens_PT: mrMeasurement.siemens_respiration,
-            time_of_measurement: mrMeasurement.time_of_measurement,
+                uuid: measuremnt.uuid,
+                log_file_name: measuremnt.log_file_name,
+                stimulation_protocol: measuremnt.stimulation_protocol,
+                raw_file_name: measuremnt.raw_file_name,
+                order_of_measurement: measuremnt.order_of_measurement,
+                comment: measuremnt.comment,
+                series_instance_UID: mrMeasurement.series_instance_UID,
+                study_id: mrMeasurement.study_id,
+                fyzio_EKG: mrMeasurement.fyzio_EKG,
+                fyzio_respiration_belt: mrMeasurement.fyzio_respiration_belt,
+                fyzio_GSR: mrMeasurement.fyzio_GSR,
+                fyzio_ACC: mrMeasurement.fyzio_ACC,
+                fyzio_pulse_oxymeter: mrMeasurement.fyzio_pulse_oxymeter,
+                fyzio_external: mrMeasurement.fyzio_external,
+                siemens_EKG: mrMeasurement.siemens_EKG,
+                siemens_respiration: mrMeasurement.siemens_respiration,
+                siemens_PT: mrMeasurement.siemens_respiration,
+                time_of_measurement: new Date(mrMeasurement.time_of_measurement),
         }});
         const result: FormattedSession = {
             uuid: session.uuid,
@@ -47,6 +52,7 @@ export const getSession = async (req, res) => {
             visit: session.visit,
             measurements: measurements
         }
+        console.log(result.measurements);
         res.status(200).json(result);
     } catch (error) {
         console.log(error);
@@ -80,7 +86,8 @@ export const patchSession = async (req,res) => {
             'Authorization': `Bearer ${token}`
           };
           const body: FormattedSession = req.body;
-          const measurements: Measurement[] = body.measurements.map((fMeasurement) => ({
+          const measurements: Measurement[] = body.measurements.map((fMeasurement) => {
+            return {
             uuid: fMeasurement.uuid,
             log_file_name: fMeasurement.log_file_name,
             stimulation_protocol: fMeasurement.stimulation_protocol,
@@ -99,9 +106,9 @@ export const patchSession = async (req,res) => {
                 siemens_EKG: fMeasurement.siemens_EKG,
                 siemens_respiration: fMeasurement.siemens_respiration,
                 siemens_PT: fMeasurement.siemens_PT,
-                time_of_measurement: fMeasurement.time_of_measurement
+                time_of_measurement: new Date(fMeasurement.time_of_measurement).toTimeString().split(' ')[0]
             }]
-          }));
+          }});
           const requestBody: Session = {
             uuid: body.uuid,
             visit: body.visit,
@@ -115,10 +122,15 @@ export const patchSession = async (req,res) => {
         console.log('url');
         console.log(mafilApiUrl + `sessions/${session_uuid}`);
 
+        const jsonString = JSON.stringify(requestBody, null, 2); // null and 2 are for formatting (pretty-print)
+
+        // Write the JSON string to a file
+        fs.writeFileSync('data.json', jsonString);
+
         const response = await axios.patch(mafilApiUrl + `sessions/${session_uuid}`, requestBody, { headers });
         res.status(200).json();
     } catch (error) {
-        // console.log(error);
+        console.log(error);
         res.status(500).json({ message: "Error patching session" });
     }
 }

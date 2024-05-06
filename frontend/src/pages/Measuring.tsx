@@ -21,7 +21,7 @@ import { saveSeriesData, saveStudyData } from '../utils/Savers';
 import { getStudyData } from '../utils/DatabaseFetchers';
 import { postValidationData } from '../utils/ValidationFetchers';
 import { fetchProjectDefaultTemplates, fetchProjectTemplates, fetchProjects, fetchSession, patchSession } from '../utils/MAFILFetchers';
-import { FormattedMeasurement, FormattedSession, FormattedTemplate, MissingSeries, PACSSeries, Project, StudyProps, ValidatedSeries } from '../../../shared/Types';
+import { FormattedMeasurement, FormattedSession, FormattedTemplate, MissingSeries, PACSSeries, Project, SeriesData, StudyProps, ValidatedSeries } from '../../../shared/Types';
 import ExpandButton from '../components/common/ExpandButton';
 
 export interface StudyData {
@@ -65,7 +65,6 @@ function Measuring() {
   const [selectedTemplateId, setSelectedTemplateId] = useState<string>("");
   async function saveRecords(): Promise<boolean> {
     setSaveStatus('saving');
-    console.log('aaaaaa');
     const result = await patchSession(auth.user ? auth.user.access_token : '', session);
 
     const seriesSuccess = await saveSeriesData(props.StudyInstanceUID);
@@ -109,9 +108,9 @@ function Measuring() {
         setFetchStatus('success');
         setPacsSeries(json);
 
-        const session = await fetchSession(auth.user ? auth.user.access_token : '', currentStudy.StudyInstanceUID);
+        const newSession = await fetchSession(auth.user ? auth.user.access_token : '', currentStudy.StudyInstanceUID);
         setMafilMeasurements(session.measurements);
-        setSession(session);
+        if (session.uuid == '') setSession(newSession);
       } catch (error) {
         setFetchStatus('failed');
         setFetchError('Fetching series failed, check internet connection and try again. If problem persists, contact your system administrator.');
@@ -218,6 +217,31 @@ function Measuring() {
     localStorage.setItem(`study-${props.StudyInstanceUID}`, JSON.stringify({ ...studyData }))
   }, [studyData]);
 
+  function handleSeriesChange(measurement: SeriesData) {
+    const measurements = session.measurements.filter((m) => m.series_instance_UID != measurement.series_instance_uid);
+    const newMeasurement: FormattedMeasurement = {
+      log_file_name: measurement.stim_log_file,
+      stimulation_protocol: measurement.stim_protocol,
+      raw_file_name: measurement.fyzio_raw_file,
+      order_of_measurement: 0,
+      study_id: undefined,
+      comment: measurement.comment,
+      series_instance_UID: measurement.series_instance_uid,
+      fyzio_EKG: measurement.bp_ekg,
+      fyzio_respiration_belt: measurement.bp_resp,
+      fyzio_GSR: measurement.bp_gsr,
+      fyzio_ACC: measurement.bp_acc,
+      fyzio_pulse_oxymeter: measurement.general_et,
+      fyzio_external: measurement.general_eeg,
+      siemens_EKG: measurement.siemens_ekg,
+      siemens_respiration: measurement.siemens_resp,
+      siemens_PT: measurement.siemens_pt,
+      time_of_measurement: measurement.measured
+    }
+    setSession({...session, measurements: [...measurements, newMeasurement]});
+    console.log({...session, measurements: measurements});
+  }
+
   function listSeries() {
     return [
       ...validatedSeries.map((series) => (
@@ -225,11 +249,12 @@ function Measuring() {
           key={`validated-${series.SeriesInstanceUID}`}
           validatedSerie={series}
           templateSerie={null}
-          downloadedMeasurement={mafilMeasurements.filter((measurement) => measurement.series_instance_UID ==series.SeriesInstanceUID)[0]}
+          downloadedMeasurement={mafilMeasurements.filter((measurement) => measurement.series_instance_UID == series.SeriesInstanceUID)[0]}
           onCopy={handleSeriesCopy}
           onPaste={handleSeriesPaste}
           allExpanded={expanded}
           choosenTemplate={selectedTemplateId}
+          onChange={handleSeriesChange}
         />
       )),
       ...missingSeries.map((series) => (
@@ -242,6 +267,7 @@ function Measuring() {
           onPaste={handleSeriesPaste}
           allExpanded={expanded}
           choosenTemplate={selectedTemplateId}
+          onChange={handleSeriesChange}
         />
       )),
     ];

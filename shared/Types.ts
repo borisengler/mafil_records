@@ -171,7 +171,7 @@ export interface SeriesProps {
   onPaste: () => string | null; // onPaste handler passed from parent component
   allExpanded: boolean;
   choosenTemplate: string;
-  // onChange: (measurement: SeriesData) => void;
+  onChange: (measurement: SeriesData) => void;
 }
 
 export interface Project {
@@ -208,7 +208,7 @@ export interface MrMeasurement {
   siemens_EKG: boolean | undefined;
   siemens_respiration: boolean | undefined;
   siemens_PT: boolean | undefined;
-  time_of_measurement: Date | undefined;
+  time_of_measurement: string | undefined;
 }
 
 export interface FormattedSession {

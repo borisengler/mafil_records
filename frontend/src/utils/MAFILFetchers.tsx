@@ -88,6 +88,7 @@ export async function patchSession(token: string | undefined, session: Formatted
     const headers = {
       'token': token
     };
+    console.log('aaaa');
     const response = await axios.patch(url, session, { headers });
 
     const visit: FormattedSession = await response.data;
