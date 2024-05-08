@@ -179,14 +179,15 @@ export interface Project {
 }
 
 export interface Session {
-  uuid: string;
+  uuid?: string;
   visit: string;
   comment: string;
   measurements: Measurement[];
+  studyInstanceUID: string;
 }
 
 export interface Measurement {
-  uuid: string;
+  uuid?: string;
   log_file_name: string;
   stimulation_protocol: string;
   raw_file_name: string;
@@ -212,9 +213,11 @@ export interface MrMeasurement {
 
 export interface FormattedSession {
   uuid: string;
+  studyInstanceUID: string;
   visit: string;
   comment: string;
   measurements: FormattedMeasurement[];
+  
 }
 
 export interface FormattedMeasurement {

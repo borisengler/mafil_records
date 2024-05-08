@@ -1,7 +1,7 @@
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import {Icon, IconButton, MenuItem, Select, SelectChangeEvent, Tooltip, breadcrumbsClasses} from '@mui/material';
+import {Icon, IconButton, MenuItem, Select, SelectChangeEvent, Tooltip} from '@mui/material';
 import Box from '@mui/material/Box';
 import CardActions from '@mui/material/CardActions';
 import Checkbox from '@mui/material/Checkbox';
@@ -10,20 +10,13 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import React, {useEffect, useState} from 'react';
 import CommonCard, {ExpandMore} from '../common/CommonCard';
 import {MultiLineInput, MultiLineInputProps, SingleLineInput, SingleLineInputProps} from '../common/Inputs';
-import {getSeriesData} from '../../utils/DatabaseFetchers';
-import {SeriesData, PACSSeries, SeriesProps, Measurement, FormattedMeasurement} from '../../../../shared/Types';
-import {getClockNumberUtilityClass} from '@mui/x-date-pickers/TimeClock/clockNumberClasses';
+import {SeriesData, SeriesProps, FormattedMeasurement} from '../../../../shared/Types';
 import {
-  Cancel,
   CancelRounded,
   CheckCircle,
-  CheckCircleOutline,
-  Help,
   HelpRounded,
-  Warning,
   WarningRounded
 } from '@mui/icons-material';
-import {CalendarIcon} from '@mui/x-date-pickers';
 
 export function SeriesSingleLineInput({name, label, value, onChange, type = 'text'}: SingleLineInputProps) {
   return (
@@ -357,8 +350,8 @@ export function Series(props: SeriesProps) {
   const description = props.validatedSerie ? props.validatedSerie.SeriesDescription : (props.templateSerie ? props.templateSerie.SeriesDescription : '');
   const seriesNumber = props.validatedSerie ? props.validatedSerie.SeriesNumber : '';
 
-  const measured = props.validatedSerie !== null ? displayData.measured.toLocaleString() : '-';
-  const last_updated = props.validatedSerie !== null ? displayData.last_updated.toLocaleString() : '-';
+  const measured = props.validatedSerie !== null ? (displayData.measured ? displayData.measured.toLocaleString(): '-') : '-';
+  const last_updated = props.validatedSerie !== null ? (displayData.last_updated ? displayData.last_updated.toLocaleString(): '-') : '-';
   const num_of_instances = props.validatedSerie !== null ? props.validatedSerie.NumberOfSeriesRelatedInstances : '-';
 
   const disableInteractions = props.validatedSerie === null;

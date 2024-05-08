@@ -74,8 +74,8 @@ export async function fetchSession(token: string | undefined, studyInstanceUID: 
     };
     const response = await axios.get(url, {headers});
 
-    const visit: FormattedSession = await response.data;
-    return visit;
+    const session = await response.data;
+    return session;
   } catch (err) {
     throw err;
   }
@@ -88,13 +88,12 @@ export async function patchSession(token: string | undefined, session: Formatted
     const headers = {
       'token': token
     };
-    console.log('aaaa');
     const response = await axios.patch(url, session, {headers});
 
     const visit: FormattedSession = await response.data;
-    return visit;
+    return true;
   } catch (err) {
-    throw err;
+    return false;
   }
 }
 
@@ -109,9 +108,9 @@ export async function postSession(token: string | undefined, session: FormattedS
     const response = await axios.post(url, session, {headers});
 
     const visit: FormattedSession = await response.data;
-    return visit;
+    return true;
   } catch (err) {
-    throw err;
+    return false;
   }
 }
 

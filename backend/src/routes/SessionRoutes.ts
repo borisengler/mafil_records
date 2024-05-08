@@ -14,10 +14,15 @@ export const getSession = async (req, res) => {
       'Authorization': `Bearer ${token}`,
       'StudyInstanceUID': study_instance_uuid
     };
+
+    console.log('StudyInstanceUID');
+    console.log(study_instance_uuid);
     const response = await axios.get(mafilApiUrl + 'sessions', {headers});
+    console.log(response);
     const sessions: Session[] = response.data.results;
     if (sessions.length == 0) {
       res.status(200).json();
+      return;
     }
     const session = sessions[0];
     const measurements: FormattedMeasurement[] = session.measurements.filter(
@@ -48,6 +53,7 @@ export const getSession = async (req, res) => {
       }
     });
     const result: FormattedSession = {
+      studyInstanceUID: session.studyInstanceUID,
       uuid: session.uuid,
       comment: session.comment,
       visit: session.visit,
@@ -66,14 +72,49 @@ export const postSession = async (req, res) => {
 
   try {
     const headers = {
-      'Authorization': `Bearer ${token}`,
+      'Authorization': `Bearer ${token}`
     };
-    const body = req.body;
-    console.log(body);
-    return;
-    const response = await axios.post(mafilApiUrl + 'sessions', body, {headers});
+    const body: FormattedSession = req.body;
+    const measurements: Measurement[] = body.measurements ? body.measurements.map((fMeasurement) => {
+      return {
+        log_file_name: fMeasurement.log_file_name,
+        stimulation_protocol: fMeasurement.stimulation_protocol,
+        raw_file_name: fMeasurement.raw_file_name,
+        order_of_measurement: fMeasurement.order_of_measurement,
+        comment: fMeasurement.comment,
+        mr_measurements: [{
+          series_instance_UID: fMeasurement.series_instance_UID,
+          study_id: fMeasurement.study_id,
+          fyzio_EKG: fMeasurement.fyzio_EKG,
+          fyzio_respiration_belt: fMeasurement.fyzio_respiration_belt,
+          fyzio_GSR: fMeasurement.fyzio_GSR,
+          fyzio_ACC: fMeasurement.fyzio_ACC,
+          fyzio_pulse_oxymeter: fMeasurement.fyzio_pulse_oxymeter,
+          fyzio_external: fMeasurement.fyzio_external,
+          siemens_EKG: fMeasurement.siemens_EKG,
+          siemens_respiration: fMeasurement.siemens_respiration,
+          siemens_PT: fMeasurement.siemens_PT,
+          time_of_measurement: new Date(fMeasurement.time_of_measurement).toTimeString().split(' ')[0]
+        }]
+      }
+    }) : [];
+    const requestBody: Session = {
+      studyInstanceUID: body.studyInstanceUID,
+      visit: body.visit,
+      comment: body.comment,
+      measurements: measurements
+    }
+
+    
+    const jsonString = JSON.stringify(requestBody, null, 2); // null and 2 are for formatting (pretty-print)
+
+    // Write the JSON string to a file
+    fs.writeFileSync('data.json', jsonString);
+
+    const response = await axios.post(mafilApiUrl + `sessions`, requestBody, {headers});
     res.status(200).json();
   } catch (error) {
+    console.log(error);
     res.status(500).json({message: 'Error posting session'});
   }
 }
@@ -112,22 +153,12 @@ export const patchSession = async (req, res) => {
       }
     });
     const requestBody: Session = {
+      studyInstanceUID: body.studyInstanceUID,
       uuid: body.uuid,
       visit: body.visit,
       comment: body.comment,
       measurements: measurements
     }
-
-    console.log(requestBody);
-    // res.status(200).json();a
-
-    console.log('url');
-    console.log(mafilApiUrl + `sessions/${session_uuid}`);
-
-    const jsonString = JSON.stringify(requestBody, null, 2); // null and 2 are for formatting (pretty-print)
-
-    // Write the JSON string to a file
-    fs.writeFileSync('data.json', jsonString);
 
     const response = await axios.patch(mafilApiUrl + `sessions/${session_uuid}`, requestBody, {headers});
     res.status(200).json();
