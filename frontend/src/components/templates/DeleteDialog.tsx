@@ -1,4 +1,4 @@
-import {Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button} from "@mui/material";
+import {Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button} from '@mui/material';
 import React from 'react';
 
 
@@ -14,20 +14,20 @@ export function DeleteDialog(props: DeleteDialogProps) {
     <Dialog
       open={props.open}
       onClose={props.onClose}
-      aria-labelledby="alert-dialog-title"
-      aria-describedby="alert-dialog-description"
+      aria-labelledby='alert-dialog-title'
+      aria-describedby='alert-dialog-description'
     >
-      <DialogTitle id="alert-dialog-title">{"Confirm Deletion"}</DialogTitle>
+      <DialogTitle id='alert-dialog-title'>{'Confirm Deletion'}</DialogTitle>
       <DialogContent>
-        <DialogContentText id="alert-dialog-description">
+        <DialogContentText id='alert-dialog-description'>
           Are you sure you want to delete this item?
         </DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button onClick={props.onClose} color="primary">
+        <Button onClick={props.onClose} color='primary'>
           Cancel
         </Button>
-        <Button onClick={props.onConfirm} color="primary" autoFocus>
+        <Button onClick={props.onConfirm} color='primary' autoFocus>
           Delete
         </Button>
       </DialogActions>

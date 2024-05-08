@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState} from 'react';
 
 const SidebarContext = React.createContext<{
   sidebarWidth: number;

@@ -1,4 +1,4 @@
-import { SeriesData } from "../../../shared/Types";
+import { SeriesData } from '../../../shared/Types';
 
 export async function getStudyData(study_instance_uid: string) {
   // First, try to get the data from localStorage

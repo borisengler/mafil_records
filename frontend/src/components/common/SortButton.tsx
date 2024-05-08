@@ -13,7 +13,7 @@ function SortButton({sortOrder, onClick}: SortButtonProps) {
 
   return (
     <Tooltip title={tooltipText}>
-      <IconButton size="large" color="inherit" onClick={onClick}>
+      <IconButton size='large' color='inherit' onClick={onClick}>
         {sortOrder === 'asc' ? <ArrowDownwardIcon/> : <ArrowUpwardIcon/>}
       </IconButton>
     </Tooltip>

@@ -20,7 +20,7 @@ function RefreshButton({onClick, fetchStatus, tooltipTitle}: RefreshButtonProps)
     } else if (fetchStatus === 'failed') {
       setIcon(<ErrorIcon sx={{color: '#ff7f7f'}}/>);
     } else if (fetchStatus === 'saving') {
-      setIcon(<CircularProgress color="inherit" size={24} thickness={6}/>);
+      setIcon(<CircularProgress color='inherit' size={24} thickness={6}/>);
     } else {
       setIcon(<RefreshIcon/>);
     }
@@ -28,7 +28,7 @@ function RefreshButton({onClick, fetchStatus, tooltipTitle}: RefreshButtonProps)
 
   return (
     <Tooltip title={tooltipTitle}>
-      <IconButton size="large" color="inherit" onClick={onClick}>
+      <IconButton size='large' color='inherit' onClick={onClick}>
         {icon}
       </IconButton>
     </Tooltip>

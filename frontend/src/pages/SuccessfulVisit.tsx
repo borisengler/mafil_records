@@ -30,7 +30,7 @@ function SuccessfulVisit() {
           <BlueButton text='Start visit' path='/studies'/>
         </ResizableSidebar>
         <Box
-          component="main"
+          component='main'
           sx={{
             flexGrow: 1,
             overflow: 'auto',

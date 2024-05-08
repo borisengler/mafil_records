@@ -1,4 +1,4 @@
-import {FormattedTemplate, Project, Template, Session, FormattedSession} from "../../../shared/Types";
+import {FormattedTemplate, Project, Template, Session, FormattedSession} from '../../../shared/Types';
 import axios from 'axios';
 
 export async function fetchProjectTemplates(project_id: string | undefined, token: string | undefined) {
@@ -128,7 +128,7 @@ export async function postTemplate(token: string | undefined, template: Formatte
       is_default: template.is_default,
       name: template.name,
       order_for_displaying: template.order_for_displaying,
-      measurement_modality: "mr",
+      measurement_modality: 'mr',
       project: template.project_uuid,
       comment: template.comment,
       versioned_templates: [{
@@ -161,7 +161,7 @@ export async function patchTemplate(token: string | undefined, template: Formatt
       is_default: template.is_default,
       name: template.name,
       order_for_displaying: template.order_for_displaying,
-      measurement_modality: "mr",
+      measurement_modality: 'mr',
       project: template.project_uuid,
       is_defeault: template.is_default,
       versioned_templates: [{

@@ -11,7 +11,7 @@ function withAuthentication<P extends object>(
     console.log(auth);
 
     if (!auth.isLoading && !auth.isAuthenticated) {
-      return <Navigate to="/" replace />;
+      return <Navigate to='/' replace />;
     }
 
     if (auth.isLoading) {

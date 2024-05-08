@@ -1,6 +1,6 @@
-import React from "react";
-import {Box} from "@mui/material";
-import CommonCard from "./CommonCard";
+import React from 'react';
+import {Box} from '@mui/material';
+import CommonCard from './CommonCard';
 
 interface MessageProps {
   title: string;

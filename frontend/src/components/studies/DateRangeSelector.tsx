@@ -1,8 +1,8 @@
-import {Box, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent} from "@mui/material";
+import {Box, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent} from '@mui/material';
 import {DatePicker} from '@mui/x-date-pickers';
 import React, {useContext, useEffect, useState} from 'react';
-import SidebarContext from "../../contexts/SidebarContext";
-import {BlueButton} from "../common/Buttons";
+import SidebarContext from '../../contexts/SidebarContext';
+import {BlueButton} from '../common/Buttons';
 
 export function formatDateToISOString(date: Date | null): string {
   if (!date || isNaN(date.getTime())) {
@@ -97,7 +97,7 @@ export function DateRangeSelector({setDateRange, dateRange, fetchData}: DateRang
           <React.Fragment>
             <Box>
               <DatePicker
-                label="Start Date"
+                label='Start Date'
                 value={new Date(dateRange.start)}
                 onChange={(newValue: Date | null) => {
                   handleCustomDateChange(formatDateToISOString(newValue), dateRange.end);
@@ -106,7 +106,7 @@ export function DateRangeSelector({setDateRange, dateRange, fetchData}: DateRang
             </Box>
             <Box>
               <DatePicker
-                label="End Date"
+                label='End Date'
                 value={new Date(dateRange.end)}
                 onChange={(newValue: Date | null) => {
                   handleCustomDateChange(dateRange.start, formatDateToISOString(newValue));
@@ -116,7 +116,7 @@ export function DateRangeSelector({setDateRange, dateRange, fetchData}: DateRang
           </React.Fragment>
         )}
       </Box>
-      <BlueButton onClick={handleFetchButtonClick} text="Fetch studies"/>
+      <BlueButton onClick={handleFetchButtonClick} text='Fetch studies'/>
     </React.Fragment>
   );
 }

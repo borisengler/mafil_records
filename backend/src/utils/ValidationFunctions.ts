@@ -21,7 +21,7 @@ import {
     if (template === undefined) {
       return {
         ...serie,
-        ValidationResult: "NOT_FOUND",
+        ValidationResult: 'NOT_FOUND',
         UserInput: [],
         InvalidReasons: [],
         OrderForDisplaying: 1000 + serie.SeriesNumber
@@ -32,7 +32,7 @@ import {
     if (assignedTemplate === undefined) {
       return {
         ...serie,
-        ValidationResult: "NOT_FOUND",
+        ValidationResult: 'NOT_FOUND',
         UserInput: [],
         InvalidReasons: [],
         OrderForDisplaying: 1000 + serie.SeriesNumber
@@ -44,7 +44,7 @@ import {
     if (result) {
       return {
         ...serie,
-        ValidationResult: "OK",
+        ValidationResult: 'OK',
         UserInput: userInput,
         InvalidReasons: [],
         OrderForDisplaying: assignedTemplate.order_for_displaying
@@ -53,7 +53,7 @@ import {
   
     return {
       ...serie,
-      ValidationResult: "NOK",
+      ValidationResult: 'NOK',
       UserInput: userInput,
       InvalidReasons: reasons,
       OrderForDisplaying: assignedTemplate.order_for_displaying
@@ -79,7 +79,7 @@ import {
   }
   const validateSeriesWithPair = (serie: PACSSeries, pair: MeasurementTemplatePair): ValidationPairResult => {
     if (!pair.user_input) {
-      if (pair.type_of_comparison == "equal") {
+      if (pair.type_of_comparison == 'equal') {
         if (serie[pair.key_source] != pair.valueA) {
           return {
             result: false,
@@ -87,7 +87,7 @@ import {
           };
         }
       }
-      if (pair.type_of_comparison == "range") {
+      if (pair.type_of_comparison == 'range') {
         if (
           (pair.valueA != undefined && serie[pair.key_source] < pair.valueA)
           || (pair.valueB != undefined && serie[pair.key_source] > pair.valueB)

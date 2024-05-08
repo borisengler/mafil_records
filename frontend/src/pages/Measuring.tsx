@@ -78,7 +78,7 @@ function Measuring() {
 
 
   const [studyTemplates, setStudyTemplates] = useState<FormattedTemplate[]>([]);
-  const [selectedTemplateId, setSelectedTemplateId] = useState<string>("");
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string>('');
 
   async function saveRecords(): Promise<boolean> {
     setSaveStatus('saving');
@@ -311,24 +311,24 @@ function Measuring() {
           open={open}
           toggleDrawer={toggleDrawer}
         >
-          <InfoItem label="Measuring operator" text={auth.user ? auth.user.profile.name : ''}/>
-          <InfoItem label="Visit ID" text={props.AccessionNumber}/>
-          <InfoItem label="Study UID" text={props.StudyInstanceUID}/>
-          <InfoItem label="Patient name" text={props.PatientName}/>
+          <InfoItem label='Measuring operator' text={auth.user ? auth.user.profile.name : ''}/>
+          <InfoItem label='Visit ID' text={props.AccessionNumber}/>
+          <InfoItem label='Study UID' text={props.StudyInstanceUID}/>
+          <InfoItem label='Patient name' text={props.PatientName}/>
           <TemplateDropdown
             selectedTemplate={selectedTemplateId}
             handleTemplateChange={setSelectedTemplateId}
             templates={studyTemplates}
           />
           <MultiLineInput
-            label="General comment to session"
-            name="comment"
+            label='General comment to session'
+            name='comment'
             value={session.comment}
             onChange={handleTextChange}
           />
-          <Box gap={2} display='flex' flexDirection="row" flexWrap='wrap' justifyContent="space-between">
-            <BlueButton text="Finish study" onClick={handleFinishStudy}/>
-            <RedButton text="Back to studies" path="/studies" onClick={handleBackToStudies}/>
+          <Box gap={2} display='flex' flexDirection='row' flexWrap='wrap' justifyContent='space-between'>
+            <BlueButton text='Finish study' onClick={handleFinishStudy}/>
+            <RedButton text='Back to studies' path='/studies' onClick={handleBackToStudies}/>
           </Box>
           <Divider sx={{my: 3}}/>
         </ResizableSidebar>

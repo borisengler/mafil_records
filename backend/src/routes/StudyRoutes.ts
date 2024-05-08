@@ -1,4 +1,4 @@
-import {PostStudyCommentProps} from "../model/StudyProps";
+import {PostStudyCommentProps} from '../model/StudyProps';
 
 require('dotenv').config();
 

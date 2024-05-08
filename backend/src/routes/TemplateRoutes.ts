@@ -2,7 +2,7 @@ import {
   Template,
   FormattedTemplate,
   VersionedTemplate,
-} from "../../../shared/Types"
+} from '../../../shared/Types'
 
 const axios = require('axios');
 

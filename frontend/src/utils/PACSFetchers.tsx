@@ -1,5 +1,5 @@
 import DateRange from '../components/studies/DateRangeSelector';
-import {PacsStudyAPI, PacsStudy, PACSSeries} from "../../../shared/Types";
+import {PacsStudyAPI, PacsStudy, PACSSeries} from '../../../shared/Types';
 
 export async function fetchStudies(dateRange: DateRange) {
   const url = `/api/pacs/studies?start=${dateRange.start}&end=${dateRange.end}`;

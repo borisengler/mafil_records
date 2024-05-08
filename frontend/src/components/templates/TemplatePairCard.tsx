@@ -32,7 +32,7 @@ export default function TemplatePairCard(props: TemplatePairCardProps) {
   }
 
   const handleTypeOfComparisonChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const comparison = (event.target.value == "equal") ? "equal" : "range";
+    const comparison = (event.target.value == 'equal') ? 'equal' : 'range';
     setPair({...pair, type_of_comparison: comparison});
   };
 
@@ -58,32 +58,32 @@ export default function TemplatePairCard(props: TemplatePairCardProps) {
       <Box display={'flex'} flexDirection={'row'}>
         <DeleteDialog open={isDeleteDialogOpen} onClose={closeDeleteDialog} onConfirm={deleteItem}></DeleteDialog>
         <SeriesSingleLineInput label='Source (PACS key)' name='key_source'
-                               value={pair.key_source ? pair.key_source : ""} onChange={handleTextChange}/>
+                               value={pair.key_source ? pair.key_source : ''} onChange={handleTextChange}/>
         <SeriesSingleLineInput label='Key (Mafil key)' name='key' value={pair.key} onChange={handleTextChange}/>
 
-        <FormControl component="fieldset">
-          <FormLabel component="legend">Type of Comparison</FormLabel>
+        <FormControl component='fieldset'>
+          <FormLabel component='legend'>Type of Comparison</FormLabel>
           <RadioGroup
-            aria-label="comparison-type"
-            name="comparison-type"
+            aria-label='comparison-type'
+            name='comparison-type'
             value={pair.type_of_comparison}
             onChange={handleTypeOfComparisonChange}
             row
           >
-            <FormControlLabel value="equal" control={<Radio/>} label="Equal"/>
-            <FormControlLabel value="range" control={<Radio/>} label="Range"/>
+            <FormControlLabel value='equal' control={<Radio/>} label='Equal'/>
+            <FormControlLabel value='range' control={<Radio/>} label='Range'/>
           </RadioGroup>
         </FormControl>
 
-        <SeriesSingleLineInput label={pair.type_of_comparison == "equal" ? "Value" : "From"} name='valueA'
-                               value={pair.valueA ? pair.valueA : ""} onChange={handleTextChange}/>
-        <SeriesSingleLineInput label={pair.type_of_comparison == "equal" ? "Value (unused)" : "To"} name='valueB'
-                               value={pair.valueB ? pair.valueB : ""} onChange={handleTextChange}/>
+        <SeriesSingleLineInput label={pair.type_of_comparison == 'equal' ? 'Value' : 'From'} name='valueA'
+                               value={pair.valueA ? pair.valueA : ''} onChange={handleTextChange}/>
+        <SeriesSingleLineInput label={pair.type_of_comparison == 'equal' ? 'Value (unused)' : 'To'} name='valueB'
+                               value={pair.valueB ? pair.valueB : ''} onChange={handleTextChange}/>
 
         <CardActions disableSpacing>
           <span>
             <IconButton
-              aria-label="delete"
+              aria-label='delete'
               onClick={() => onDeleteClick(props.addedPair.index)}
             >
                 <DeleteIcon/>

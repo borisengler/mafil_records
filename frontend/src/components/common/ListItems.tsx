@@ -28,7 +28,7 @@ const ListItems: React.FC<ListItemsProps> = (
 
   return (
     <Box
-      component="main"
+      component='main'
       sx={{
         flexGrow: 1,
         overflow: 'auto',
@@ -46,7 +46,7 @@ const ListItems: React.FC<ListItemsProps> = (
         </Box>
       ) : (
         <Box flexDirection={'column'}>
-          {list.length == 0 && emptyMessage != null && <Message title={emptyMessage} text={""}/>}
+          {list.length == 0 && emptyMessage != null && <Message title={emptyMessage} text={''}/>}
           {list}
         </Box>
       )}

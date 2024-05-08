@@ -2,7 +2,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import {Box, IconButton, Toolbar} from '@mui/material';
 import React, {useContext, useEffect, useState} from 'react';
 
-import SidebarContext from "../../contexts/SidebarContext";
+import SidebarContext from '../../contexts/SidebarContext';
 import Logo from '../common/Logo';
 import AppBar from './AppBar';
 
@@ -39,7 +39,7 @@ function AppBarContent({open, pageTitle, content, toggleDrawer}: AppBarContentPr
   }, [sidebarWidth]);
 
   return (
-    <AppBar position="absolute" sidebarWidth={sidebarWidth} open={open}>
+    <AppBar position='absolute' sidebarWidth={sidebarWidth} open={open}>
       <Toolbar
         sx={{
           pr: '28px',
@@ -47,8 +47,8 @@ function AppBarContent({open, pageTitle, content, toggleDrawer}: AppBarContentPr
         }}
       >
         <IconButton
-          edge="start"
-          color="inherit"
+          edge='start'
+          color='inherit'
           onClick={toggleDrawer}
           sx={{
             marginRight: '36px',

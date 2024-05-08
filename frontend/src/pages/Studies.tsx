@@ -109,7 +109,7 @@ function Studies() {
             />
             {lastAccessedStudy !== undefined &&
                 <div style={{display: 'flex', alignItems: 'center'}}>
-                    <BlueButton text="Open last accessed study" path="/measuring"/>
+                    <BlueButton text='Open last accessed study' path='/measuring'/>
                     <div style={{marginLeft: '4px'}}>
                         <Tooltip title={
                           <span>
@@ -128,7 +128,7 @@ function Studies() {
                 </div>
 
             }
-            {<BlueButton text="Template administration" path="/templates"/>}
+            {<BlueButton text='Template administration' path='/templates'/>}
           </ResizableSidebar>
           <ListItems
             loading={loading}

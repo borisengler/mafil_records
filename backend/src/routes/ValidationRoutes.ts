@@ -1,6 +1,6 @@
-import {validateSeriesWithMeasurementTemplate, findMissingSeries} from "../utils/ValidationFunctions";
-import {ValidatedSeries} from "../../../shared/Types";
-import {SeriesValidationProps} from "../model/ValidationProps";
+import {validateSeriesWithMeasurementTemplate, findMissingSeries} from '../utils/ValidationFunctions';
+import {ValidatedSeries} from '../../../shared/Types';
+import {SeriesValidationProps} from '../model/ValidationProps';
 
 export const validateSeriesForTemplate = async (req, res) => {
   const validationData: SeriesValidationProps = req.body;

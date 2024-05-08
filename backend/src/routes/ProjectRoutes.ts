@@ -15,6 +15,6 @@ export const getProjects = async (req, res) => {
     const projects = response.data;
     res.status(200).json(projects.results);
   } catch (error) {
-    res.status(500).json({message: "Error fetching projects"});
+    res.status(500).json({message: 'Error fetching projects'});
   }
 }

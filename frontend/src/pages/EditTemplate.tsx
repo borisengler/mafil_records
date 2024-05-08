@@ -14,22 +14,22 @@ import {
   Toolbar,
   Typography,
   useTheme
-} from "@mui/material";
-import React, {useEffect, useState, version} from "react";
-import {BlueButton, RedButton} from "../components/common/Buttons";
-import InfoItem from "../components/common/InfoItem";
-import ListItems from "../components/common/ListItems";
-import {ResizableSidebar} from "../components/global/ResizableSidebar";
-import {SidebarProvider} from "../contexts/SidebarContext";
+} from '@mui/material';
+import React, {useEffect, useState, version} from 'react';
+import {BlueButton, RedButton} from '../components/common/Buttons';
+import InfoItem from '../components/common/InfoItem';
+import ListItems from '../components/common/ListItems';
+import {ResizableSidebar} from '../components/global/ResizableSidebar';
+import {SidebarProvider} from '../contexts/SidebarContext';
 import CommonAppBar from '../components/global/AppBarContent';
-import {useAuth} from "react-oidc-context";
-import {FormattedTemplate, MeasurementTemplate, Project} from "../../../shared/Types";
-import {TemplateItemCard} from "../components/templates/TemplateItemCard";
-import {fetchProjects, postTemplate, patchTemplate} from "../utils/MAFILFetchers";
-import {MultiLineInput, SingleLineInput} from "../components/common/Inputs";
+import {useAuth} from 'react-oidc-context';
+import {FormattedTemplate, MeasurementTemplate, Project} from '../../../shared/Types';
+import {TemplateItemCard} from '../components/templates/TemplateItemCard';
+import {fetchProjects, postTemplate, patchTemplate} from '../utils/MAFILFetchers';
+import {MultiLineInput, SingleLineInput} from '../components/common/Inputs';
 import AddIcon from '@mui/icons-material/Add';
 import AddMeasurementTemplateDialog from '../components/templates/AddMeasurementTemplateDialog';
-import {useNavigate} from "react-router-dom";
+import {useNavigate} from 'react-router-dom';
 
 
 export default function EditTemplate() {
@@ -49,7 +49,7 @@ export default function EditTemplate() {
   const [props, setProps] = useState<FormattedTemplate>(() => {
     const currentTemplate = localStorage.getItem(`currentTemplate`);
     const template: FormattedTemplate = currentTemplate ? JSON.parse(currentTemplate) : {
-      name: "",
+      name: '',
       version: 1,
       id: '',
       is_default: false,
@@ -93,7 +93,7 @@ export default function EditTemplate() {
   }
 
   const handleBackToTemplates = () => {
-    localStorage.setItem('currentTemplate', "");
+    localStorage.setItem('currentTemplate', '');
   }
 
   const listTemplates = () => {
@@ -166,7 +166,7 @@ export default function EditTemplate() {
       name: name,
       order_for_displaying: null,
       compulsory: true,
-      comment: "",
+      comment: '',
       measurement_template_pairs: []
     }];
 
@@ -195,10 +195,10 @@ export default function EditTemplate() {
           open={open}
           toggleDrawer={toggleDrawer}
         >
-          <InfoItem label="Measuring operator" text={auth.user ? auth.user.profile.name : ''}/>
-          <Box gap={2} display='flex' flexDirection="row" flexWrap='wrap' justifyContent="space-between">
-            <BlueButton text="Save template" onClick={saveTemplate}/>
-            <RedButton text="Back to templates" path="/templates" onClick={handleBackToTemplates}/>
+          <InfoItem label='Measuring operator' text={auth.user ? auth.user.profile.name : ''}/>
+          <Box gap={2} display='flex' flexDirection='row' flexWrap='wrap' justifyContent='space-between'>
+            <BlueButton text='Save template' onClick={saveTemplate}/>
+            <RedButton text='Back to templates' path='/templates' onClick={handleBackToTemplates}/>
           </Box>
           <Divider sx={{my: 3}}/>
         </ResizableSidebar>
@@ -219,8 +219,8 @@ export default function EditTemplate() {
                   `Name: ${props.name} | Version: ${props.version} | Project: ${props.project_name}` :
                   <Box width={'65%'}>
                     <SingleLineInput
-                      name="name"
-                      label="Name"
+                      name='name'
+                      label='Name'
                       value={props.name}
                       onChange={handleTextChange}
                     />
@@ -236,10 +236,10 @@ export default function EditTemplate() {
                           <InputLabel>Select Project</InputLabel>
                           <Select
                               onChange={onProjectChanged}
-                              label="Select Project"
+                              label='Select Project'
                               value={selectedProjectId || ''}
                           >
-                              <MenuItem value="" disabled>
+                              <MenuItem value='' disabled>
                                   Select a project
                               </MenuItem>
                             {projects.map((project) => (
@@ -255,8 +255,8 @@ export default function EditTemplate() {
                         <Checkbox
                           checked={props.is_default}
                           onChange={handleIsDefaultChange}
-                          name="is_default"
-                          color="primary"
+                          name='is_default'
+                          color='primary'
                         />
                       } label='Is default'/>
                   </Box>
@@ -265,17 +265,17 @@ export default function EditTemplate() {
               <Box display={'flex'} flexDirection={'row'} mt={2}>
                 <Box sx={{width: '600px', marginRight: '10px'}}>
                   <MultiLineInput
-                    name="comment"
-                    label="Comment"
+                    name='comment'
+                    label='Comment'
                     value={props.comment}
                     onChange={handleTextChange}
                   />
                 </Box>
                 <Box sx={{width: '100px'}}>
                   <SingleLineInput
-                    name="order_for_displaying"
-                    type="number"
-                    label="Order"
+                    name='order_for_displaying'
+                    type='number'
+                    label='Order'
                     value={props.order_for_displaying ? props.order_for_displaying.toString() : '0'}
                     onChange={handleTextChange}
                   />
@@ -290,7 +290,7 @@ export default function EditTemplate() {
             >
               Measurements
               <IconButton
-                aria-label="add"
+                aria-label='add'
                 onClick={() => setIsAddMeasurementDialogOpen(true)}
               >
                 <AddIcon/>
@@ -304,7 +304,7 @@ export default function EditTemplate() {
                 errorMessage={''}
                 loadingMessage={`Fetching template...`}
                 hasToolbar={false}
-                maxHeight={!isNew ? "67vh" : "55vh"}
+                maxHeight={!isNew ? '67vh' : '55vh'}
               />
             </Box>
           </Box>

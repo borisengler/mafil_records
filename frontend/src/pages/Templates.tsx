@@ -75,7 +75,7 @@ function Templates() {
   }, []);
 
   const handleClick = () => {
-    localStorage.setItem('currentTemplate', "");
+    localStorage.setItem('currentTemplate', '');
   };
 
   const onProjectChanged = (event: SelectChangeEvent<string>) => {
@@ -99,16 +99,16 @@ function Templates() {
             open={open}
             toggleDrawer={toggleDrawer}
           >
-            <InfoItem label="Measuring operator" text={auth.user ? auth.user.profile.name : ''}/>
-            <BlueButton text="Create template" path="/template-edit" onClick={handleClick}/>
+            <InfoItem label='Measuring operator' text={auth.user ? auth.user.profile.name : ''}/>
+            <BlueButton text='Create template' path='/template-edit' onClick={handleClick}/>
             <FormControl fullWidth>
               <InputLabel>Select Project</InputLabel>
               <Select
                 onChange={onProjectChanged}
-                label="Select Project"
+                label='Select Project'
                 value={selectedProjectId || ''}
               >
-                <MenuItem key="all" value="all">
+                <MenuItem key='all' value='all'>
                   -All projects-
                 </MenuItem>
                 {projects.map((project) => (
@@ -118,7 +118,7 @@ function Templates() {
                 ))}
               </Select>
             </FormControl>
-            <RedButton text="Back to studies" path="/studies"/>
+            <RedButton text='Back to studies' path='/studies'/>
           </ResizableSidebar>
           <ListItems
             loading={loading}

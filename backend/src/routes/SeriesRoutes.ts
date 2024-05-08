@@ -26,7 +26,7 @@ export const getSerie = async (req, res) => {
     if (seriesData !== undefined) {
       result = {
         ...seriesData,
-        validation_status: "NOT_FOUND",
+        validation_status: 'NOT_FOUND',
         is_selected: false,
         is_expanded: false,
       };

@@ -60,13 +60,13 @@ export default function TemplateCard(props: TemplateCardProps) {
             <CardActions disableSpacing>
               <span>
                 <IconButton
-                  aria-label="edit"
+                  aria-label='edit'
                   onClick={handleClick}>
                   <EditIcon/>
 
                 </IconButton>
                 <IconButton
-                  aria-label="delete"
+                  aria-label='delete'
                   onClick={() => onDeleteClick(props.template)}
                 >
                   <DeleteIcon/>

@@ -8,7 +8,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import React, {useEffect, useState} from 'react';
 import CommonCard, {ExpandMore} from '../common/CommonCard';
 import {MultiLineInput} from '../common/Inputs';
-import {MeasurementTemplate, MeasurementTemplatePair} from "../../../../shared/Types";
+import {MeasurementTemplate, MeasurementTemplatePair} from '../../../../shared/Types';
 import {SeriesSingleLineInput} from '../series/Series';
 import DeleteIcon from '@mui/icons-material/Delete';
 import {DeleteDialog} from './DeleteDialog';
@@ -44,7 +44,7 @@ export function TemplateItemCard(props: TemplateItemProps) {
             checked={checked}
             onChange={handleCheckboxChange}
             name={name}
-            color="primary"
+            color='primary'
           />
         } label={text}/>
       </Box>
@@ -55,7 +55,7 @@ export function TemplateItemCard(props: TemplateItemProps) {
 
   const [isExpanded, setIsExpanded] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [itemToDelete, setItemToDelete] = useState("");
+  const [itemToDelete, setItemToDelete] = useState('');
 
   const [addedPairsIndex, setAddedPairsIndex] = useState(0);
   const [addedPairs, setAddedPairs] = useState<AddedMeasurementTemplatePairs[]>(() => {
@@ -88,15 +88,15 @@ export function TemplateItemCard(props: TemplateItemProps) {
 
   function closeDeleteDialog() {
     setIsDeleteDialogOpen(false);
-    setItemToDelete("");
+    setItemToDelete('');
   }
 
   const onAddTemplateClick = () => {
     const new_pair: MeasurementTemplatePair = {
-      key: "",
-      key_source: "",
+      key: '',
+      key_source: '',
       user_input: false,
-      type_of_comparison: "equal",
+      type_of_comparison: 'equal',
       valueA: '',
       valueB: ''
     }
@@ -112,7 +112,7 @@ export function TemplateItemCard(props: TemplateItemProps) {
       const new_pair: MeasurementTemplatePair = {
         key: name,
         user_input: true,
-        type_of_comparison: "equal",
+        type_of_comparison: 'equal',
         valueA: event.target.checked.toString(),
         valueB: ''
       }
@@ -142,7 +142,7 @@ export function TemplateItemCard(props: TemplateItemProps) {
   }
 
   const handleConfirmOrder = () => {
-    if (order == "") {
+    if (order == '') {
       setTemplate({...template, order_for_displaying: null});
     } else {
       const new_order = parseInt(order)
@@ -157,7 +157,7 @@ export function TemplateItemCard(props: TemplateItemProps) {
       const new_pair: MeasurementTemplatePair = {
         key: name,
         user_input: true,
-        type_of_comparison: "equal",
+        type_of_comparison: 'equal',
         valueA: value,
         valueB: ''
       }
@@ -211,15 +211,15 @@ export function TemplateItemCard(props: TemplateItemProps) {
 
   function isChecked(value: string) {
     const pair = template.measurement_template_pairs.find(pair => pair.key === value);
-    return pair !== undefined && pair.valueA === "true";
+    return pair !== undefined && pair.valueA === 'true';
   }
 
   function getStringValue(value: string, isNumeric: boolean = false) {
     const pair = template.measurement_template_pairs.find(pair => pair.key === value);
     if (pair === undefined) {
-      return isNumeric ? "0" : "";
+      return isNumeric ? '0' : '';
     }
-    return pair.valueA ? pair.valueA : (isNumeric ? "0" : "");
+    return pair.valueA ? pair.valueA : (isNumeric ? '0' : '');
   }
 
   const listTemplatePairs = () => {
@@ -251,7 +251,7 @@ export function TemplateItemCard(props: TemplateItemProps) {
           <CardActions disableSpacing>
             <span>
             <IconButton
-              aria-label="delete"
+              aria-label='delete'
               onClick={() => onDeleteClick(props.template.name)}
             >
               <DeleteIcon/>
@@ -270,23 +270,23 @@ export function TemplateItemCard(props: TemplateItemProps) {
 
         <DeleteDialog open={isDeleteDialogOpen} onClose={closeDeleteDialog} onConfirm={deleteItem}></DeleteDialog>
 
-        <Collapse in={isExpanded} timeout="auto" unmountOnExit>
+        <Collapse in={isExpanded} timeout='auto' unmountOnExit>
           <Box display={'flex'} flexDirection={'row'} flexWrap={'wrap'}>
-            <SeriesSingleLineInput label='Stim. protocol' name='stim_protocol' value={getStringValue("stim_protocol")}
+            <SeriesSingleLineInput label='Stim. protocol' name='stim_protocol' value={getStringValue('stim_protocol')}
                                    onChange={handleTextChange}/>
-            <SeriesSingleLineInput label='Stim. log file' name='stim_log_file' value={getStringValue("stim_log_file")}
+            <SeriesSingleLineInput label='Stim. log file' name='stim_log_file' value={getStringValue('stim_log_file')}
                                    onChange={handleTextChange}/>
             <SeriesSingleLineInput label='Fyzio raw file (for BP)' name='fyzio_raw_file'
-                                   value={getStringValue("fyzio_raw_file")} onChange={handleTextChange}/>
+                                   value={getStringValue('fyzio_raw_file')} onChange={handleTextChange}/>
             <Box sx={{width: '200px'}} display={'flex'} alignItems={'center'}>
               <SeriesSingleLineInput
-                name="order_for_displaying"
-                type="number"
-                label="Order"
+                name='order_for_displaying'
+                type='number'
+                label='Order'
                 value={order}
                 onChange={handleOrderChange}
               />
-              <Tooltip title="Save order (this action may move this item)">
+              <Tooltip title='Save order (this action may move this item)'>
                 <IconButton onClick={handleConfirmOrder}>
                   <SaveIcon/>
                 </IconButton>
@@ -294,8 +294,8 @@ export function TemplateItemCard(props: TemplateItemProps) {
             </Box>
             <Box m={1} sx={{width: '60ch', marginRight: '10px'}}>
               <MultiLineInput
-                name="comment"
-                label="Comment"
+                name='comment'
+                label='Comment'
                 value={template.comment}
                 onChange={handleCommentChange}
               />
@@ -309,8 +309,8 @@ export function TemplateItemCard(props: TemplateItemProps) {
                 General
               </Box>
               <Box display={'flex'} flexDirection={'row'}>
-                <CheckboxInput text='EEG' checked={isChecked("general_eeg")} name="general_eeg"/>
-                <CheckboxInput text='ET' checked={isChecked("general_et")} name="general_et"/>
+                <CheckboxInput text='EEG' checked={isChecked('general_eeg')} name='general_eeg'/>
+                <CheckboxInput text='ET' checked={isChecked('general_et')} name='general_et'/>
               </Box>
             </Box>
             <Box m={1}>
@@ -322,10 +322,10 @@ export function TemplateItemCard(props: TemplateItemProps) {
                 BP ExG
               </Box>
               <Box display={'flex'} flexDirection={'row'}>
-                <CheckboxInput text='EKG' checked={isChecked("bp_ekg")} name="bp_ekg"/>
-                <CheckboxInput text='Resp.' checked={isChecked("bp_resp")} name="bp_resp"/>
-                <CheckboxInput text='GSR' checked={isChecked("bp_gsr")} name="bp_gsr"/>
-                <CheckboxInput text='ACC' checked={isChecked("bp_acc")} name="bp_acc"/>
+                <CheckboxInput text='EKG' checked={isChecked('bp_ekg')} name='bp_ekg'/>
+                <CheckboxInput text='Resp.' checked={isChecked('bp_resp')} name='bp_resp'/>
+                <CheckboxInput text='GSR' checked={isChecked('bp_gsr')} name='bp_gsr'/>
+                <CheckboxInput text='ACC' checked={isChecked('bp_acc')} name='bp_acc'/>
               </Box>
             </Box>
             <Box m={1}>
@@ -337,9 +337,9 @@ export function TemplateItemCard(props: TemplateItemProps) {
                 Siemens
               </Box>
               <Box display={'flex'} flexDirection={'row'}>
-                <CheckboxInput text='EKG' checked={isChecked("siemens_ekg")} name="siemens_ekg"/>
-                <CheckboxInput text='Resp.' checked={isChecked("siemens_resp")} name="siemens_resp"/>
-                <CheckboxInput text='PT' checked={isChecked("siemens_pt")} name="siemens_pt"/>
+                <CheckboxInput text='EKG' checked={isChecked('siemens_ekg')} name='siemens_ekg'/>
+                <CheckboxInput text='Resp.' checked={isChecked('siemens_resp')} name='siemens_resp'/>
+                <CheckboxInput text='PT' checked={isChecked('siemens_pt')} name='siemens_pt'/>
               </Box>
             </Box>
 
@@ -352,7 +352,7 @@ export function TemplateItemCard(props: TemplateItemProps) {
             >
               Validation pairs
               <IconButton
-                aria-label="add"
+                aria-label='add'
                 onClick={onAddTemplateClick}
               >
                 <AddIcon/>
@@ -362,7 +362,7 @@ export function TemplateItemCard(props: TemplateItemProps) {
             <ListItems
               loading={false}
               list={listTemplatePairs()}
-              errorMessage={""}
+              errorMessage={''}
               loadingMessage={`Fetching template...`}
               hasToolbar={false}
               maxHeight={null}

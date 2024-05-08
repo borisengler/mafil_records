@@ -10,9 +10,9 @@ function SidebarContent({children}: SidebarContentProps) {
     <Box
       gap={2}
       p={2}
-      display="flex"
-      flexDirection="column"
-      justifyContent="flex-start"
+      display='flex'
+      flexDirection='column'
+      justifyContent='flex-start'
       sx={{
         height: '100vh',
         overflow: 'auto',

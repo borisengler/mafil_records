@@ -57,7 +57,7 @@ export const getSession = async (req, res) => {
     res.status(200).json(result);
   } catch (error) {
     console.log(error);
-    res.status(500).json({message: "Error fetching sessions"});
+    res.status(500).json({message: 'Error fetching sessions'});
   }
 }
 
@@ -74,7 +74,7 @@ export const postSession = async (req, res) => {
     const response = await axios.post(mafilApiUrl + 'sessions', body, {headers});
     res.status(200).json();
   } catch (error) {
-    res.status(500).json({message: "Error posting session"});
+    res.status(500).json({message: 'Error posting session'});
   }
 }
 
@@ -133,6 +133,6 @@ export const patchSession = async (req, res) => {
     res.status(200).json();
   } catch (error) {
     console.log(error);
-    res.status(500).json({message: "Error patching session"});
+    res.status(500).json({message: 'Error patching session'});
   }
 }

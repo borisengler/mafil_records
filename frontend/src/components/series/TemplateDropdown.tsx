@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {IconButton, MenuItem, Select, SelectChangeEvent, Tooltip, FormControl, InputLabel} from '@mui/material';
-import {FormattedTemplate} from "../../../../shared/Types";
+import {FormattedTemplate} from '../../../../shared/Types';
 
 
 interface TemplateDropdownProps {
@@ -26,15 +26,15 @@ export const TemplateDropdown: React.FC<TemplateDropdownProps> = ({
 
   return (
     <FormControl fullWidth>
-      <InputLabel id="template-dropdown-label">Select Template</InputLabel>
+      <InputLabel id='template-dropdown-label'>Select Template</InputLabel>
       <Select
-        labelId="template-dropdown-label"
-        id="template-dropdown"
+        labelId='template-dropdown-label'
+        id='template-dropdown'
         value={selectedTemplate || ''}
         onChange={onTemplateChange}
-        label="Select Template"
+        label='Select Template'
       >
-        <MenuItem value="">No template</MenuItem>
+        <MenuItem value=''>No template</MenuItem>
         {templates.map((template) => (
           <MenuItem key={template.id} value={template.id} selected={isTemplateSelected(template.id)}>
             {`${template.name} (${template.version})`}

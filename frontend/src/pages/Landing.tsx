@@ -1,7 +1,7 @@
 import {Box, Toolbar, useTheme} from '@mui/material';
 import React, {useEffect} from 'react';
-import {useAuth} from "react-oidc-context";
-import {useNavigate} from "react-router-dom";
+import {useAuth} from 'react-oidc-context';
+import {useNavigate} from 'react-router-dom';
 import Message from '../components/common/Message';
 import CommonAppBar from '../components/global/AppBarContent';
 import {ResizableSidebar} from '../components/global/ResizableSidebar';

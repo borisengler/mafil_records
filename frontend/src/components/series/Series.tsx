@@ -11,7 +11,7 @@ import React, {useEffect, useState} from 'react';
 import CommonCard, {ExpandMore} from '../common/CommonCard';
 import {MultiLineInput, MultiLineInputProps, SingleLineInput, SingleLineInputProps} from '../common/Inputs';
 import {getSeriesData} from '../../utils/DatabaseFetchers';
-import {SeriesData, PACSSeries, SeriesProps, Measurement, FormattedMeasurement} from "../../../../shared/Types";
+import {SeriesData, PACSSeries, SeriesProps, Measurement, FormattedMeasurement} from '../../../../shared/Types';
 import {getClockNumberUtilityClass} from '@mui/x-date-pickers/TimeClock/clockNumberClasses';
 import {
   Cancel,
@@ -25,7 +25,7 @@ import {
 } from '@mui/icons-material';
 import {CalendarIcon} from '@mui/x-date-pickers';
 
-export function SeriesSingleLineInput({name, label, value, onChange, type = "text"}: SingleLineInputProps) {
+export function SeriesSingleLineInput({name, label, value, onChange, type = 'text'}: SingleLineInputProps) {
   return (
     <Box m={1} flexGrow={1}>
       <SingleLineInput
@@ -70,7 +70,7 @@ export function Series(props: SeriesProps) {
             checked={checked}
             onChange={handleCheckboxChange}
             name={name}
-            color="primary"
+            color='primary'
           />
         } label={text}/>
       </Box>
@@ -88,7 +88,7 @@ export function Series(props: SeriesProps) {
 
   const [seriesData, setSeriesData] = useState<SeriesData>({
     // Default values
-    series_instance_uid: props.validatedSerie ? props.validatedSerie.SeriesInstanceUID : "",
+    series_instance_uid: props.validatedSerie ? props.validatedSerie.SeriesInstanceUID : '',
     seq_state: 'pending',
     is_selected: false,
     is_expanded: false,
@@ -113,7 +113,7 @@ export function Series(props: SeriesProps) {
 
   const [displayData, setDisplayData] = useState<SeriesData>({
     // Default values
-    series_instance_uid: props.validatedSerie ? props.validatedSerie.SeriesInstanceUID : "",
+    series_instance_uid: props.validatedSerie ? props.validatedSerie.SeriesInstanceUID : '',
     seq_state: 'pending',
     is_selected: false,
     is_expanded: false,
@@ -145,7 +145,7 @@ export function Series(props: SeriesProps) {
       if (props.validatedSerie !== null) {
 
         const oldSeriesJSON = localStorage.getItem(`series-${props.validatedSerie.SeriesInstanceUID}`);
-        const oldSeries = JSON.parse(oldSeriesJSON ? oldSeriesJSON : "{}");
+        const oldSeries = JSON.parse(oldSeriesJSON ? oldSeriesJSON : '{}');
         var newSeriesData: SeriesData = {
           ...seriesData,
           series_instance_uid: props.validatedSerie.SeriesInstanceUID,
@@ -180,13 +180,13 @@ export function Series(props: SeriesProps) {
           } else {
             newSeriesData.validation_status = props.validatedSerie ? props.validatedSerie.ValidationResult : 'MISSING';
             props.validatedSerie.UserInput.forEach(element => {
-              if ((element.key == "stim_protocol" || element.key == "stim_log_file" || element.key == "fyzio_raw_file") && element.valueA !== null) {
+              if ((element.key == 'stim_protocol' || element.key == 'stim_log_file' || element.key == 'fyzio_raw_file') && element.valueA !== null) {
                 if (element.valueA.length > 0) newSeriesData[element.key] = element.valueA;
-              } else if ((element.key == "general_eeg" || element.key == "general_et" || element.key == "bp_ekg"
-                || element.key == "bp_resp" || element.key == "bp_gsr" || element.key == "bp_acc"
-                || element.key == "siemens_ekg" || element.key == "siemens_resp" || element.key == "siemens_pt")
+              } else if ((element.key == 'general_eeg' || element.key == 'general_et' || element.key == 'bp_ekg'
+                || element.key == 'bp_resp' || element.key == 'bp_gsr' || element.key == 'bp_acc'
+                || element.key == 'siemens_ekg' || element.key == 'siemens_resp' || element.key == 'siemens_pt')
               ) {
-                newSeriesData[element.key] = element.valueA == "true";
+                newSeriesData[element.key] = element.valueA == 'true';
               }
             });
 
@@ -196,7 +196,7 @@ export function Series(props: SeriesProps) {
         if (props.downloadedMeasurement) {
           if (!measurementDownloaded) {
             setDisplayData({
-              series_instance_uid: props.validatedSerie ? props.validatedSerie.SeriesInstanceUID : "",
+              series_instance_uid: props.validatedSerie ? props.validatedSerie.SeriesInstanceUID : '',
               seq_state: displayData.seq_state,
               is_selected: displayData.is_selected,
               is_expanded: displayData.is_expanded,
@@ -327,11 +327,11 @@ export function Series(props: SeriesProps) {
   function getIcon() {
     if (props.validatedSerie) {
       switch (props.validatedSerie.ValidationResult) {
-        case "OK":
+        case 'OK':
           return <CheckCircle/>;
-        case "NOK":
+        case 'NOK':
           return <CancelRounded/>;
-        case "NOT_FOUND":
+        case 'NOT_FOUND':
           return <HelpRounded/>;
       }
     }
@@ -341,17 +341,17 @@ export function Series(props: SeriesProps) {
   function getIconText() {
     if (props.validatedSerie) {
       switch (props.validatedSerie.ValidationResult) {
-        case "OK":
-          return "Valid";
-        case "NOK":
+        case 'OK':
+          return 'Valid';
+        case 'NOK':
           const elements = props.validatedSerie.InvalidReasons.map((reason) => <React.Fragment
             key={reason}>{reason}<br/></React.Fragment>);
           return <Box flexDirection={'column'}>{elements}</Box>;
-        case "NOT_FOUND":
-          return "Not found in template";
+        case 'NOT_FOUND':
+          return 'Not found in template';
       }
     }
-    return "Missing to fill template";
+    return 'Missing to fill template';
   }
 
   const description = props.validatedSerie ? props.validatedSerie.SeriesDescription : (props.templateSerie ? props.templateSerie.SeriesDescription : '');
@@ -374,7 +374,7 @@ export function Series(props: SeriesProps) {
             fontSize={18}
             whiteSpace={'break-spaces'}
           >
-            {`${seriesNumber ? seriesNumber + " | " : ''}`}{description}
+            {`${seriesNumber ? seriesNumber + ' | ' : ''}`}{description}
           </Box>
 
           <Box color={'grey'} justifyContent='flex-start' fontWeight={'lighter'} fontSize={12} width={'38ch'}>
@@ -442,7 +442,7 @@ export function Series(props: SeriesProps) {
 
         </Box>
 
-        <Collapse in={displayData.is_expanded} timeout="auto" unmountOnExit>
+        <Collapse in={displayData.is_expanded} timeout='auto' unmountOnExit>
           <Box display={'flex'} flexDirection={'row'} flexWrap={'wrap'}>
             <SeriesSingleLineInput label='Stim. protocol' name='stim_protocol' value={displayData.stim_protocol}
                                    onChange={handleTextChange}/>
@@ -463,8 +463,8 @@ export function Series(props: SeriesProps) {
                 General
               </Box>
               <Box display={'flex'} flexDirection={'row'}>
-                <CheckboxInput text='EEG' checked={displayData.general_eeg} name="general_eeg"/>
-                <CheckboxInput text='ET' checked={displayData.general_et} name="general_et"/>
+                <CheckboxInput text='EEG' checked={displayData.general_eeg} name='general_eeg'/>
+                <CheckboxInput text='ET' checked={displayData.general_et} name='general_et'/>
               </Box>
             </Box>
             <Box m={1}>
@@ -476,10 +476,10 @@ export function Series(props: SeriesProps) {
                 BP ExG
               </Box>
               <Box display={'flex'} flexDirection={'row'}>
-                <CheckboxInput text='EKG' checked={displayData.bp_ekg} name="bp_ekg"/>
-                <CheckboxInput text='Resp.' checked={displayData.bp_resp} name="bp_resp"/>
-                <CheckboxInput text='GSR' checked={displayData.bp_gsr} name="bp_gsr"/>
-                <CheckboxInput text='ACC' checked={displayData.bp_acc} name="bp_acc"/>
+                <CheckboxInput text='EKG' checked={displayData.bp_ekg} name='bp_ekg'/>
+                <CheckboxInput text='Resp.' checked={displayData.bp_resp} name='bp_resp'/>
+                <CheckboxInput text='GSR' checked={displayData.bp_gsr} name='bp_gsr'/>
+                <CheckboxInput text='ACC' checked={displayData.bp_acc} name='bp_acc'/>
               </Box>
             </Box>
             <Box m={1}>
@@ -491,9 +491,9 @@ export function Series(props: SeriesProps) {
                 Siemens
               </Box>
               <Box display={'flex'} flexDirection={'row'}>
-                <CheckboxInput text='EKG' checked={displayData.siemens_ekg} name="siemens_ekg"/>
-                <CheckboxInput text='Resp.' checked={displayData.siemens_resp} name="siemens_resp"/>
-                <CheckboxInput text='PT' checked={displayData.siemens_pt} name="siemens_pt"/>
+                <CheckboxInput text='EKG' checked={displayData.siemens_ekg} name='siemens_ekg'/>
+                <CheckboxInput text='Resp.' checked={displayData.siemens_resp} name='siemens_resp'/>
+                <CheckboxInput text='PT' checked={displayData.siemens_pt} name='siemens_pt'/>
               </Box>
             </Box>
           </Box>

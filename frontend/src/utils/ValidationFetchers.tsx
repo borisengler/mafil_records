@@ -1,4 +1,4 @@
-import {PACSSeries, FormattedTemplate, ValidatedSeries, MissingSeries} from "../../../shared/Types"
+import {PACSSeries, FormattedTemplate, ValidatedSeries, MissingSeries} from '../../../shared/Types'
 
 
 export async function postValidationData(series: PACSSeries[], template: FormattedTemplate | undefined)

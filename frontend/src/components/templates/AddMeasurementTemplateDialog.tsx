@@ -1,4 +1,4 @@
-import {Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, TextField} from "@mui/material";
+import {Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, TextField} from '@mui/material';
 import React, {useState} from 'react';
 
 
@@ -20,31 +20,31 @@ export default function AddMeasurementTemplateDialog(props: AddMeasurementTempla
     <Dialog
       open={props.open}
       onClose={props.onClose}
-      aria-labelledby="alert-dialog-title"
-      aria-describedby="alert-dialog-description"
+      aria-labelledby='alert-dialog-title'
+      aria-describedby='alert-dialog-description'
     >
-      <DialogTitle id="alert-dialog-title">{"Add new measurement template"}</DialogTitle>
+      <DialogTitle id='alert-dialog-title'>{'Add new measurement template'}</DialogTitle>
       <DialogContent>
-        <DialogContentText id="alert-dialog-description">
+        <DialogContentText id='alert-dialog-description'>
           Add new measurement template. Fill the name.
         </DialogContentText>
         <TextField
-          margin="dense"
-          id="name"
-          label="Name"
-          type="text"
+          margin='dense'
+          id='name'
+          label='Name'
+          type='text'
           fullWidth
           value={name}
           onChange={handleNameChange}
         />
       </DialogContent>
       <DialogActions>
-        <Button onClick={props.onClose} color="primary">
+        <Button onClick={props.onClose} color='primary'>
           Cancel
         </Button>
         <Button onClick={() => {
           props.onConfirm(name)
-        }} color="primary" disabled={name == ''}>
+        }} color='primary' disabled={name == ''}>
           Add
         </Button>
       </DialogActions>
