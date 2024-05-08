@@ -1,4 +1,3 @@
-
 export interface Template {
   id: number;
   name: string;
@@ -98,7 +97,7 @@ export interface SeriesData {
   siemens_ekg: boolean;
   siemens_resp: boolean;
   siemens_pt: boolean;
-  validation_status: "OK" | "NOK"  | "NOT_FOUND" | "MISSING";
+  validation_status: "OK" | "NOK" | "NOT_FOUND" | "MISSING";
 }
 
 export interface PACSSeries {

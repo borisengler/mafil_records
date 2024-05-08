@@ -9,7 +9,7 @@ export interface SingleLineInputProps {
   type?: string;
 }
 
-export function SingleLineInput({ name, label, value, onChange, type="text" }: SingleLineInputProps) {
+export function SingleLineInput({name, label, value, onChange, type = "text"}: SingleLineInputProps) {
   const handleTextChange = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
     onChange(event);
   };
@@ -35,7 +35,7 @@ export interface MultiLineInputProps {
   onChange: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
 }
 
-export function MultiLineInput({ name, label, value, onChange }: MultiLineInputProps) {
+export function MultiLineInput({name, label, value, onChange}: MultiLineInputProps) {
   const handleTextChange = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
     onChange(event);
   };

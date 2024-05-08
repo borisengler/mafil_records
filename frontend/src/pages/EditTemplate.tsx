@@ -1,19 +1,35 @@
-import { Box, Checkbox, Divider, FormControl, FormControlLabel, IconButton, InputLabel, MenuItem, Select, SelectChangeEvent, TextField, TextareaAutosize, Toolbar, Typography, useTheme } from "@mui/material";
-import React, { useEffect, useState, version } from "react";
-import { BlueButton, RedButton } from "../components/common/Buttons";
+import {
+  Box,
+  Checkbox,
+  Divider,
+  FormControl,
+  FormControlLabel,
+  IconButton,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+  TextField,
+  TextareaAutosize,
+  Toolbar,
+  Typography,
+  useTheme
+} from "@mui/material";
+import React, {useEffect, useState, version} from "react";
+import {BlueButton, RedButton} from "../components/common/Buttons";
 import InfoItem from "../components/common/InfoItem";
 import ListItems from "../components/common/ListItems";
-import { ResizableSidebar } from "../components/global/ResizableSidebar";
-import { SidebarProvider } from "../contexts/SidebarContext";
+import {ResizableSidebar} from "../components/global/ResizableSidebar";
+import {SidebarProvider} from "../contexts/SidebarContext";
 import CommonAppBar from '../components/global/AppBarContent';
-import { useAuth } from "react-oidc-context";
-import { FormattedTemplate, MeasurementTemplate, Project } from "../../../shared/Types";
-import { TemplateItemCard } from "../components/templates/TemplateItemCard";
-import { fetchProjects, postTemplate, patchTemplate } from "../utils/MAFILFetchers";
-import { MultiLineInput, SingleLineInput } from "../components/common/Inputs";
+import {useAuth} from "react-oidc-context";
+import {FormattedTemplate, MeasurementTemplate, Project} from "../../../shared/Types";
+import {TemplateItemCard} from "../components/templates/TemplateItemCard";
+import {fetchProjects, postTemplate, patchTemplate} from "../utils/MAFILFetchers";
+import {MultiLineInput, SingleLineInput} from "../components/common/Inputs";
 import AddIcon from '@mui/icons-material/Add';
 import AddMeasurementTemplateDialog from '../components/templates/AddMeasurementTemplateDialog';
-import { useNavigate } from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 
 
 export default function EditTemplate() {
@@ -85,14 +101,19 @@ export default function EditTemplate() {
       return [];
     }
     return [
-      ...props.measurementTemplates.sort((a,b) => {
+      ...props.measurementTemplates.sort((a, b) => {
         const order_a = a.order_for_displaying ? a.order_for_displaying : 100;
         const order_b = b.order_for_displaying ? b.order_for_displaying : 100;
         return order_a - order_b;
       }).map((template) => {
-        return <TemplateItemCard {...{template: template, onChange: saveMeasurement, onDelete: handleDelete, key: template.name}}
+        return <TemplateItemCard {...{
+          template: template,
+          onChange: saveMeasurement,
+          onDelete: handleDelete,
+          key: template.name
+        }}
         />
-  })
+      })
     ];
   }
 
@@ -117,7 +138,7 @@ export default function EditTemplate() {
   }, []);
 
   const handleTextChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = event.target;
+    const {name, value} = event.target;
     setProps({
       ...props,
       [name]: value,
@@ -141,7 +162,7 @@ export default function EditTemplate() {
   };
 
   function addMeasurementTemplate(name: string) {
-    const templates = [...props.measurementTemplates,{
+    const templates = [...props.measurementTemplates, {
       name: name,
       order_for_displaying: null,
       compulsory: true,
@@ -157,8 +178,8 @@ export default function EditTemplate() {
     setIsAddMeasurementDialogOpen(false);
   }
 
-    return (
-      <SidebarProvider>
+  return (
+    <SidebarProvider>
       <React.Fragment>
         <CommonAppBar
           open={open}
@@ -166,7 +187,7 @@ export default function EditTemplate() {
           pageTitle='Template detail'
           content={
             <React.Fragment>
-                <></>
+              <></>
             </React.Fragment>
           }
         />
@@ -174,17 +195,18 @@ export default function EditTemplate() {
           open={open}
           toggleDrawer={toggleDrawer}
         >
-          <InfoItem label="Measuring operator" text={auth.user ? auth.user.profile.name : ''} />
+          <InfoItem label="Measuring operator" text={auth.user ? auth.user.profile.name : ''}/>
           <Box gap={2} display='flex' flexDirection="row" flexWrap='wrap' justifyContent="space-between">
-            <BlueButton text="Save template"  onClick={saveTemplate} />
-            <RedButton text="Back to templates" path="/templates" onClick={handleBackToTemplates} />
+            <BlueButton text="Save template" onClick={saveTemplate}/>
+            <RedButton text="Back to templates" path="/templates" onClick={handleBackToTemplates}/>
           </Box>
-          <Divider sx={{ my: 3 }} />
+          <Divider sx={{my: 3}}/>
         </ResizableSidebar>
-        <AddMeasurementTemplateDialog open={isAddMeasurementDialogOpen} onClose={closeDialog} onConfirm={addMeasurementTemplate}></AddMeasurementTemplateDialog>
+        <AddMeasurementTemplateDialog open={isAddMeasurementDialogOpen} onClose={closeDialog}
+                                      onConfirm={addMeasurementTemplate}></AddMeasurementTemplateDialog>
         <React.Fragment>
           <Box width={'100%'}>
-            <Toolbar sx={{ minHeight: theme.mixins.toolbar.minHeight }} />
+            <Toolbar sx={{minHeight: theme.mixins.toolbar.minHeight}}/>
 
             <Box width={'100%'} mt={2} sx={{margin: 2}}>
               <Box
@@ -193,54 +215,54 @@ export default function EditTemplate() {
                 whiteSpace={'break-spaces'}
                 flexDirection={'row'}
               >
-                {!isNew ? 
+                {!isNew ?
                   `Name: ${props.name} | Version: ${props.version} | Project: ${props.project_name}` :
                   <Box width={'65%'}>
                     <SingleLineInput
-                    name="name"
-                    label="Name"
-                    value={props.name}
-                    onChange={handleTextChange}
-                  />
+                      name="name"
+                      label="Name"
+                      value={props.name}
+                      onChange={handleTextChange}
+                    />
                   </Box>
                 }
-                
+
               </Box>
 
-                {
-                  isNew &&
-                <Box display={'flex'} flexDirection={'row'} mt={2}>
-                <FormControl style={{width: '300px'}}>
-                  <InputLabel>Select Project</InputLabel>
-                  <Select
-                    onChange={onProjectChanged}
-                    label="Select Project"
-                    value={selectedProjectId || ''}
-                  >
-                    <MenuItem value="" disabled>
-                      Select a project
-                  </MenuItem>
-                    {projects.map((project) => (
-                      <MenuItem key={project.uuid} value={project.uuid} selected={false}>
-                        {project.acronym}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-                
-                <div style={{ marginLeft: '10px' }} />
-                <FormControlLabel control={
-                  <Checkbox
-                    checked={props.is_default}
-                    onChange={handleIsDefaultChange}
-                    name="is_default"
-                    color="primary"
-                  />
-                } label='Is default' />
-                </Box>
-                }
-                
-                <Box display={'flex'} flexDirection={'row'} mt={2}>
+              {
+                isNew &&
+                  <Box display={'flex'} flexDirection={'row'} mt={2}>
+                      <FormControl style={{width: '300px'}}>
+                          <InputLabel>Select Project</InputLabel>
+                          <Select
+                              onChange={onProjectChanged}
+                              label="Select Project"
+                              value={selectedProjectId || ''}
+                          >
+                              <MenuItem value="" disabled>
+                                  Select a project
+                              </MenuItem>
+                            {projects.map((project) => (
+                              <MenuItem key={project.uuid} value={project.uuid} selected={false}>
+                                {project.acronym}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                      </FormControl>
+
+                      <div style={{marginLeft: '10px'}}/>
+                      <FormControlLabel control={
+                        <Checkbox
+                          checked={props.is_default}
+                          onChange={handleIsDefaultChange}
+                          name="is_default"
+                          color="primary"
+                        />
+                      } label='Is default'/>
+                  </Box>
+              }
+
+              <Box display={'flex'} flexDirection={'row'} mt={2}>
                 <Box sx={{width: '600px', marginRight: '10px'}}>
                   <MultiLineInput
                     name="comment"
@@ -248,7 +270,7 @@ export default function EditTemplate() {
                     value={props.comment}
                     onChange={handleTextChange}
                   />
-                </Box>                
+                </Box>
                 <Box sx={{width: '100px'}}>
                   <SingleLineInput
                     name="order_for_displaying"
@@ -261,37 +283,33 @@ export default function EditTemplate() {
               </Box>
             </Box>
             <Box sx={{marginLeft: 2}}
-              fontWeight={'bold'}
-              fontSize={20}
-              whiteSpace={'break-spaces'}
-              flexDirection={'row'}
+                 fontWeight={'bold'}
+                 fontSize={20}
+                 whiteSpace={'break-spaces'}
+                 flexDirection={'row'}
             >
-                Measurements
+              Measurements
               <IconButton
                 aria-label="add"
                 onClick={() => setIsAddMeasurementDialogOpen(true)}
               >
-                <AddIcon />
-
+                <AddIcon/>
               </IconButton>
             </Box>
 
             <Box sx={{marginLeft: 2}}>
-            <ListItems
-                  loading={loading}
-                  list={listTemplates()}
-                  errorMessage={''}
-                  loadingMessage={`Fetching template...`}
-                  hasToolbar={false}
-                  maxHeight={!isNew ? "67vh": "55vh"}
-                />              
+              <ListItems
+                loading={loading}
+                list={listTemplates()}
+                errorMessage={''}
+                loadingMessage={`Fetching template...`}
+                hasToolbar={false}
+                maxHeight={!isNew ? "67vh" : "55vh"}
+              />
             </Box>
-
           </Box>
-
         </React.Fragment>
-        
       </React.Fragment>
-    </SidebarProvider >
-    )
+    </SidebarProvider>
+  )
 }

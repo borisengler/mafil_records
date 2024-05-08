@@ -1,19 +1,19 @@
-import React, { useState } from 'react';
-import CommonCard, { ExpandMore } from '../common/CommonCard';
-import { FormattedTemplate, Project } from '../../../../shared/Types';
+import React, {useState} from 'react';
+import CommonCard from '../common/CommonCard';
+import {FormattedTemplate} from '../../../../shared/Types';
 import Box from '@mui/material/Box';
-import { Link, useNavigate } from 'react-router-dom';
+import {useNavigate} from 'react-router-dom';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { CardActions, IconButton } from '@mui/material';
-import { DeleteDialog } from './DeleteDialog';
+import {CardActions, IconButton} from '@mui/material';
+import {DeleteDialog} from './DeleteDialog';
 import EditIcon from '@mui/icons-material/Edit';
 
 interface TemplateCardProps {
-    template: FormattedTemplate;
-    onDelete: (template: FormattedTemplate) => void;
-  }
+  template: FormattedTemplate;
+  onDelete: (template: FormattedTemplate) => void;
+}
 
-export default function TemplateCard (props: TemplateCardProps) {
+export default function TemplateCard(props: TemplateCardProps) {
   const navigate = useNavigate();
 
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -46,7 +46,7 @@ export default function TemplateCard (props: TemplateCardProps) {
     <>
       <DeleteDialog open={isDeleteDialogOpen} onClose={closeDeleteDialog} onConfirm={deleteItem}></DeleteDialog>
       <CommonCard>
-        
+
         <Box>
           <Box m={1} mb={0} display={'flex'} justifyContent={'space-between'} flexDirection={'row'} flexWrap={'wrap'}>
 
@@ -56,26 +56,26 @@ export default function TemplateCard (props: TemplateCardProps) {
               whiteSpace={'break-spaces'}
             >
               {`${props.template.name} (v${props.template.version})`}
-              </Box>
+            </Box>
             <CardActions disableSpacing>
               <span>
                 <IconButton
                   aria-label="edit"
                   onClick={handleClick}>
-                  <EditIcon />
+                  <EditIcon/>
 
                 </IconButton>
                 <IconButton
-                    aria-label="delete"
-                    onClick={() => onDeleteClick(props.template)}
-                    >
-                  <DeleteIcon />
+                  aria-label="delete"
+                  onClick={() => onDeleteClick(props.template)}
+                >
+                  <DeleteIcon/>
                 </IconButton>
               </span>
             </CardActions>
+          </Box>
         </Box>
-      </Box>
-    </CommonCard>
+      </CommonCard>
     </>
   )
 }

@@ -1,4 +1,4 @@
-import { Box, Toolbar, useTheme } from '@mui/material';
+import {Box, Toolbar, useTheme} from '@mui/material';
 import React from 'react';
 
 import LoadingBox from './LoadingBox';
@@ -14,7 +14,16 @@ interface ListItemsProps {
   emptyMessage?: string | null;
 }
 
-const ListItems: React.FC<ListItemsProps> = ({ loading, list, loadingMessage, errorMessage, hasToolbar = true, maxHeight = '100vh', emptyMessage = null}) => {
+const ListItems: React.FC<ListItemsProps> = (
+  {
+    loading,
+    list,
+    loadingMessage,
+    errorMessage,
+    hasToolbar = true,
+    maxHeight = '100vh',
+    emptyMessage = null
+  }) => {
   const theme = useTheme();
 
   return (
@@ -27,17 +36,17 @@ const ListItems: React.FC<ListItemsProps> = ({ loading, list, loadingMessage, er
         height: 'auto',
       }}
     >
-      { hasToolbar && <Toolbar sx={{ minHeight: theme.mixins.toolbar.minHeight }} /> }
+      {hasToolbar && <Toolbar sx={{minHeight: theme.mixins.toolbar.minHeight}}/>}
       {loading ? (
-        <LoadingBox loadingMessage={loadingMessage} />
+        <LoadingBox loadingMessage={loadingMessage}/>
       ) : errorMessage ? (
         <Box flexDirection={'column'}>
-          <Message title='Error' text={errorMessage} />
+          <Message title='Error' text={errorMessage}/>
           {list}
         </Box>
       ) : (
         <Box flexDirection={'column'}>
-          {list.length == 0 && emptyMessage != null && <Message title={emptyMessage} text={""} />}
+          {list.length == 0 && emptyMessage != null && <Message title={emptyMessage} text={""}/>}
           {list}
         </Box>
       )}

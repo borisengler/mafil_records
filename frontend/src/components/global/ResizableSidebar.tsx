@@ -1,6 +1,6 @@
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import { Box, Divider, IconButton, Toolbar } from "@mui/material";
-import React, { useRef, useState } from "react";
+import {Box, Divider, IconButton, Toolbar} from "@mui/material";
+import React, {useRef, useState} from "react";
 import "./ResizableSidebar.css";
 
 import SidebarContext from "../../contexts/SidebarContext";
@@ -12,9 +12,9 @@ interface ResizableSidebarProps {
   children?: React.ReactNode;
 }
 
-export function ResizableSidebar({ open, toggleDrawer, children }: ResizableSidebarProps) {
+export function ResizableSidebar({open, toggleDrawer, children}: ResizableSidebarProps) {
   const sidebarRef = useRef<HTMLDivElement | null>(null);
-  const { sidebarWidth, setSidebarWidth } = React.useContext(SidebarContext);
+  const {sidebarWidth, setSidebarWidth} = React.useContext(SidebarContext);
   const [isResizing, setIsResizing] = useState(false);
   const [maxWidth, setMaxWidth] = useState(window.innerWidth * 0.75);
   const minWidth = 150;
@@ -120,15 +120,15 @@ export function ResizableSidebar({ open, toggleDrawer, children }: ResizableSide
             }}
           >
             <IconButton onClick={toggleDrawer}>
-              <ChevronLeftIcon />
+              <ChevronLeftIcon/>
             </IconButton>
           </Toolbar>
-          <Divider />
+          <Divider/>
           <SidebarContent>
             {children}
           </SidebarContent>
         </Box>
-        <Box className="sidebar-resizer" onMouseDown={startResizing} onTouchStart={startResizing} />
+        <Box className="sidebar-resizer" onMouseDown={startResizing} onTouchStart={startResizing}/>
       </Box>
     </Box>
   );

@@ -1,11 +1,11 @@
-import { Box } from '@mui/material';
+import {Box} from '@mui/material';
 import React from 'react';
 
 interface SidebarContentProps {
   children?: React.ReactNode;
 }
 
-function SidebarContent({ children }: SidebarContentProps) {
+function SidebarContent({children}: SidebarContentProps) {
   return (
     <Box
       gap={2}

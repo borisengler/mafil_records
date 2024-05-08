@@ -1,23 +1,20 @@
-import { Project } from "../../../shared/Types"
-
 const axios = require('axios');
-const express = require("express");
 
 require('dotenv').config();
 const mafilApiUrl = process.env.MAFIL_API_URL;
 
 export const getProjects = async (req, res) => {
 
-    const token = req.headers['token'];
+  const token = req.headers['token'];
 
-    try {
-        const headers = {
-            'Authorization': `Bearer ${token}`
-          };
-        const response = await axios.get(mafilApiUrl + 'projects', { headers });
-        const projects = response.data;
-        res.status(200).json(projects.results);
-    } catch (error) {
-        res.status(500).json({ message: "Error fetching projects" });
-    }
+  try {
+    const headers = {
+      'Authorization': `Bearer ${token}`
+    };
+    const response = await axios.get(mafilApiUrl + 'projects', {headers});
+    const projects = response.data;
+    res.status(200).json(projects.results);
+  } catch (error) {
+    res.status(500).json({message: "Error fetching projects"});
+  }
 }

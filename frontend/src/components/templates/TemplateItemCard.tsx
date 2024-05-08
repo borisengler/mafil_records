@@ -1,21 +1,22 @@
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { Button, Icon, IconButton, Tooltip } from '@mui/material';
+import {IconButton, Tooltip} from '@mui/material';
 import Box from '@mui/material/Box';
 import CardActions from '@mui/material/CardActions';
 import Checkbox from '@mui/material/Checkbox';
 import Collapse from '@mui/material/Collapse';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import React, { useEffect, useState } from 'react';
-import CommonCard, { ExpandMore } from '../common/CommonCard';
-import { MultiLineInput } from '../common/Inputs';
-import { MeasurementTemplate, MeasurementTemplatePair } from "../../../../shared/Types";
-import { SeriesSingleLineInput } from '../series/Series';
+import React, {useEffect, useState} from 'react';
+import CommonCard, {ExpandMore} from '../common/CommonCard';
+import {MultiLineInput} from '../common/Inputs';
+import {MeasurementTemplate, MeasurementTemplatePair} from "../../../../shared/Types";
+import {SeriesSingleLineInput} from '../series/Series';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { DeleteDialog } from './DeleteDialog';
+import {DeleteDialog} from './DeleteDialog';
 import AddIcon from '@mui/icons-material/Add';
 import TemplatePairCard from './TemplatePairCard';
 import ListItems from '../common/ListItems';
 import SaveIcon from '@mui/icons-material/Save';
+
 interface CheckboxInputProps {
   text: string;
   checked: boolean;
@@ -23,9 +24,9 @@ interface CheckboxInputProps {
 }
 
 export interface TemplateItemProps {
-    template: MeasurementTemplate,
-    onDelete: (name: string) => void,
-    onChange: (template: MeasurementTemplate) => any
+  template: MeasurementTemplate,
+  onDelete: (name: string) => void,
+  onChange: (template: MeasurementTemplate) => any
 }
 
 export interface AddedMeasurementTemplatePairs {
@@ -35,7 +36,7 @@ export interface AddedMeasurementTemplatePairs {
 
 export function TemplateItemCard(props: TemplateItemProps) {
 
-  function CheckboxInput({ text, checked, name }: CheckboxInputProps) {
+  function CheckboxInput({text, checked, name}: CheckboxInputProps) {
     return (
       <Box>
         <FormControlLabel control={
@@ -45,7 +46,7 @@ export function TemplateItemCard(props: TemplateItemProps) {
             name={name}
             color="primary"
           />
-        } label={text} />
+        } label={text}/>
       </Box>
     )
   }
@@ -105,7 +106,7 @@ export function TemplateItemCard(props: TemplateItemProps) {
   }
 
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name } = event.target;
+    const {name} = event.target;
     const index = template.measurement_template_pairs.findIndex(pair => pair.key === name);
     if (index === -1) {
       const new_pair: MeasurementTemplatePair = {
@@ -115,9 +116,12 @@ export function TemplateItemCard(props: TemplateItemProps) {
         valueA: event.target.checked.toString(),
         valueB: ''
       }
-      setTemplate(prevTemplate => ({...prevTemplate, measurement_template_pairs: [...prevTemplate.measurement_template_pairs, new_pair]}))
+      setTemplate(prevTemplate => ({
+        ...prevTemplate,
+        measurement_template_pairs: [...prevTemplate.measurement_template_pairs, new_pair]
+      }))
     } else {
-      const updatedTemplate = { ...template };
+      const updatedTemplate = {...template};
       updatedTemplate.measurement_template_pairs[index] = {
         ...updatedTemplate.measurement_template_pairs[index],
         valueA: event.target.checked.toString(),
@@ -127,12 +131,12 @@ export function TemplateItemCard(props: TemplateItemProps) {
   };
 
   const handleCommentChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = event.target;
+    const {name, value} = event.target;
     setTemplate({...template, comment: value});
   }
 
   const handleOrderChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = event.target;
+    const {name, value} = event.target;
     setOrder(value);
 
   }
@@ -147,7 +151,7 @@ export function TemplateItemCard(props: TemplateItemProps) {
   }
 
   const handleTextChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = event.target;
+    const {name, value} = event.target;
     const index = template.measurement_template_pairs.findIndex(pair => pair.key === name);
     if (index === -1) {
       const new_pair: MeasurementTemplatePair = {
@@ -157,9 +161,12 @@ export function TemplateItemCard(props: TemplateItemProps) {
         valueA: value,
         valueB: ''
       }
-      setTemplate(prevTemplate => ({...prevTemplate, measurement_template_pairs: [...prevTemplate.measurement_template_pairs, new_pair]}))
+      setTemplate(prevTemplate => ({
+        ...prevTemplate,
+        measurement_template_pairs: [...prevTemplate.measurement_template_pairs, new_pair]
+      }))
     } else {
-      const updatedTemplate = { ...template };
+      const updatedTemplate = {...template};
       updatedTemplate.measurement_template_pairs[index] = {
         ...updatedTemplate.measurement_template_pairs[index],
         valueA: value,
@@ -183,7 +190,6 @@ export function TemplateItemCard(props: TemplateItemProps) {
   };
 
 
-
   const onDeleteNewPair = (pairIndex: number) => {
     const pairToDelete = addedPairs.find((pair) => pair.index == pairIndex);
     if (pairToDelete === undefined) return;
@@ -191,7 +197,7 @@ export function TemplateItemCard(props: TemplateItemProps) {
     setAddedPairs(newPairs);
 
     const newPairs2 = template.measurement_template_pairs.filter((pair) => pair.user_input).concat(newPairs.map((newPair) => newPair.pair));
-    const updatedTemplate = { ...template, ...{measurement_template_pairs: newPairs2} };
+    const updatedTemplate = {...template, ...{measurement_template_pairs: newPairs2}};
     (updatedTemplate);
     return;
   }
@@ -199,6 +205,7 @@ export function TemplateItemCard(props: TemplateItemProps) {
   function handleSeriesClick() {
     setIsExpanded(!isExpanded);
   }
+
   const description = props.template.name;
   const seriesNumber = props.template.order_for_displaying ? props.template.order_for_displaying : 0;
 
@@ -212,13 +219,18 @@ export function TemplateItemCard(props: TemplateItemProps) {
     if (pair === undefined) {
       return isNumeric ? "0" : "";
     }
-    return pair.valueA ? pair.valueA : ( isNumeric ? "0" : "");
+    return pair.valueA ? pair.valueA : (isNumeric ? "0" : "");
   }
 
   const listTemplatePairs = () => {
     return [
       ...addedPairs.sort((a, b) => a.index - b.index).map((pair) => (
-        <TemplatePairCard {...{addedPair: pair, savePair: savePair, key: pair.index, onDelete: onDeleteNewPair}}></TemplatePairCard>
+        <TemplatePairCard {...{
+          addedPair: pair,
+          savePair: savePair,
+          key: pair.index,
+          onDelete: onDeleteNewPair
+        }}></TemplatePairCard>
       ))
     ];
   }
@@ -242,14 +254,14 @@ export function TemplateItemCard(props: TemplateItemProps) {
               aria-label="delete"
               onClick={() => onDeleteClick(props.template.name)}
             >
-              <DeleteIcon />
+              <DeleteIcon/>
             </IconButton>
               <ExpandMore
                 expand={isExpanded}
                 onClick={handleSeriesClick}
                 aria-expanded={isExpanded}
               >
-                <ExpandMoreIcon />
+                <ExpandMoreIcon/>
               </ExpandMore>
             </span>
           </CardActions>
@@ -260,9 +272,12 @@ export function TemplateItemCard(props: TemplateItemProps) {
 
         <Collapse in={isExpanded} timeout="auto" unmountOnExit>
           <Box display={'flex'} flexDirection={'row'} flexWrap={'wrap'}>
-            <SeriesSingleLineInput label='Stim. protocol' name='stim_protocol' value={getStringValue("stim_protocol")} onChange={handleTextChange} />
-            <SeriesSingleLineInput label='Stim. log file' name='stim_log_file' value={getStringValue("stim_log_file")} onChange={handleTextChange} />
-            <SeriesSingleLineInput label='Fyzio raw file (for BP)' name='fyzio_raw_file' value={getStringValue("fyzio_raw_file")} onChange={handleTextChange} />
+            <SeriesSingleLineInput label='Stim. protocol' name='stim_protocol' value={getStringValue("stim_protocol")}
+                                   onChange={handleTextChange}/>
+            <SeriesSingleLineInput label='Stim. log file' name='stim_log_file' value={getStringValue("stim_log_file")}
+                                   onChange={handleTextChange}/>
+            <SeriesSingleLineInput label='Fyzio raw file (for BP)' name='fyzio_raw_file'
+                                   value={getStringValue("fyzio_raw_file")} onChange={handleTextChange}/>
             <Box sx={{width: '200px'}} display={'flex'} alignItems={'center'}>
               <SeriesSingleLineInput
                 name="order_for_displaying"
@@ -273,10 +288,10 @@ export function TemplateItemCard(props: TemplateItemProps) {
               />
               <Tooltip title="Save order (this action may move this item)">
                 <IconButton onClick={handleConfirmOrder}>
-                  <SaveIcon />
+                  <SaveIcon/>
                 </IconButton>
               </Tooltip>
-              </Box>
+            </Box>
             <Box m={1} sx={{width: '60ch', marginRight: '10px'}}>
               <MultiLineInput
                 name="comment"
@@ -284,7 +299,7 @@ export function TemplateItemCard(props: TemplateItemProps) {
                 value={template.comment}
                 onChange={handleCommentChange}
               />
-            </Box> 
+            </Box>
             <Box m={1}>
               <Box
                 sx={{
@@ -294,8 +309,8 @@ export function TemplateItemCard(props: TemplateItemProps) {
                 General
               </Box>
               <Box display={'flex'} flexDirection={'row'}>
-                <CheckboxInput text='EEG' checked={isChecked("general_eeg")} name="general_eeg" />
-                <CheckboxInput text='ET' checked={isChecked("general_et")} name="general_et" />
+                <CheckboxInput text='EEG' checked={isChecked("general_eeg")} name="general_eeg"/>
+                <CheckboxInput text='ET' checked={isChecked("general_et")} name="general_et"/>
               </Box>
             </Box>
             <Box m={1}>
@@ -307,10 +322,10 @@ export function TemplateItemCard(props: TemplateItemProps) {
                 BP ExG
               </Box>
               <Box display={'flex'} flexDirection={'row'}>
-                <CheckboxInput text='EKG' checked={isChecked("bp_ekg")} name="bp_ekg" />
-                <CheckboxInput text='Resp.' checked={isChecked("bp_resp")} name="bp_resp" />
-                <CheckboxInput text='GSR' checked={isChecked("bp_gsr")} name="bp_gsr" />
-                <CheckboxInput text='ACC' checked={isChecked("bp_acc")} name="bp_acc" />
+                <CheckboxInput text='EKG' checked={isChecked("bp_ekg")} name="bp_ekg"/>
+                <CheckboxInput text='Resp.' checked={isChecked("bp_resp")} name="bp_resp"/>
+                <CheckboxInput text='GSR' checked={isChecked("bp_gsr")} name="bp_gsr"/>
+                <CheckboxInput text='ACC' checked={isChecked("bp_acc")} name="bp_acc"/>
               </Box>
             </Box>
             <Box m={1}>
@@ -322,39 +337,39 @@ export function TemplateItemCard(props: TemplateItemProps) {
                 Siemens
               </Box>
               <Box display={'flex'} flexDirection={'row'}>
-                <CheckboxInput text='EKG' checked={isChecked("siemens_ekg")} name="siemens_ekg" />
-                <CheckboxInput text='Resp.' checked={isChecked("siemens_resp")} name="siemens_resp" />
-                <CheckboxInput text='PT' checked={isChecked("siemens_pt")} name="siemens_pt" />
+                <CheckboxInput text='EKG' checked={isChecked("siemens_ekg")} name="siemens_ekg"/>
+                <CheckboxInput text='Resp.' checked={isChecked("siemens_resp")} name="siemens_resp"/>
+                <CheckboxInput text='PT' checked={isChecked("siemens_pt")} name="siemens_pt"/>
               </Box>
             </Box>
-            
+
           </Box>
           <Box>
-              <Box m={1}
-                sx={{
-                  fontWeight: 'bold'
-                }}
+            <Box m={1}
+                 sx={{
+                   fontWeight: 'bold'
+                 }}
+            >
+              Validation pairs
+              <IconButton
+                aria-label="add"
+                onClick={onAddTemplateClick}
               >
-                Validation pairs
-                <IconButton
-                  aria-label="add"
-                  onClick={onAddTemplateClick}
-                >
-                  <AddIcon />
+                <AddIcon/>
 
-                </IconButton>
-              </Box>
-            <ListItems
-                loading={false}
-                list={listTemplatePairs()}
-                errorMessage={""}
-                loadingMessage={`Fetching template...`}
-                hasToolbar={false}
-                maxHeight={null}
-              />
+              </IconButton>
             </Box>
+            <ListItems
+              loading={false}
+              list={listTemplatePairs()}
+              errorMessage={""}
+              loadingMessage={`Fetching template...`}
+              hasToolbar={false}
+              maxHeight={null}
+            />
+          </Box>
         </Collapse>
       </Box>
-    </CommonCard >
+    </CommonCard>
   )
 }

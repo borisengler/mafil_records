@@ -1,8 +1,8 @@
-import { Box, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent } from "@mui/material";
-import { DatePicker } from '@mui/x-date-pickers';
-import React, { useContext, useEffect, useState } from 'react';
+import {Box, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent} from "@mui/material";
+import {DatePicker} from '@mui/x-date-pickers';
+import React, {useContext, useEffect, useState} from 'react';
 import SidebarContext from "../../contexts/SidebarContext";
-import { BlueButton } from "../common/Buttons";
+import {BlueButton} from "../common/Buttons";
 
 export function formatDateToISOString(date: Date | null): string {
   if (!date || isNaN(date.getTime())) {
@@ -32,9 +32,9 @@ interface DateRangeSelectorProps {
   fetchData: () => void;
 }
 
-export function DateRangeSelector({ setDateRange, dateRange, fetchData }: DateRangeSelectorProps) {
+export function DateRangeSelector({setDateRange, dateRange, fetchData}: DateRangeSelectorProps) {
   const [currentChoice, setCurrentChoice] = useState<DateRangeChoice>('past72Hours');
-  const { sidebarWidth } = useContext(SidebarContext);
+  const {sidebarWidth} = useContext(SidebarContext);
 
   // Get past 72 hours on refresh
   useEffect(() => {
@@ -59,7 +59,7 @@ export function DateRangeSelector({ setDateRange, dateRange, fetchData }: DateRa
     startDate.setHours(0, 0, 0, 0);
     endDate.setHours(23, 59, 59, 999);
     if (!(isNaN(startDate.getTime()) || isNaN(endDate.getTime()))) {
-      setDateRange({ start: formatDateToISOString(startDate), end: formatDateToISOString(endDate) });
+      setDateRange({start: formatDateToISOString(startDate), end: formatDateToISOString(endDate)});
     }
   };
 
@@ -116,7 +116,7 @@ export function DateRangeSelector({ setDateRange, dateRange, fetchData }: DateRa
           </React.Fragment>
         )}
       </Box>
-      <BlueButton onClick={handleFetchButtonClick} text="Fetch studies" />
+      <BlueButton onClick={handleFetchButtonClick} text="Fetch studies"/>
     </React.Fragment>
   );
 }

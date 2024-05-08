@@ -1,17 +1,25 @@
 const express = require("express");
-const { Pool } = require('pg');
+const {Pool} = require('pg');
 const cors = require('cors');
 const axios = require('axios');
 const app = express();
 const port = process.env.PORT || 4000;
 
-import { getStudies, getStudy, postStudyComment } from "./routes/StudyRoutes";
-import { getSeries, getSerie, postSeries } from "./routes/SeriesRoutes";
-import { getPacsSeries, getPacsStudies } from "./routes/PACSRoutes";
-import { getTemplatesForStudy, getDefaultTemplateForStudy, getTemplates, postTemplate, patchTemplate, deleteTemplate } from './routes/TemplateRoutes';
-import { validateSeriesForTemplate } from './routes/ValidationRoutes';
-import { getProjects } from './routes/ProjectRoutes'
-import { getSession, postSession, patchSession } from './routes/SessionRoutes'
+import {getStudies, getStudy, postStudyComment} from "./routes/StudyRoutes";
+import {getSeries, getSerie, postSeries} from "./routes/SeriesRoutes";
+import {getPacsSeries, getPacsStudies} from "./routes/PACSRoutes";
+import {
+  getTemplatesForStudy,
+  getDefaultTemplateForStudy,
+  getTemplates,
+  postTemplate,
+  patchTemplate,
+  deleteTemplate
+} from './routes/TemplateRoutes';
+import {validateSeriesForTemplate} from './routes/ValidationRoutes';
+import {getProjects} from './routes/ProjectRoutes'
+import {getSession, postSession, patchSession} from './routes/SessionRoutes'
+
 require('dotenv').config();
 
 app.use(express.json());

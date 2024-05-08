@@ -1,22 +1,31 @@
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { Icon, IconButton, MenuItem, Select, SelectChangeEvent, Tooltip, breadcrumbsClasses } from '@mui/material';
+import {Icon, IconButton, MenuItem, Select, SelectChangeEvent, Tooltip, breadcrumbsClasses} from '@mui/material';
 import Box from '@mui/material/Box';
 import CardActions from '@mui/material/CardActions';
 import Checkbox from '@mui/material/Checkbox';
 import Collapse from '@mui/material/Collapse';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import React, { useEffect, useState } from 'react';
-import CommonCard, { ExpandMore } from '../common/CommonCard';
-import { MultiLineInput, MultiLineInputProps, SingleLineInput, SingleLineInputProps } from '../common/Inputs';
-import { getSeriesData } from '../../utils/DatabaseFetchers';
-import { SeriesData, PACSSeries, SeriesProps, Measurement, FormattedMeasurement } from "../../../../shared/Types";
-import { getClockNumberUtilityClass } from '@mui/x-date-pickers/TimeClock/clockNumberClasses';
-import { Cancel, CancelRounded, CheckCircle, CheckCircleOutline, Help, HelpRounded, Warning, WarningRounded } from '@mui/icons-material';
-import { CalendarIcon } from '@mui/x-date-pickers';
+import React, {useEffect, useState} from 'react';
+import CommonCard, {ExpandMore} from '../common/CommonCard';
+import {MultiLineInput, MultiLineInputProps, SingleLineInput, SingleLineInputProps} from '../common/Inputs';
+import {getSeriesData} from '../../utils/DatabaseFetchers';
+import {SeriesData, PACSSeries, SeriesProps, Measurement, FormattedMeasurement} from "../../../../shared/Types";
+import {getClockNumberUtilityClass} from '@mui/x-date-pickers/TimeClock/clockNumberClasses';
+import {
+  Cancel,
+  CancelRounded,
+  CheckCircle,
+  CheckCircleOutline,
+  Help,
+  HelpRounded,
+  Warning,
+  WarningRounded
+} from '@mui/icons-material';
+import {CalendarIcon} from '@mui/x-date-pickers';
 
-export function SeriesSingleLineInput({ name, label, value, onChange, type="text"}: SingleLineInputProps) {
+export function SeriesSingleLineInput({name, label, value, onChange, type = "text"}: SingleLineInputProps) {
   return (
     <Box m={1} flexGrow={1}>
       <SingleLineInput
@@ -26,11 +35,11 @@ export function SeriesSingleLineInput({ name, label, value, onChange, type="text
         type={type}
         onChange={onChange}
       />
-    </Box >
+    </Box>
   );
 }
 
-export function SeriesMultiLineInput({ name, label, value, onChange }: MultiLineInputProps) {
+export function SeriesMultiLineInput({name, label, value, onChange}: MultiLineInputProps) {
   return (
     <Box m={1} flexGrow={1}>
       <MultiLineInput
@@ -53,7 +62,7 @@ interface CheckboxInputProps {
 export function Series(props: SeriesProps) {
   type SeriesStateEnum = 'successful' | 'failed' | 'pending';
 
-  function CheckboxInput({ text, checked, name }: CheckboxInputProps) {
+  function CheckboxInput({text, checked, name}: CheckboxInputProps) {
     return (
       <Box>
         <FormControlLabel control={
@@ -63,7 +72,7 @@ export function Series(props: SeriesProps) {
             name={name}
             color="primary"
           />
-        } label={text} />
+        } label={text}/>
       </Box>
     )
   }
@@ -74,7 +83,7 @@ export function Series(props: SeriesProps) {
       is_expanded: props.allExpanded && props.templateSerie === null
     });
   }, [props.allExpanded])
-  const[template, setTemplate] = useState('');
+  const [template, setTemplate] = useState('');
   const [measurement, setMeasurement] = useState<FormattedMeasurement | null>(null);
 
   const [seriesData, setSeriesData] = useState<SeriesData>({
@@ -133,55 +142,55 @@ export function Series(props: SeriesProps) {
     setTemplate(props.choosenTemplate);
 
     const fetchData = async () => {
-    if (props.validatedSerie !== null) {
-      
-      const oldSeriesJSON = localStorage.getItem(`series-${props.validatedSerie.SeriesInstanceUID}`);
-      const oldSeries = JSON.parse(oldSeriesJSON ? oldSeriesJSON : "{}");
-      var newSeriesData: SeriesData = {
-        ...seriesData,
-        series_instance_uid: props.validatedSerie.SeriesInstanceUID,
-      };
-      if (oldSeries != undefined) {
+      if (props.validatedSerie !== null) {
+
+        const oldSeriesJSON = localStorage.getItem(`series-${props.validatedSerie.SeriesInstanceUID}`);
+        const oldSeries = JSON.parse(oldSeriesJSON ? oldSeriesJSON : "{}");
         var newSeriesData: SeriesData = {
           ...seriesData,
-          is_expanded: oldSeries.is_expanded,
-          is_selected: oldSeries.is_selected,
           series_instance_uid: props.validatedSerie.SeriesInstanceUID,
         };
-        if (!triggeredByTemplateChange) {
-          newSeriesData = {
-            ...newSeriesData,
-            seq_state: oldSeries.seq_state,
-            measured: oldSeries.measured,
-            last_updated: oldSeries.last_updated,
-            comment: oldSeries.comment,
-            stim_protocol: oldSeries.stim_protocol,
-            stim_log_file: oldSeries.stim_log_file,
-            fyzio_raw_file: oldSeries.fyzio_raw_file,
-            general_eeg: oldSeries.general_eeg,
-            general_et: oldSeries.general_et,
-            bp_ekg: oldSeries.bp_ekg,
-            bp_resp: oldSeries.bp_resp,
-            bp_gsr: oldSeries.bp_gsr,
-            bp_acc: oldSeries.bp_acc,
-            siemens_ekg: oldSeries.siemens_ekg,
-            siemens_resp: oldSeries.siemens_resp,
-            siemens_pt: oldSeries.siemens_pt
-          }
-        } else {
-          newSeriesData.validation_status = props.validatedSerie ? props.validatedSerie.ValidationResult : 'MISSING';
-          props.validatedSerie.UserInput.forEach(element => {
-            if ((element.key == "stim_protocol" || element.key == "stim_log_file" || element.key == "fyzio_raw_file") && element.valueA !== null) {
-              if (element.valueA.length > 0 ) newSeriesData[element.key] = element.valueA;
-            } else if ((element.key == "general_eeg" || element.key == "general_et" || element.key == "bp_ekg"
-              || element.key == "bp_resp" || element.key == "bp_gsr" || element.key == "bp_acc"
-              || element.key == "siemens_ekg" || element.key == "siemens_resp" || element.key == "siemens_pt")
-            ) {
-              newSeriesData[element.key] = element.valueA == "true";
+        if (oldSeries != undefined) {
+          var newSeriesData: SeriesData = {
+            ...seriesData,
+            is_expanded: oldSeries.is_expanded,
+            is_selected: oldSeries.is_selected,
+            series_instance_uid: props.validatedSerie.SeriesInstanceUID,
+          };
+          if (!triggeredByTemplateChange) {
+            newSeriesData = {
+              ...newSeriesData,
+              seq_state: oldSeries.seq_state,
+              measured: oldSeries.measured,
+              last_updated: oldSeries.last_updated,
+              comment: oldSeries.comment,
+              stim_protocol: oldSeries.stim_protocol,
+              stim_log_file: oldSeries.stim_log_file,
+              fyzio_raw_file: oldSeries.fyzio_raw_file,
+              general_eeg: oldSeries.general_eeg,
+              general_et: oldSeries.general_et,
+              bp_ekg: oldSeries.bp_ekg,
+              bp_resp: oldSeries.bp_resp,
+              bp_gsr: oldSeries.bp_gsr,
+              bp_acc: oldSeries.bp_acc,
+              siemens_ekg: oldSeries.siemens_ekg,
+              siemens_resp: oldSeries.siemens_resp,
+              siemens_pt: oldSeries.siemens_pt
             }
-          });
+          } else {
+            newSeriesData.validation_status = props.validatedSerie ? props.validatedSerie.ValidationResult : 'MISSING';
+            props.validatedSerie.UserInput.forEach(element => {
+              if ((element.key == "stim_protocol" || element.key == "stim_log_file" || element.key == "fyzio_raw_file") && element.valueA !== null) {
+                if (element.valueA.length > 0) newSeriesData[element.key] = element.valueA;
+              } else if ((element.key == "general_eeg" || element.key == "general_et" || element.key == "bp_ekg"
+                || element.key == "bp_resp" || element.key == "bp_gsr" || element.key == "bp_acc"
+                || element.key == "siemens_ekg" || element.key == "siemens_resp" || element.key == "siemens_pt")
+              ) {
+                newSeriesData[element.key] = element.valueA == "true";
+              }
+            });
 
-        }
+          }
         }
 
         if (props.downloadedMeasurement) {
@@ -234,7 +243,7 @@ export function Series(props: SeriesProps) {
   };
 
   const handleTextChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = event.target;
+    const {name, value} = event.target;
     setDisplayData({
       ...displayData,
       [name]: value,
@@ -263,7 +272,7 @@ export function Series(props: SeriesProps) {
         ...displayData,
         is_selected: !displayData.is_selected
       });
-    props.onCopy(`series-${props.validatedSerie.SeriesInstanceUID}`); // invoke parent onCopy handler
+      props.onCopy(`series-${props.validatedSerie.SeriesInstanceUID}`); // invoke parent onCopy handler
     }
   };
 
@@ -325,7 +334,7 @@ export function Series(props: SeriesProps) {
         case "NOT_FOUND":
           return <HelpRounded/>;
       }
-  }
+    }
     return <WarningRounded/>;
   }
 
@@ -335,7 +344,8 @@ export function Series(props: SeriesProps) {
         case "OK":
           return "Valid";
         case "NOK":
-          const elements = props.validatedSerie.InvalidReasons.map((reason) => <React.Fragment key={reason}>{reason}<br/></React.Fragment>);
+          const elements = props.validatedSerie.InvalidReasons.map((reason) => <React.Fragment
+            key={reason}>{reason}<br/></React.Fragment>);
           return <Box flexDirection={'column'}>{elements}</Box>;
         case "NOT_FOUND":
           return "Not found in template";
@@ -350,7 +360,7 @@ export function Series(props: SeriesProps) {
   const measured = props.validatedSerie !== null ? displayData.measured.toLocaleString() : '-';
   const last_updated = props.validatedSerie !== null ? displayData.last_updated.toLocaleString() : '-';
   const num_of_instances = props.validatedSerie !== null ? props.validatedSerie.NumberOfSeriesRelatedInstances : '-';
-  
+
   const disableInteractions = props.validatedSerie === null;
 
   return (
@@ -385,7 +395,7 @@ export function Series(props: SeriesProps) {
               <Tooltip title={'Paste records from the selected measurement into this one'}>
                 <span>
                   <IconButton size='large' onClick={handleSeriesPaste} disabled={disableInteractions}>
-                    <ContentPasteIcon />
+                    <ContentPasteIcon/>
                   </IconButton>
                 </span>
               </Tooltip>
@@ -396,11 +406,11 @@ export function Series(props: SeriesProps) {
           }}>
             <span>
               <Select fullWidth
-                defaultValue={'pending'}
-                value={displayData.seq_state}
-                onChange={handleSeqStateChange}
-                sx={{ color: getSelectColor }}
-                disabled={disableInteractions}
+                      defaultValue={'pending'}
+                      value={displayData.seq_state}
+                      onChange={handleSeqStateChange}
+                      sx={{color: getSelectColor}}
+                      disabled={disableInteractions}
               >
                 <MenuItem value={'successful'}>Successful</MenuItem>
                 <MenuItem value={'failed'}>Failed</MenuItem>
@@ -409,12 +419,12 @@ export function Series(props: SeriesProps) {
             </span>
           </Box>
           <Box display={'flex'} justifyContent='flex-start' flexDirection={'row'}>
-          <CardActions disableSpacing>
-            <Tooltip title={getIconText()}>
-              <Icon>
-                {getIcon()}
-              </Icon>
-            </Tooltip>
+            <CardActions disableSpacing>
+              <Tooltip title={getIconText()}>
+                <Icon>
+                  {getIcon()}
+                </Icon>
+              </Tooltip>
             </CardActions>
           </Box>
           <CardActions disableSpacing>
@@ -425,7 +435,7 @@ export function Series(props: SeriesProps) {
                 aria-expanded={displayData.is_expanded}
                 disabled={disableInteractions}
               >
-                <ExpandMoreIcon />
+                <ExpandMoreIcon/>
               </ExpandMore>
             </span>
           </CardActions>
@@ -434,11 +444,15 @@ export function Series(props: SeriesProps) {
 
         <Collapse in={displayData.is_expanded} timeout="auto" unmountOnExit>
           <Box display={'flex'} flexDirection={'row'} flexWrap={'wrap'}>
-            <SeriesSingleLineInput label='Stim. protocol' name='stim_protocol' value={displayData.stim_protocol} onChange={handleTextChange} />
-            <SeriesSingleLineInput label='Stim. log file' name='stim_log_file' value={displayData.stim_log_file} onChange={handleTextChange} />
-            <SeriesSingleLineInput label='Fyzio raw file (for BP)' name='fyzio_raw_file' value={displayData.fyzio_raw_file} onChange={handleTextChange} />
+            <SeriesSingleLineInput label='Stim. protocol' name='stim_protocol' value={displayData.stim_protocol}
+                                   onChange={handleTextChange}/>
+            <SeriesSingleLineInput label='Stim. log file' name='stim_log_file' value={displayData.stim_log_file}
+                                   onChange={handleTextChange}/>
+            <SeriesSingleLineInput label='Fyzio raw file (for BP)' name='fyzio_raw_file'
+                                   value={displayData.fyzio_raw_file} onChange={handleTextChange}/>
             <Box sx={{width: '80ch'}}>
-              <SeriesMultiLineInput label='Comment' name='comment' value={displayData.comment} onChange={handleTextChange} />
+              <SeriesMultiLineInput label='Comment' name='comment' value={displayData.comment}
+                                    onChange={handleTextChange}/>
             </Box>
             <Box m={1}>
               <Box
@@ -449,8 +463,8 @@ export function Series(props: SeriesProps) {
                 General
               </Box>
               <Box display={'flex'} flexDirection={'row'}>
-                <CheckboxInput text='EEG' checked={displayData.general_eeg} name="general_eeg" />
-                <CheckboxInput text='ET' checked={displayData.general_et} name="general_et" />
+                <CheckboxInput text='EEG' checked={displayData.general_eeg} name="general_eeg"/>
+                <CheckboxInput text='ET' checked={displayData.general_et} name="general_et"/>
               </Box>
             </Box>
             <Box m={1}>
@@ -462,10 +476,10 @@ export function Series(props: SeriesProps) {
                 BP ExG
               </Box>
               <Box display={'flex'} flexDirection={'row'}>
-                <CheckboxInput text='EKG' checked={displayData.bp_ekg} name="bp_ekg" />
-                <CheckboxInput text='Resp.' checked={displayData.bp_resp} name="bp_resp" />
-                <CheckboxInput text='GSR' checked={displayData.bp_gsr} name="bp_gsr" />
-                <CheckboxInput text='ACC' checked={displayData.bp_acc} name="bp_acc" />
+                <CheckboxInput text='EKG' checked={displayData.bp_ekg} name="bp_ekg"/>
+                <CheckboxInput text='Resp.' checked={displayData.bp_resp} name="bp_resp"/>
+                <CheckboxInput text='GSR' checked={displayData.bp_gsr} name="bp_gsr"/>
+                <CheckboxInput text='ACC' checked={displayData.bp_acc} name="bp_acc"/>
               </Box>
             </Box>
             <Box m={1}>
@@ -477,14 +491,14 @@ export function Series(props: SeriesProps) {
                 Siemens
               </Box>
               <Box display={'flex'} flexDirection={'row'}>
-                <CheckboxInput text='EKG' checked={displayData.siemens_ekg} name="siemens_ekg" />
-                <CheckboxInput text='Resp.' checked={displayData.siemens_resp} name="siemens_resp" />
-                <CheckboxInput text='PT' checked={displayData.siemens_pt} name="siemens_pt" />
+                <CheckboxInput text='EKG' checked={displayData.siemens_ekg} name="siemens_ekg"/>
+                <CheckboxInput text='Resp.' checked={displayData.siemens_resp} name="siemens_resp"/>
+                <CheckboxInput text='PT' checked={displayData.siemens_pt} name="siemens_pt"/>
               </Box>
             </Box>
           </Box>
         </Collapse>
       </Box>
-    </CommonCard >
+    </CommonCard>
   )
 }

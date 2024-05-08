@@ -1,9 +1,8 @@
-import axios from "axios";
-import { PostStudyCommentProps } from "../model/StudyProps";
+import {PostStudyCommentProps} from "../model/StudyProps";
+
 require('dotenv').config();
 
-const mafilApiUrl = process.env.MAFIL_API_URL;
-const { Pool } = require('pg');
+const {Pool} = require('pg');
 
 const connectionString = process.env.DATABASE_URL;
 const pool = new Pool({
@@ -12,7 +11,7 @@ const pool = new Pool({
 
 export const getStudies = async (req, res) => {
   try {
-    const { rows } = await pool.query('SELECT * FROM studiesdt');
+    const {rows} = await pool.query('SELECT * FROM studiesdt');
     res.status(200).json(rows);
   } catch (err) {
     console.error(err);
@@ -43,9 +42,9 @@ export const postStudyComment = async (req, res) => {
 }
 
 export const getStudy = async (req, res) => {
-  const { study_instance_uid } = req.params;
+  const {study_instance_uid} = req.params;
   try {
-    const { rows } = await pool.query('SELECT * FROM studiesdt WHERE study_instance_uid = $1', [study_instance_uid]);
+    const {rows} = await pool.query('SELECT * FROM studiesdt WHERE study_instance_uid = $1', [study_instance_uid]);
     const studyData = rows.find(row => row.study_instance_uid === study_instance_uid);
     res.status(200).json(studyData ?? null);
   } catch (err) {

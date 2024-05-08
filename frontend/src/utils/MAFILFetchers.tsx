@@ -1,19 +1,19 @@
-import { FormattedTemplate, Project, Template, Session, FormattedSession } from "../../../shared/Types";
+import {FormattedTemplate, Project, Template, Session, FormattedSession} from "../../../shared/Types";
 import axios from 'axios';
 
 export async function fetchProjectTemplates(project_id: string | undefined, token: string | undefined) {
-    const url = `/api/project/${project_id}/template`;
-    try {
-      const headers = {
-        'token': token
-      };
-      const response = await axios.get(url, { headers });
-      const templates: FormattedTemplate[] = await response.data;
-      return templates;
-    } catch (err) {
-      return [];
-    }
+  const url = `/api/project/${project_id}/template`;
+  try {
+    const headers = {
+      'token': token
+    };
+    const response = await axios.get(url, {headers});
+    const templates: FormattedTemplate[] = await response.data;
+    return templates;
+  } catch (err) {
+    return [];
   }
+}
 
 export async function fetchTemplates(token: string | undefined) {
   const url = `/api/template`;
@@ -21,7 +21,7 @@ export async function fetchTemplates(token: string | undefined) {
     const headers = {
       'token': token
     };
-    const response = await axios.get(url, { headers });
+    const response = await axios.get(url, {headers});
 
     const templates: FormattedTemplate[] = await response.data;
     return templates;
@@ -29,8 +29,8 @@ export async function fetchTemplates(token: string | undefined) {
     return [];
   }
 }
-  
-  
+
+
 export async function fetchProjects(token: string | undefined) {
   const url = `/api/project`;
 
@@ -38,7 +38,7 @@ export async function fetchProjects(token: string | undefined) {
     const headers = {
       'token': token
     };
-    const response = await axios.get(url, { headers });
+    const response = await axios.get(url, {headers});
 
     const projects: Project[] = await response.data;
     return projects;
@@ -53,7 +53,7 @@ export async function fetchProjectDefaultTemplates(project_id: string | undefine
     const headers = {
       'token': token
     };
-    const response = await axios.get(url, { headers });
+    const response = await axios.get(url, {headers});
 
     if (response.status == 204) {
       return;
@@ -72,7 +72,7 @@ export async function fetchSession(token: string | undefined, studyInstanceUID: 
     const headers = {
       'token': token
     };
-    const response = await axios.get(url, { headers });
+    const response = await axios.get(url, {headers});
 
     const visit: FormattedSession = await response.data;
     return visit;
@@ -89,7 +89,7 @@ export async function patchSession(token: string | undefined, session: Formatted
       'token': token
     };
     console.log('aaaa');
-    const response = await axios.patch(url, session, { headers });
+    const response = await axios.patch(url, session, {headers});
 
     const visit: FormattedSession = await response.data;
     return visit;
@@ -106,7 +106,7 @@ export async function postSession(token: string | undefined, session: FormattedS
     const headers = {
       'token': token
     };
-    const response = await axios.post(url, session, { headers });
+    const response = await axios.post(url, session, {headers});
 
     const visit: FormattedSession = await response.data;
     return visit;
@@ -124,7 +124,7 @@ export async function postTemplate(token: string | undefined, template: Formatte
       'token': token,
       'Content-Type': 'application/json'
     };
-    const body = {     
+    const body = {
       is_default: template.is_default,
       name: template.name,
       order_for_displaying: template.order_for_displaying,
@@ -139,7 +139,7 @@ export async function postTemplate(token: string | undefined, template: Formatte
       }]
     };
 
-    const response = await axios.post(url, body, { headers });
+    const response = await axios.post(url, body, {headers});
 
     const newTemplate: Template = await response.data;
     return newTemplate;
@@ -172,7 +172,7 @@ export async function patchTemplate(token: string | undefined, template: Formatt
       }]
     };
 
-    const response = await axios.patch(url, body, { headers });
+    const response = await axios.patch(url, body, {headers});
 
     const newTemplate: Template = await response.data;
     return newTemplate;
@@ -187,7 +187,7 @@ export async function deleteTemplate(token: string | undefined, template: Format
     const headers = {
       'token': token,
     };
-    const response = await axios.delete(url, { headers });
+    const response = await axios.delete(url, {headers});
     return;
   } catch (err) {
     return;

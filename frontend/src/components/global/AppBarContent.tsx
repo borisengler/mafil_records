@@ -1,6 +1,6 @@
 import MenuIcon from '@mui/icons-material/Menu';
-import { Box, IconButton, Toolbar } from '@mui/material';
-import React, { useContext, useEffect, useState } from 'react';
+import {Box, IconButton, Toolbar} from '@mui/material';
+import React, {useContext, useEffect, useState} from 'react';
 
 import SidebarContext from "../../contexts/SidebarContext";
 import Logo from '../common/Logo';
@@ -13,8 +13,8 @@ interface AppBarContentProps {
   content?: React.ReactNode;
 }
 
-function AppBarContent({ open, pageTitle, content, toggleDrawer }: AppBarContentProps) {
-  const { sidebarWidth } = useContext(SidebarContext);
+function AppBarContent({open, pageTitle, content, toggleDrawer}: AppBarContentProps) {
+  const {sidebarWidth} = useContext(SidebarContext);
   const [showLogo, setShowLogo] = useState(true);
   const [showTitle, setShowTitle] = useState(true);
 
@@ -52,15 +52,15 @@ function AppBarContent({ open, pageTitle, content, toggleDrawer }: AppBarContent
           onClick={toggleDrawer}
           sx={{
             marginRight: '36px',
-            ...(open && { display: 'none' }),
+            ...(open && {display: 'none'}),
           }}
         >
-          <MenuIcon />
+          <MenuIcon/>
         </IconButton>
         {showTitle ?
           <Box>{pageTitle}</Box>
-          : <Box />}
-        {showLogo && <Logo />}
+          : <Box/>}
+        {showLogo && <Logo/>}
         <Box>
           {content}
         </Box>

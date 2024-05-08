@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { IconButton, MenuItem, Select, SelectChangeEvent, Tooltip, FormControl, InputLabel } from '@mui/material';
-import { FormattedTemplate } from "../../../../shared/Types";
+import React, {useState} from 'react';
+import {IconButton, MenuItem, Select, SelectChangeEvent, Tooltip, FormControl, InputLabel} from '@mui/material';
+import {FormattedTemplate} from "../../../../shared/Types";
 
 
 interface TemplateDropdownProps {
@@ -9,7 +9,11 @@ interface TemplateDropdownProps {
   templates: FormattedTemplate[];
 }
 
-export const TemplateDropdown: React.FC<TemplateDropdownProps> = ({ selectedTemplate, handleTemplateChange, templates }) => {
+export const TemplateDropdown: React.FC<TemplateDropdownProps> = ({
+                                                                    selectedTemplate,
+                                                                    handleTemplateChange,
+                                                                    templates
+                                                                  }) => {
 
   const onTemplateChange = (event: SelectChangeEvent<string>) => {
     const selectedValue = event.target.value;

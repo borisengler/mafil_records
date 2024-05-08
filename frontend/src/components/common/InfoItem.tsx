@@ -6,7 +6,7 @@ interface Props {
   text: string | undefined;
 }
 
-function InfoItem({ label, text }: Props) {
+function InfoItem({label, text}: Props) {
   return (
     <Box
       sx={{

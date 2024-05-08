@@ -1,27 +1,43 @@
-import { Box, Divider } from '@mui/material';
-import React, { useEffect, useState } from 'react';
-import { useAuth } from 'react-oidc-context';
+import {Box, Divider} from '@mui/material';
+import React, {useEffect, useState} from 'react';
+import {useAuth} from 'react-oidc-context';
 import RefreshButton from '../components/common/RefreshButton';
-import { BlueButton, RedButton } from '../components/common/Buttons';
+import {BlueButton, RedButton} from '../components/common/Buttons';
 import InfoItem from '../components/common/InfoItem';
-import { MultiLineInput } from '../components/common/Inputs';
+import {MultiLineInput} from '../components/common/Inputs';
 import ListItems from '../components/common/ListItems';
 import SaveButton from '../components/common/SaveButton';
 import SortButton from '../components/common/SortButton';
 import CommonAppBar from '../components/global/AppBarContent';
-import { ResizableSidebar } from '../components/global/ResizableSidebar';
-import { Series } from '../components/series/Series';
-import { TemplateDropdown } from '../components/series/TemplateDropdown';
-import { SidebarProvider } from '../contexts/SidebarContext';
-import { fetchSeries } from '../utils/PACSFetchers';
-import { withAuthentication } from '../utils/WithAuthentication';
+import {ResizableSidebar} from '../components/global/ResizableSidebar';
+import {Series} from '../components/series/Series';
+import {TemplateDropdown} from '../components/series/TemplateDropdown';
+import {SidebarProvider} from '../contexts/SidebarContext';
+import {fetchSeries} from '../utils/PACSFetchers';
+import {withAuthentication} from '../utils/WithAuthentication';
 import removeSeriesFromLocalStorage from '../utils/RemoveSeriesFromLocalStorage';
 import removeStudiesFromLocalStorage from '../utils/RemoveStudiesFromLocalStorage';
-import { saveSeriesData, saveStudyData } from '../utils/Savers';
-import { getStudyData } from '../utils/DatabaseFetchers';
-import { postValidationData } from '../utils/ValidationFetchers';
-import { fetchProjectDefaultTemplates, fetchProjectTemplates, fetchProjects, fetchSession, patchSession } from '../utils/MAFILFetchers';
-import { FormattedMeasurement, FormattedSession, FormattedTemplate, MissingSeries, PACSSeries, Project, SeriesData, StudyProps, ValidatedSeries } from '../../../shared/Types';
+import {saveSeriesData, saveStudyData} from '../utils/Savers';
+import {getStudyData} from '../utils/DatabaseFetchers';
+import {postValidationData} from '../utils/ValidationFetchers';
+import {
+  fetchProjectDefaultTemplates,
+  fetchProjectTemplates,
+  fetchProjects,
+  fetchSession,
+  patchSession
+} from '../utils/MAFILFetchers';
+import {
+  FormattedMeasurement,
+  FormattedSession,
+  FormattedTemplate,
+  MissingSeries,
+  PACSSeries,
+  Project,
+  SeriesData,
+  StudyProps,
+  ValidatedSeries
+} from '../../../shared/Types';
 import ExpandButton from '../components/common/ExpandButton';
 
 export interface StudyData {
@@ -63,6 +79,7 @@ function Measuring() {
 
   const [studyTemplates, setStudyTemplates] = useState<FormattedTemplate[]>([]);
   const [selectedTemplateId, setSelectedTemplateId] = useState<string>("");
+
   async function saveRecords(): Promise<boolean> {
     setSaveStatus('saving');
     const result = await patchSession(auth.user ? auth.user.access_token : '', session);
@@ -89,7 +106,7 @@ function Measuring() {
         setSelectedTemplateId(defaultTemplate.id);
       }
       setStudyTemplates(fetchedTemplates);
-    } catch(err) {
+    } catch (err) {
 
     }
 
@@ -186,7 +203,7 @@ function Measuring() {
     return selectedSeqId;
   };
 
- useEffect(() => {
+  useEffect(() => {
     (async () => {
       const fetchedStudyData = await getStudyData(props.StudyInstanceUID);
       setStudyData(fetchedStudyData);
@@ -201,11 +218,11 @@ function Measuring() {
       setValidatedSeries(validatedSeries);
       setMissingSeries(missingSeries);
     })()
-  
+
   }, [studyTemplates, selectedTemplateId, pacsSeries]);
 
   const handleTextChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = event.target;
+    const {name, value} = event.target;
     setSession({...session, [name]: value});
     setStudyData({
       ...studyData,
@@ -214,7 +231,7 @@ function Measuring() {
   };
 
   useEffect(() => {
-    localStorage.setItem(`study-${props.StudyInstanceUID}`, JSON.stringify({ ...studyData }))
+    localStorage.setItem(`study-${props.StudyInstanceUID}`, JSON.stringify({...studyData}))
   }, [studyData]);
 
   function handleSeriesChange(measurement: SeriesData) {
@@ -282,10 +299,11 @@ function Measuring() {
           pageTitle='Measuring and taking notes'
           content={
             <React.Fragment>
-              <SortButton sortOrder={sortOrder} onClick={toggleSortOrder} />
+              <SortButton sortOrder={sortOrder} onClick={toggleSortOrder}/>
               <ExpandButton expanded={expanded} onClick={toggleExpand}/>
-              <SaveButton saveStatus={saveStatus} onClick={saveRecords} />
-              <RefreshButton fetchStatus={fetchStatus} onClick={handleRefresh} tooltipTitle='Re-fetch series for current study' />
+              <SaveButton saveStatus={saveStatus} onClick={saveRecords}/>
+              <RefreshButton fetchStatus={fetchStatus} onClick={handleRefresh}
+                             tooltipTitle='Re-fetch series for current study'/>
             </React.Fragment>
           }
         />
@@ -293,10 +311,10 @@ function Measuring() {
           open={open}
           toggleDrawer={toggleDrawer}
         >
-          <InfoItem label="Measuring operator" text={auth.user ? auth.user.profile.name : ''} />
-          <InfoItem label="Visit ID" text={props.AccessionNumber} />
-          <InfoItem label="Study UID" text={props.StudyInstanceUID} />
-          <InfoItem label="Patient name" text={props.PatientName} />
+          <InfoItem label="Measuring operator" text={auth.user ? auth.user.profile.name : ''}/>
+          <InfoItem label="Visit ID" text={props.AccessionNumber}/>
+          <InfoItem label="Study UID" text={props.StudyInstanceUID}/>
+          <InfoItem label="Patient name" text={props.PatientName}/>
           <TemplateDropdown
             selectedTemplate={selectedTemplateId}
             handleTemplateChange={setSelectedTemplateId}
@@ -309,19 +327,19 @@ function Measuring() {
             onChange={handleTextChange}
           />
           <Box gap={2} display='flex' flexDirection="row" flexWrap='wrap' justifyContent="space-between">
-            <BlueButton text="Finish study"  onClick={handleFinishStudy} />
-            <RedButton text="Back to studies" path="/studies" onClick={handleBackToStudies} />
+            <BlueButton text="Finish study" onClick={handleFinishStudy}/>
+            <RedButton text="Back to studies" path="/studies" onClick={handleBackToStudies}/>
           </Box>
-          <Divider sx={{ my: 3 }} />
+          <Divider sx={{my: 3}}/>
         </ResizableSidebar>
-          <ListItems
-            loading={loading}
-            list={listSeries()}
-            errorMessage={fetchError}
-            loadingMessage={`Fetching series...`}
-          />
+        <ListItems
+          loading={loading}
+          list={listSeries()}
+          errorMessage={fetchError}
+          loadingMessage={`Fetching series...`}
+        />
       </React.Fragment>
-    </SidebarProvider >
+    </SidebarProvider>
   );
 }
 
