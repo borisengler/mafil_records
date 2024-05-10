@@ -7,9 +7,22 @@ export interface SingleLineInputProps {
   value: string;
   onChange: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   type?: string;
+  required?: boolean;
+  error?: boolean;
+  helperText?: string;
 }
 
-export function SingleLineInput({name, label, value, onChange, type = 'text'}: SingleLineInputProps) {
+export function SingleLineInput(
+  {
+    name,
+    label,
+    value,
+    onChange,
+    type = 'text',
+    required = false,
+    error = required && value == '',
+    helperText = 'Field can\'t be empty'
+  }: SingleLineInputProps) {
   const handleTextChange = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
     onChange(event);
   };
@@ -24,6 +37,9 @@ export function SingleLineInput({name, label, value, onChange, type = 'text'}: S
       fullWidth
       variant='outlined'
       type={type}
+      required={required}
+      error={error}
+      helperText={error && helperText}
     />
   )
 }

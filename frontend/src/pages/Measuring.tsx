@@ -40,6 +40,7 @@ import {
   ValidatedSeries
 } from '../../../shared/Types';
 import ExpandButton from '../components/common/ExpandButton';
+import { getTemplateFromSession } from '../utils/SessionToTemplate';
 
 export interface StudyData {
   study_instance_uid: string;
@@ -87,11 +88,18 @@ function Measuring() {
 
     const seriesSuccess = await saveSeriesData(props.StudyInstanceUID);
     const studySuccess = await saveStudyData(props.StudyInstanceUID);
-
-    if (seriesSuccess && studySuccess) {
+    var sessionSucess = false;
+    if (session.uuid !== undefined) {
+      sessionSucess = await patchSession(auth.user ? auth.user.access_token : '', session);
+    } else {
+      sessionSucess = await postSession(auth.user ? auth.user.access_token : '', {...session, visit: props.AccessionNumber, studyInstanceUID: props.StudyInstanceUID});
+    }
+    if (seriesSuccess && studySuccess && sessionSucess) {
       setSaveStatus('success');
       return true;
     }
+
+
 
     setSaveStatus('failed');
     return false;
@@ -151,7 +159,7 @@ function Measuring() {
     }, 30 * 1000);
 
     return () => {
-      clearInterval(interval);
+    clearInterval(interval);
     };
   }, [selectedTemplateId]);
 
@@ -192,12 +200,6 @@ function Measuring() {
       removeSeriesFromLocalStorage();
       removeStudiesFromLocalStorage();
     }
-
-    if (session.uuid !== undefined) {
-      await patchSession(auth.user ? auth.user.access_token : '', session);
-    } else {
-      await postSession(auth.user ? auth.user.access_token : '', {...session, visit: props.AccessionNumber, studyInstanceUID: props.StudyInstanceUID});
-    }
   }
 
   async function handleBackToStudies() {
@@ -215,6 +217,11 @@ function Measuring() {
   const handleSeriesPaste = () => {
     return selectedSeqId;
   };
+  function saveAsTemplate() {
+    const template = getTemplateFromSession(session);
+    localStorage.setItem('isFromSession', 'true');
+    localStorage.setItem('currentTemplate', JSON.stringify(template));
+  }
 
   useEffect(() => {
     (async () => {
@@ -247,7 +254,9 @@ function Measuring() {
     localStorage.setItem(`study-${props.StudyInstanceUID}`, JSON.stringify({...studyData}))
   }, [studyData]);
 
-  function handleSeriesChange(measurement: SeriesData) {
+  function handleSeriesChange(measurement: SeriesData, order: number | null = null) {
+    const filteredPacsSeries = pacsSeries.filter((s) => s.SeriesInstanceUID == measurement.series_instance_uid);
+    const pacsSerie = filteredPacsSeries[0];
     setSession(prevSession => {
       const updatedMeasurements = prevSession.measurements !== undefined
         ? prevSession.measurements.filter(m => m.series_instance_UID !== measurement.series_instance_uid)
@@ -256,8 +265,8 @@ function Measuring() {
           log_file_name: measurement.stim_log_file,
           stimulation_protocol: measurement.stim_protocol,
           raw_file_name: measurement.fyzio_raw_file,
-          order_of_measurement: 0,
-          study_id: undefined,
+          order_of_measurement: order ? order : 0,
+          study_id: props.StudyID,
           comment: measurement.comment,
           series_instance_UID: measurement.series_instance_uid,
           fyzio_EKG: measurement.bp_ekg,
@@ -269,17 +278,33 @@ function Measuring() {
           siemens_EKG: measurement.siemens_ekg,
           siemens_respiration: measurement.siemens_resp,
           siemens_PT: measurement.siemens_pt,
-          time_of_measurement: measurement.measured
+          time_of_measurement:  new Date(measurement.measured),
+          series_description: pacsSerie.SeriesDescription,
+          series_number: pacsSerie.SeriesNumber,
+          protocol_name: pacsSerie.ProtocolName,
+          software_version: pacsSerie.SoftwareVersions,
+          body_part_examined: pacsSerie.BodyPartExamined,
+          repetition_time: pacsSerie.RepetitionTime,
+          flip_angle: pacsSerie.FlipAngle,
+          spacing_between_slices: pacsSerie.SpacingBetweenSlices,
+          slice_thickness: pacsSerie.SliceThickness,
+          patient_position: pacsSerie.PatientPosition,
+          inversion_time: pacsSerie.InversionTime,
         }
       return { ...prevSession, measurements: [...updatedMeasurements, newMeasurement] };
     });
   }
 
   function listSeries() {
+    var order = 0;
+
     return [
-      ...validatedSeries.map((series) => (
+      ...validatedSeries.map((series) => { 
+        order = order + 1;
+      return (
         <Series
           key={`validated-${series.SeriesInstanceUID}`}
+          order={order}
           validatedSerie={series}
           templateSerie={null}
           downloadedMeasurement={
@@ -292,9 +317,13 @@ function Measuring() {
           allExpanded={expanded}
           choosenTemplate={selectedTemplateId}
           onChange={handleSeriesChange}
+          projectAcronym={props.ReferringPhysicianName}
+          visitId={props.AccessionNumber}
         />
-      )),
-      ...missingSeries.map((series) => (
+      )}),
+      ...missingSeries.map((series) => {
+        order = order + 1;
+        return (
         <Series
           key={`missing-${series.SeriesDescription}`}
           validatedSerie={null}
@@ -305,8 +334,11 @@ function Measuring() {
           allExpanded={expanded}
           choosenTemplate={selectedTemplateId}
           onChange={handleSeriesChange}
+          order={order}
+          projectAcronym={props.ReferringPhysicianName}
+          visitId={props.AccessionNumber}
         />
-      )),
+      )}),
     ];
   }
 
@@ -347,7 +379,8 @@ function Measuring() {
             onChange={handleTextChange}
           />
           <Box gap={2} display='flex' flexDirection='row' flexWrap='wrap' justifyContent='space-between'>
-            <BlueButton text='Finish study' onClick={handleFinishStudy}/> {/* TODO path'/Succesfulvisit/ */}
+            <BlueButton text='Finish study' path='/success' onClick={handleFinishStudy}/>
+            <BlueButton text='Save as template' path='/template-edit' onClick={saveAsTemplate}/>
             <RedButton text='Back to studies' path='/studies' onClick={handleBackToStudies}/>
           </Box>
           <Divider sx={{my: 3}}/>

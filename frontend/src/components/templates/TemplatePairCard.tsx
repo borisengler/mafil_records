@@ -2,11 +2,11 @@ import React, {useEffect, useState} from 'react';
 import CommonCard from '../common/CommonCard';
 import {MeasurementTemplatePair} from '../../../../shared/Types';
 import Box from '@mui/material/Box';
-import {SeriesSingleLineInput} from '../series/Series';
 import {FormControl, FormLabel, RadioGroup, FormControlLabel, Radio, CardActions, IconButton} from '@mui/material';
 import {AddedMeasurementTemplatePairs} from './TemplateItemCard';
 import {DeleteDialog} from './DeleteDialog';
 import DeleteIcon from '@mui/icons-material/Delete';
+import {SingleLineInput} from '../common/Inputs';
 
 
 interface TemplatePairCardProps {
@@ -51,15 +51,29 @@ export default function TemplatePairCard(props: TemplatePairCardProps) {
     setItemToDelete(-1);
   }
 
+  const valueAerror = pair.type_of_comparison == 'equal' ? (pair.valueA == '') : (pair.valueA == '' && pair.valueB == '');
+  const valueBerror = pair.type_of_comparison == 'equal' ? false : (pair.valueA == '' && pair.valueB == '');
+  const valueAHint = pair.type_of_comparison == 'equal' ? 'Field can\'t be empty' : 'At least one of the values must be filled';
+  const valueBHint = pair.type_of_comparison == 'equal' ? 'Field can\'t be empty' : 'At least one of the values must be filled';
+
+  const keyError = (pair.key_source == undefined || pair.key_source == '') && pair.key == '';
+  const keyHint = 'At least one of Source and Key fields must be filled';
+
   return (
 
     <CommonCard>
 
       <Box display={'flex'} flexDirection={'row'}>
         <DeleteDialog open={isDeleteDialogOpen} onClose={closeDeleteDialog} onConfirm={deleteItem}></DeleteDialog>
-        <SeriesSingleLineInput label='Source (PACS key)' name='key_source'
-                               value={pair.key_source ? pair.key_source : ''} onChange={handleTextChange}/>
-        <SeriesSingleLineInput label='Key (Mafil key)' name='key' value={pair.key} onChange={handleTextChange}/>
+        <Box m={1} flexGrow={1}>
+          <SingleLineInput label='Source (PACS key)' name='key_source'
+                                 value={pair.key_source ? pair.key_source : ''} onChange={handleTextChange}
+                                 error={keyError} helperText={keyHint}/>
+        </Box>
+        <Box m={1} flexGrow={1}>
+          <SingleLineInput label='Key (Mafil key)' name='key' value={pair.key} onChange={handleTextChange}
+                                 error={keyError} helperText={keyHint}/>
+        </Box>
 
         <FormControl component='fieldset'>
           <FormLabel component='legend'>Type of Comparison</FormLabel>
@@ -74,11 +88,18 @@ export default function TemplatePairCard(props: TemplatePairCardProps) {
             <FormControlLabel value='range' control={<Radio/>} label='Range'/>
           </RadioGroup>
         </FormControl>
+        <Box m={1} flexGrow={1}>
 
-        <SeriesSingleLineInput label={pair.type_of_comparison == 'equal' ? 'Value' : 'From'} name='valueA'
-                               value={pair.valueA ? pair.valueA : ''} onChange={handleTextChange}/>
-        <SeriesSingleLineInput label={pair.type_of_comparison == 'equal' ? 'Value (unused)' : 'To'} name='valueB'
-                               value={pair.valueB ? pair.valueB : ''} onChange={handleTextChange}/>
+          <SingleLineInput label={pair.type_of_comparison == 'equal' ? 'Value' : 'From'} name='valueA'
+                           value={pair.valueA ? pair.valueA : ''} onChange={handleTextChange}
+                           error={valueAerror} helperText={valueAHint}/>
+        </Box>
+        <Box m={1} flexGrow={1}>
+
+          <SingleLineInput label={pair.type_of_comparison == 'equal' ? 'Value (unused)' : 'To'} name='valueB'
+                           value={pair.valueB ? pair.valueB : ''} onChange={handleTextChange}
+                           error={valueBerror} helperText={valueBHint}/>
+        </Box>
 
         <CardActions disableSpacing>
           <span>

@@ -7,7 +7,7 @@ import Collapse from '@mui/material/Collapse';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import React, {useEffect, useState} from 'react';
 import CommonCard, {ExpandMore} from '../common/CommonCard';
-import {MultiLineInput} from '../common/Inputs';
+import {MultiLineInput, SingleLineInput} from '../common/Inputs';
 import {MeasurementTemplate, MeasurementTemplatePair} from '../../../../shared/Types';
 import {SeriesSingleLineInput} from '../series/Series';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -70,6 +70,10 @@ export function TemplateItemCard(props: TemplateItemProps) {
     return pairs;
   });
 
+  const setTemplateName = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const {name, value} = event.target;
+    setTemplate({...template, name: value});
+  }
   const [order, setOrder] = useState(props.template.order_for_displaying ? props.template.order_for_displaying.toString() : '');
 
   useEffect(() => {
@@ -246,7 +250,7 @@ export function TemplateItemCard(props: TemplateItemProps) {
             fontSize={18}
             whiteSpace={'break-spaces'}
           >
-            {description}
+            <SingleLineInput label='Name' name='name' value={template.name} onChange={setTemplateName} required={true}/>
           </Box>
           <CardActions disableSpacing>
             <span>

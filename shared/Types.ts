@@ -2,7 +2,7 @@ export interface Template {
   id: number;
   name: string;
   order_for_displaying: number | null;
-  measurement_modality: "MR" | "EF";
+  measurement_modality: 'MR' | 'EF';
   versioned_templates?: VersionedTemplate[];
   project: Project;
   is_default: boolean;
@@ -16,6 +16,7 @@ export interface VersionedTemplate {
 }
 
 export interface MeasurementTemplate {
+  id?: number;
   name: string;
   order_for_displaying: number | null;
   compulsory: boolean;
@@ -27,7 +28,7 @@ export interface MeasurementTemplatePair {
   key: string;
   key_source?: string;
   user_input: boolean;
-  type_of_comparison: "equal" | "range";
+  type_of_comparison: 'equal' | 'range';
   valueA: string;
   valueB: string;
 }
@@ -97,7 +98,7 @@ export interface SeriesData {
   siemens_ekg: boolean;
   siemens_resp: boolean;
   siemens_pt: boolean;
-  validation_status: "OK" | "NOK" | "NOT_FOUND" | "MISSING";
+  validation_status: 'OK' | 'NOK' | 'NOT_FOUND' | 'MISSING';
 }
 
 export interface PACSSeries {
@@ -127,7 +128,7 @@ export interface PACSSeries {
 
 
 export interface ValidatedSeries {
-  ValidationResult: "OK" | "NOK" | "NOT_FOUND";
+  ValidationResult: 'OK' | 'NOK' | 'NOT_FOUND';
   UserInput: MeasurementTemplatePair[];
   InvalidReasons: string[];
   OrderForDisplaying: number;
@@ -156,13 +157,14 @@ export interface ValidatedSeries {
 }
 
 export interface MissingSeries {
-  ValidationResult: "MISSING";
+  ValidationResult: 'MISSING';
   UserInput: MeasurementTemplatePair[],
   SeriesDescription: string;
   OrderForDisplaying: number;
 }
 
 export interface SeriesProps {
+  order?: number;
   validatedSerie: ValidatedSeries | null;
   templateSerie: MissingSeries | null;
   downloadedMeasurement: FormattedMeasurement | null;
@@ -170,7 +172,9 @@ export interface SeriesProps {
   onPaste: () => string | null; // onPaste handler passed from parent component
   allExpanded: boolean;
   choosenTemplate: string;
-  onChange: (measurement: SeriesData) => void;
+  onChange: (measurement: SeriesData, order?: number) => void;
+  visitId: string;
+  projectAcronym: string;
 }
 
 export interface Project {
@@ -209,6 +213,17 @@ export interface MrMeasurement {
   siemens_respiration: boolean | undefined;
   siemens_PT: boolean | undefined;
   time_of_measurement: string | undefined;
+  series_description: string | undefined;
+  series_number: number | undefined;
+  protocol_name: string | undefined;
+  software_version: string | undefined;
+  body_part_examined: string | undefined;
+  repetition_time: string | undefined;
+  flip_angle: string | undefined;
+  spacing_between_slices: number | null;
+  slice_thickness: string | undefined;
+  patient_position: string | undefined;
+  inversion_time: number | null;
 }
 
 export interface FormattedSession {
@@ -217,7 +232,6 @@ export interface FormattedSession {
   visit: string;
   comment: string;
   measurements: FormattedMeasurement[];
-  
 }
 
 export interface FormattedMeasurement {
@@ -239,6 +253,17 @@ export interface FormattedMeasurement {
   siemens_respiration: boolean | undefined;
   siemens_PT: boolean | undefined;
   time_of_measurement: Date | undefined;
+  series_description: string | undefined;
+  series_number: number | undefined;
+  protocol_name: string | undefined;
+  software_version: string | undefined;
+  body_part_examined: string | undefined;
+  repetition_time: string | undefined;
+  flip_angle: string | undefined;
+  spacing_between_slices: number | null;
+  slice_thickness: string | undefined;
+  patient_position: string | undefined;
+  inversion_time: number | null;
 }
 
 export interface StudyProps {

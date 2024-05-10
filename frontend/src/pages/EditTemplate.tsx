@@ -45,9 +45,12 @@ export default function EditTemplate() {
   const toggleDrawer = () => {
     setOpen(!open);
   };
+  const [error, setError] = useState('');
 
   const [props, setProps] = useState<FormattedTemplate>(() => {
     const currentTemplate = localStorage.getItem(`currentTemplate`);
+    const isFromSession = localStorage.getItem(`isFromSession`) == 'true';
+    localStorage.setItem('isFromSession', '');
     const template: FormattedTemplate = currentTemplate ? JSON.parse(currentTemplate) : {
       name: '',
       version: 1,
@@ -57,10 +60,17 @@ export default function EditTemplate() {
       comment: '',
       measurementTemplates: []
     };
-    if (template.name == '') {
+    if (template.name == '' || isFromSession) {
       setIsNew(true);
     }
     setLoading(false);
+    var id = 0;
+    template.measurementTemplates = template.measurementTemplates.map((m) => {
+      id = id + 1;
+      return {
+        ...m, id: id
+      }
+    })
     return template;
   });
 
@@ -78,17 +88,21 @@ export default function EditTemplate() {
       if (newTemplate !== undefined) {
         setIsNew(false);
         navigate('/templates');
+      } else {
+        setError('Template can\'t be saved. Make sure all required fileds are filled.');
       }
     } else {
       const newTemplate = await patchTemplate(auth.user ? auth.user.access_token : '', props)
       if (newTemplate !== undefined) {
         navigate('/templates');
+      } else {
+        setError('Template can\'t be saved. Make sure all required fileds are filled.');
       }
     }
   };
 
   const saveMeasurement = (changed_template: MeasurementTemplate) => {
-    const oldMeasurementTemplates = props.measurementTemplates.filter((template) => template.name != changed_template.name)
+    const oldMeasurementTemplates = props.measurementTemplates.filter((template) => template.id != changed_template.id)
     setProps({...props, measurementTemplates: [...oldMeasurementTemplates, changed_template]});
   }
 
@@ -107,10 +121,10 @@ export default function EditTemplate() {
         return order_a - order_b;
       }).map((template) => {
         return <TemplateItemCard {...{
-          template: template,
+          template: {...template},
           onChange: saveMeasurement,
           onDelete: handleDelete,
-          key: template.name
+          key: template.id
         }}
         />
       })
@@ -162,12 +176,16 @@ export default function EditTemplate() {
   };
 
   function addMeasurementTemplate(name: string) {
+    const ids: number[] = props.measurementTemplates.map((t) => t.id).filter((id): id is number => id !== undefined);
+    const id = ids.length == 0 ? 1 : Math.max(...ids) + 1;
+
     const templates = [...props.measurementTemplates, {
       name: name,
       order_for_displaying: null,
       compulsory: true,
       comment: '',
-      measurement_template_pairs: []
+      measurement_template_pairs: [],
+      id: id
     }];
 
     setProps({...props, measurementTemplates: templates});
@@ -207,7 +225,18 @@ export default function EditTemplate() {
         <React.Fragment>
           <Box width={'100%'}>
             <Toolbar sx={{minHeight: theme.mixins.toolbar.minHeight}}/>
-
+            {error != '' &&<Box width={'100%'} mt={2} sx={{margin: 2}}>
+                <Box
+                    fontWeight={'bold'}
+                    fontSize={22}
+                    whiteSpace={'break-spaces'}
+                    flexDirection={'row'}
+                    color={'red'}
+                  >
+                    {error}
+                </Box>
+              </Box>
+            }
             <Box width={'100%'} mt={2} sx={{margin: 2}}>
               <Box
                 fontWeight={'bold'}
@@ -223,6 +252,7 @@ export default function EditTemplate() {
                       label='Name'
                       value={props.name}
                       onChange={handleTextChange}
+                      required={true}
                     />
                   </Box>
                 }
@@ -304,7 +334,7 @@ export default function EditTemplate() {
                 errorMessage={''}
                 loadingMessage={`Fetching template...`}
                 hasToolbar={false}
-                maxHeight={!isNew ? '67vh' : '55vh'}
+                maxHeight={!isNew ? (error =='' ? '65vh': '57vh') : (error == '' ? '53vh': '45vh')}
               />
             </Box>
           </Box>

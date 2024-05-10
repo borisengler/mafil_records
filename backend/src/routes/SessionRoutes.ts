@@ -15,10 +15,7 @@ export const getSession = async (req, res) => {
       'StudyInstanceUID': study_instance_uuid
     };
 
-    console.log('StudyInstanceUID');
-    console.log(study_instance_uuid);
     const response = await axios.get(mafilApiUrl + 'sessions', {headers});
-    console.log(response);
     const sessions: Session[] = response.data.results;
     if (sessions.length == 0) {
       res.status(200).json();
@@ -50,6 +47,17 @@ export const getSession = async (req, res) => {
         siemens_respiration: mrMeasurement.siemens_respiration,
         siemens_PT: mrMeasurement.siemens_respiration,
         time_of_measurement: new Date(mrMeasurement.time_of_measurement),
+        series_description: mrMeasurement.series_description,
+        series_number: mrMeasurement.series_number,
+        protocol_name: mrMeasurement.protocol_name,
+        software_version: mrMeasurement.software_version,
+        body_part_examined: mrMeasurement.body_part_examined,
+        repetition_time: mrMeasurement.repetition_time,
+        flip_angle: mrMeasurement.flip_angle,
+        spacing_between_slices: mrMeasurement.spacing_between_slices,
+        slice_thickness: mrMeasurement.slice_thickness,
+        patient_position: mrMeasurement.patient_position,
+        inversion_time: mrMeasurement.inversion_time,
       }
     });
     const result: FormattedSession = {
@@ -59,10 +67,8 @@ export const getSession = async (req, res) => {
       visit: session.visit,
       measurements: measurements
     }
-    console.log(result.measurements);
     res.status(200).json(result);
   } catch (error) {
-    console.log(error);
     res.status(500).json({message: 'Error fetching sessions'});
   }
 }
@@ -94,7 +100,18 @@ export const postSession = async (req, res) => {
           siemens_EKG: fMeasurement.siemens_EKG,
           siemens_respiration: fMeasurement.siemens_respiration,
           siemens_PT: fMeasurement.siemens_PT,
-          time_of_measurement: new Date(fMeasurement.time_of_measurement).toTimeString().split(' ')[0]
+          time_of_measurement: new Date(fMeasurement.time_of_measurement).toTimeString().split(' ')[0],
+          series_description: fMeasurement.series_description,
+          series_number: fMeasurement.series_number,
+          protocol_name: fMeasurement.protocol_name,
+          software_version: fMeasurement.software_version,
+          body_part_examined: fMeasurement.body_part_examined,
+          repetition_time: fMeasurement.repetition_time,
+          flip_angle: fMeasurement.flip_angle,
+          spacing_between_slices: fMeasurement.spacing_between_slices,
+          slice_thickness: fMeasurement.slice_thickness,
+          patient_position: fMeasurement.patient_position,
+          inversion_time: fMeasurement.inversion_time,
         }]
       }
     }) : [];
@@ -114,7 +131,6 @@ export const postSession = async (req, res) => {
     const response = await axios.post(mafilApiUrl + `sessions`, requestBody, {headers});
     res.status(200).json();
   } catch (error) {
-    console.log(error);
     res.status(500).json({message: 'Error posting session'});
   }
 }
@@ -148,7 +164,18 @@ export const patchSession = async (req, res) => {
           siemens_EKG: fMeasurement.siemens_EKG,
           siemens_respiration: fMeasurement.siemens_respiration,
           siemens_PT: fMeasurement.siemens_PT,
-          time_of_measurement: new Date(fMeasurement.time_of_measurement).toTimeString().split(' ')[0]
+          time_of_measurement: new Date(fMeasurement.time_of_measurement).toTimeString().split(' ')[0],
+          series_description: fMeasurement.series_description,
+          series_number: fMeasurement.series_number,
+          protocol_name: fMeasurement.protocol_name,
+          software_version: fMeasurement.software_version,
+          body_part_examined: fMeasurement.body_part_examined,
+          repetition_time: fMeasurement.repetition_time,
+          flip_angle: fMeasurement.flip_angle,
+          spacing_between_slices: fMeasurement.spacing_between_slices,
+          slice_thickness: fMeasurement.slice_thickness,
+          patient_position: fMeasurement.patient_position,
+          inversion_time: fMeasurement.inversion_time,
         }]
       }
     });
@@ -159,11 +186,13 @@ export const patchSession = async (req, res) => {
       comment: body.comment,
       measurements: measurements
     }
+    const jsonString = JSON.stringify(requestBody, null, 2); // null and 2 are for formatting (pretty-print)
 
+    // Write the JSON string to a file
+    fs.writeFileSync('data.json', jsonString);
     const response = await axios.patch(mafilApiUrl + `sessions/${session_uuid}`, requestBody, {headers});
     res.status(200).json();
   } catch (error) {
-    console.log(error);
     res.status(500).json({message: 'Error patching session'});
   }
 }

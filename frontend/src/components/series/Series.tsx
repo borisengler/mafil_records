@@ -10,7 +10,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import React, {useEffect, useState} from 'react';
 import CommonCard, {ExpandMore} from '../common/CommonCard';
 import {MultiLineInput, MultiLineInputProps, SingleLineInput, SingleLineInputProps} from '../common/Inputs';
-import {SeriesData, SeriesProps, FormattedMeasurement} from '../../../../shared/Types';
+import {SeriesData, SeriesProps} from '../../../../shared/Types';
 import {
   CancelRounded,
   CheckCircle,
@@ -53,7 +53,7 @@ interface CheckboxInputProps {
 
 
 export function Series(props: SeriesProps) {
-  type SeriesStateEnum = 'successful' | 'failed' | 'pending';
+  type SeriesStateEnum = 'successful' | 'failed' | 'pending' | 'waiting';
 
   function CheckboxInput({text, checked, name}: CheckboxInputProps) {
     return (
@@ -77,7 +77,6 @@ export function Series(props: SeriesProps) {
     });
   }, [props.allExpanded])
   const [template, setTemplate] = useState('');
-  const [measurement, setMeasurement] = useState<FormattedMeasurement | null>(null);
 
   const [seriesData, setSeriesData] = useState<SeriesData>({
     // Default values
@@ -182,13 +181,19 @@ export function Series(props: SeriesProps) {
                 newSeriesData[element.key] = element.valueA == 'true';
               }
             });
-
+            const fyzio_raw_file = `${props.projectAcronym}_${props.visitId}_XX_rest1`;
+            const visitIdWithoutLetter = props.visitId.substring(1);
+            const stim_log_file = `${props.projectAcronym}-${newSeriesData['stim_protocol']}-${visitIdWithoutLetter}-1`
+            if (newSeriesData.validation_status != 'NOT_FOUND') {
+              newSeriesData["fyzio_raw_file"] = fyzio_raw_file;
+              newSeriesData["stim_log_file"] = stim_log_file;
+            }
           }
         }
 
         if (props.downloadedMeasurement) {
           if (!measurementDownloaded) {
-            setDisplayData({
+              setDisplayData({
               series_instance_uid: props.validatedSerie ? props.validatedSerie.SeriesInstanceUID : '',
               seq_state: displayData.seq_state,
               is_selected: displayData.is_selected,
@@ -223,7 +228,7 @@ export function Series(props: SeriesProps) {
   useEffect(() => {
     if (props.validatedSerie !== null) {
       localStorage.setItem(`series-${props.validatedSerie.SeriesInstanceUID}`, JSON.stringify(displayData))
-      props.onChange(displayData);
+      props.onChange(displayData, props.order);
     }
   }, [displayData]);
 
@@ -261,7 +266,7 @@ export function Series(props: SeriesProps) {
 
   const handleSeriesCopy = () => {
     if (props.validatedSerie !== null && props.validatedSerie.SeriesInstanceUID !== null) {
-      setDisplayData({
+    setDisplayData({
         ...displayData,
         is_selected: !displayData.is_selected
       });
@@ -400,7 +405,7 @@ export function Series(props: SeriesProps) {
             <span>
               <Select fullWidth
                       defaultValue={'pending'}
-                      value={displayData.seq_state}
+                      value={disableInteractions ? 'waiting' : displayData.seq_state}
                       onChange={handleSeqStateChange}
                       sx={{color: getSelectColor}}
                       disabled={disableInteractions}
@@ -408,6 +413,7 @@ export function Series(props: SeriesProps) {
                 <MenuItem value={'successful'}>Successful</MenuItem>
                 <MenuItem value={'failed'}>Failed</MenuItem>
                 <MenuItem value={'pending'}>Pending</MenuItem>
+                {disableInteractions && <MenuItem value={'waiting'}>Waiting</MenuItem>}
               </Select>
             </span>
           </Box>
