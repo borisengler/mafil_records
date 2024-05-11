@@ -72,6 +72,7 @@ function Measuring() {
     return localStudy ? JSON.parse(localStudy) : {};
   });
   const [expanded, setExpanded] = useState(false);
+  const [donwloadNewSession, setDownloadNewSession] = useState(false);
 
 
   const [studyData, setStudyData] = useState<StudyData>({
@@ -93,17 +94,24 @@ function Measuring() {
       sessionSucess = await patchSession(auth.user ? auth.user.access_token : '', session);
     } else {
       sessionSucess = await postSession(auth.user ? auth.user.access_token : '', {...session, visit: props.AccessionNumber, studyInstanceUID: props.StudyInstanceUID});
+      setDownloadNewSession(true);
     }
     if (seriesSuccess && studySuccess && sessionSucess) {
       setSaveStatus('success');
       return true;
     }
-
-
-
     setSaveStatus('failed');
     return false;
   }
+
+  useEffect(() => {
+    console.log('session');
+    console.log(session);
+  },[session]);
+
+  useEffect(() => {
+    fetchData();
+  },[donwloadNewSession]);
 
   async function fetchMafilData() {
     try {
@@ -136,9 +144,10 @@ function Measuring() {
 
         try {
           const newSession = await fetchSession(auth.user ? auth.user.access_token : '', currentStudy.StudyInstanceUID);
-          if (session.uuid == '' && newSession !== undefined) {
+          if ((session.uuid == '' && newSession !== undefined) || donwloadNewSession) {
             setMafilMeasurements(newSession.measurements);
             setSession(newSession);
+            setDownloadNewSession(false);
           }
         } catch (error) {
         }
