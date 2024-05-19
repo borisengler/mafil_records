@@ -56,6 +56,7 @@ export function TemplateItemCard(props: TemplateItemProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState('');
+  const [order, setOrder] = useState(props.template.order_for_displaying ? props.template.order_for_displaying.toString() : '');
 
   const [addedPairsIndex, setAddedPairsIndex] = useState(0);
   const [addedPairs, setAddedPairs] = useState<AddedMeasurementTemplatePairs[]>(() => {
@@ -74,7 +75,6 @@ export function TemplateItemCard(props: TemplateItemProps) {
     const {name, value} = event.target;
     setTemplate({...template, name: value});
   }
-  const [order, setOrder] = useState(props.template.order_for_displaying ? props.template.order_for_displaying.toString() : '');
 
   useEffect(() => {
     props.onChange(template);

@@ -9,10 +9,7 @@ import {
   MenuItem,
   Select,
   SelectChangeEvent,
-  TextField,
-  TextareaAutosize,
   Toolbar,
-  Typography,
   useTheme
 } from '@mui/material';
 import React, {useEffect, useState, version} from 'react';
@@ -77,6 +74,20 @@ export default function EditTemplate() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [selectedProjectId, setSelectedProjectId] = useState<string>('');
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchData();
+    }, 30 * 1000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   const handleDelete = (name: string) => {
     const newTemplates = props.measurementTemplates.filter((template) => template.name !== name)
     setProps({...props, measurementTemplates: newTemplates});
@@ -136,20 +147,6 @@ export default function EditTemplate() {
     setProjects(fetchedProjects);
     setSelectedProjectId(props.project_uuid);
   }
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      fetchData();
-    }, 30 * 1000);
-
-    return () => {
-      clearInterval(interval);
-    };
-  }, []);
-
-  useEffect(() => {
-    fetchData();
-  }, []);
 
   const handleTextChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const {name, value} = event.target;
