@@ -1,6 +1,6 @@
-import React from "react";
-import { Box } from "@mui/material";
-import CommonCard from "./CommonCard";
+import React from 'react';
+import {Box} from '@mui/material';
+import CommonCard from './CommonCard';
 
 interface MessageProps {
   title: string;
@@ -8,10 +8,10 @@ interface MessageProps {
   error?: boolean;
 }
 
-function Message({ title, text, error }: MessageProps) {
+function Message({title, text, error}: MessageProps) {
   return (
     <CommonCard>
-      <Box sx={{ justifyContent: 'center', textAlign: 'center' }}>
+      <Box sx={{justifyContent: 'center', textAlign: 'center'}}>
         <h1>{title}</h1>
         <Box>{text}</Box>
       </Box>

@@ -1,4 +1,8 @@
   version: '3'
+  networks:
+    default:
+      driver_opts:
+        com.docker.network.driver.mtu: 1442
   services:
     frontend:
       build:
@@ -7,7 +11,8 @@
       ports:
         - "3000:3000"
       volumes:
-        - ./frontend:/app
+        # - ./frontend:/app
+        - ./shared:/app/shared
       environment:
         - PORT=3000
     backend:
@@ -16,11 +21,16 @@
         dockerfile: backend.dockerfile
       ports:
         - "4000:4000"
+      volumes:
+      #   - ./backend:/app
+        - ./shared:/app/shared
+        - ./.env:/app/.env
       environment:
         - PORT=4000
         - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
       depends_on:
         - db
+      restart: always
     db:
       image: postgres:latest
       env_file:
@@ -40,6 +50,8 @@
         - ./frontend/build:/usr/share/nginx/html
         - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
         - /etc/letsencrypt:/etc/letsencrypt
+      depends_on:
+        - frontend
 
   volumes:
     pgdata:

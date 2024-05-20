@@ -1,14 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from 'react';
 
 const SidebarContext = React.createContext<{
   sidebarWidth: number;
   setSidebarWidth: React.Dispatch<React.SetStateAction<number>>;
 }>({
   sidebarWidth: 380,
-  setSidebarWidth: () => { },
+  setSidebarWidth: () => {
+  },
 });
 
-export const SidebarProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const SidebarProvider: React.FC<{ children: React.ReactNode }> = ({children}) => {
   const [sidebarWidth, setSidebarWidth] = useState(() => {
     const storedWidth = localStorage.getItem('sidebarWidth');
     return storedWidth ? parseInt(storedWidth, 10) : 380;
@@ -19,7 +20,7 @@ export const SidebarProvider: React.FC<{ children: React.ReactNode }> = ({ child
   }, [sidebarWidth]);
 
   return (
-    <SidebarContext.Provider value={{ sidebarWidth, setSidebarWidth }}>
+    <SidebarContext.Provider value={{sidebarWidth, setSidebarWidth}}>
       {children}
     </SidebarContext.Provider>
   );

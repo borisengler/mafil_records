@@ -1,24 +1,46 @@
-import { Box, Divider } from '@mui/material';
-import React, { useEffect, useState } from 'react';
-import { useAuth } from 'react-oidc-context';
+import {Box, Divider} from '@mui/material';
+import React, {useEffect, useState} from 'react';
+import {useAuth} from 'react-oidc-context';
 import RefreshButton from '../components/common/RefreshButton';
-import { BlueButton, RedButton } from '../components/common/Buttons';
+import {BlueButton, RedButton} from '../components/common/Buttons';
 import InfoItem from '../components/common/InfoItem';
-import { MultiLineInput } from '../components/common/Inputs';
+import {MultiLineInput} from '../components/common/Inputs';
 import ListItems from '../components/common/ListItems';
 import SaveButton from '../components/common/SaveButton';
 import SortButton from '../components/common/SortButton';
 import CommonAppBar from '../components/global/AppBarContent';
-import { ResizableSidebar } from '../components/global/ResizableSidebar';
-import { Series, SeriesProps } from '../components/series/Series';
-import { StudyProps } from '../components/studies/Study';
-import { SidebarProvider } from '../contexts/SidebarContext';
-import { fetchSeries } from '../utils/PACSFetchers';
-import { withAuthentication } from '../utils/WithAuthentication';
+import {ResizableSidebar} from '../components/global/ResizableSidebar';
+import {Series} from '../components/series/Series';
+import {TemplateDropdown} from '../components/series/TemplateDropdown';
+import {SidebarProvider} from '../contexts/SidebarContext';
+import {fetchSeries} from '../utils/PACSFetchers';
+import {withAuthentication} from '../utils/WithAuthentication';
 import removeSeriesFromLocalStorage from '../utils/RemoveSeriesFromLocalStorage';
 import removeStudiesFromLocalStorage from '../utils/RemoveStudiesFromLocalStorage';
-import { saveSeriesData, saveStudyData } from '../utils/Savers';
-import { getStudyData } from '../utils/DatabaseFetchers';
+import {saveSeriesData, saveStudyData} from '../utils/Savers';
+import {getStudyData} from '../utils/DatabaseFetchers';
+import {postValidationData} from '../utils/ValidationFetchers';
+import {
+  fetchProjectDefaultTemplates,
+  fetchProjectTemplates,
+  fetchProjects,
+  fetchSession,
+  patchSession,
+  postSession
+} from '../utils/MAFILFetchers';
+import {
+  FormattedMeasurement,
+  FormattedSession,
+  FormattedTemplate,
+  MissingSeries,
+  PACSSeries,
+  Project,
+  SeriesData,
+  StudyProps,
+  ValidatedSeries
+} from '../../../shared/Types';
+import ExpandButton from '../components/common/ExpandButton';
+import { getTemplateFromSession } from '../utils/SessionToTemplate';
 
 export interface StudyData {
   study_instance_uid: string;
@@ -29,25 +51,82 @@ function Measuring() {
   const auth = useAuth();
   const [open, setOpen] = React.useState(true);
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
-  const [seriesJson, setSeriesJson] = useState<SeriesProps[]>([]);
+  const [pacsSeries, setPacsSeries] = useState<PACSSeries[]>([]);
+  const [mafilMeasurements, setMafilMeasurements] = useState<FormattedMeasurement[]>([]);
+  const [session, setSession] = useState<FormattedSession>({
+    uuid: '',
+    visit: '',
+    comment: '',
+    measurements: [],
+    studyInstanceUID: ''
+  });
+  const [validatedSeries, setValidatedSeries] = useState<ValidatedSeries[]>([]);
+  const [missingSeries, setMissingSeries] = useState<MissingSeries[]>([]);
   const [selectedSeqId, setSelectedSeqId] = React.useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'success' | 'failed'>('idle');
   const [fetchStatus, setFetchStatus] = useState<'idle' | 'saving' | 'success' | 'failed'>('idle');
   const [fetchError, setFetchError] = useState<string | null>(null);
+  const [props, setProps] = useState<StudyProps>(() => {
+    const localStudy = localStorage.getItem(`currentStudy`);
+    return localStudy ? JSON.parse(localStudy) : {};
+  });
+  const [expanded, setExpanded] = useState(false);
+  const [donwloadNewSession, setDownloadNewSession] = useState(false);
+
+
+  const [studyData, setStudyData] = useState<StudyData>({
+    study_instance_uid: props.StudyInstanceUID,
+    general_comment: '',
+  });
+
+
+  const [studyTemplates, setStudyTemplates] = useState<FormattedTemplate[]>([]);
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string>('');
 
   async function saveRecords(): Promise<boolean> {
     setSaveStatus('saving');
+
     const seriesSuccess = await saveSeriesData(props.StudyInstanceUID);
     const studySuccess = await saveStudyData(props.StudyInstanceUID);
-
-    if (seriesSuccess && studySuccess) {
+    var sessionSucess = false;
+    if (session.uuid !== undefined) {
+      sessionSucess = await patchSession(auth.user ? auth.user.access_token : '', session);
+    } else {
+      sessionSucess = await postSession(auth.user ? auth.user.access_token : '', {...session, visit: props.AccessionNumber, studyInstanceUID: props.StudyInstanceUID});
+      setDownloadNewSession(true);
+    }
+    if (seriesSuccess && studySuccess && sessionSucess) {
       setSaveStatus('success');
       return true;
     }
-
     setSaveStatus('failed');
     return false;
+  }
+
+  useEffect(() => {
+    console.log('session');
+    console.log(session);
+  },[session]);
+
+  useEffect(() => {
+    fetchData();
+  },[donwloadNewSession]);
+
+  async function fetchMafilData() {
+    try {
+      const fetchedProjects: Project[] = await fetchProjects(auth.user ? auth.user.access_token : '');
+      const project = fetchedProjects.find((project) => project.acronym == props.ReferringPhysicianName);
+      const fetchedTemplates: FormattedTemplate[] = await fetchProjectTemplates(project ? project.uuid : '', auth.user ? auth.user.access_token : '');
+      const defaultTemplate = await fetchProjectDefaultTemplates(project ? project.uuid : '', auth.user ? auth.user.access_token : '');
+      if (defaultTemplate !== undefined && selectedTemplateId == '') {
+        setSelectedTemplateId(defaultTemplate.id);
+      }
+      setStudyTemplates(fetchedTemplates);
+    } catch (err) {
+
+    }
+
   }
 
   async function fetchData() {
@@ -58,10 +137,21 @@ function Measuring() {
         const currentStudy = JSON.parse(currentStudyString);
         const json = await fetchSeries(currentStudy.AccessionNumber);
         // Sort the series by series number, highest (newly added) first
-        json.sort((a: SeriesProps, b: SeriesProps) => a.SeriesNumber - b.SeriesNumber);
+        json.sort((a: PACSSeries, b: PACSSeries) => a.SeriesNumber - b.SeriesNumber);
         setFetchError(null);
         setFetchStatus('success');
-        setSeriesJson(json);
+        setPacsSeries(json);
+
+        try {
+          const newSession = await fetchSession(auth.user ? auth.user.access_token : '', currentStudy.StudyInstanceUID);
+          if ((session.uuid == '' && newSession !== undefined) || donwloadNewSession) {
+            setMafilMeasurements(newSession.measurements);
+            setSession(newSession);
+            setDownloadNewSession(false);
+          }
+        } catch (error) {
+        }
+
       } catch (error) {
         setFetchStatus('failed');
         setFetchError('Fetching series failed, check internet connection and try again. If problem persists, contact your system administrator.');
@@ -74,12 +164,13 @@ function Measuring() {
     // Every 30 seconds, fetch series from PACS-API
     const interval = setInterval(() => {
       fetchData();
+      fetchMafilData();
     }, 30 * 1000);
 
     return () => {
-      clearInterval(interval);
+    clearInterval(interval);
     };
-  }, []);
+  }, [selectedTemplateId]);
 
   const toggleDrawer = () => {
     setOpen(!open);
@@ -89,22 +180,28 @@ function Measuring() {
     const newSortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
     setSortOrder(newSortOrder);
 
-    const sortedData = [...seriesJson];
+    const sortedData = [...pacsSeries];
     if (newSortOrder === 'asc') {
-      sortedData.sort((a: SeriesProps, b: SeriesProps) => a.SeriesNumber - b.SeriesNumber);
+      sortedData.sort((a: PACSSeries, b: PACSSeries) => a.SeriesNumber - b.SeriesNumber);
     } else {
-      sortedData.sort((a: SeriesProps, b: SeriesProps) => b.SeriesNumber - a.SeriesNumber);
+      sortedData.sort((a: PACSSeries, b: PACSSeries) => b.SeriesNumber - a.SeriesNumber);
     }
-    setSeriesJson(sortedData);
+    setPacsSeries(sortedData);
   };
 
   useEffect(() => {
     fetchData();
+    fetchMafilData();
   }, []);
 
   function handleRefresh() {
     fetchData();
+    fetchMafilData();
   };
+
+  function toggleExpand() {
+    setExpanded(!expanded);
+  }
 
   async function handleFinishStudy() {
     const saveSuccess = await saveRecords();
@@ -129,59 +226,33 @@ function Measuring() {
   const handleSeriesPaste = () => {
     return selectedSeqId;
   };
-
-  function listSeries() {
-    return seriesJson.map((series) => (
-      <Series
-        key={series.SeriesInstanceUID}
-        SeriesInstanceUID={series.SeriesInstanceUID}
-        SequenceFileName={series.SequenceFileName}
-        AcquisitionMatrix={series.AcquisitionMatrix}
-        BodyPartExamined={series.BodyPartExamined}
-        FlipAngle={series.FlipAngle}
-        ImageType={series.ImageType}
-        InversionTime={series.InversionTime}
-        NumberOfSeriesRelatedInstances={series.NumberOfSeriesRelatedInstances}
-        OperatorsName={series.OperatorsName}
-        PAT={series.PAT}
-        PatientPosition={series.PatientPosition}
-        PercentPhaseFieldOfView={series.PercentPhaseFieldOfView}
-        ProtocolName={series.ProtocolName}
-        RepetitionTime={series.RepetitionTime}
-        SOPClassUID={series.SOPClassUID}
-        SeriesDescription={series.SeriesDescription}
-        SeriesNumber={series.SeriesNumber}
-        SeriesTime={series.SeriesTime}
-        SliceThickness={series.SliceThickness}
-        SoftwareVersions={series.SoftwareVersions}
-        SpacingBetweenSlices={series.SpacingBetweenSlices}
-        StationName={series.StationName}
-        onCopy={handleSeriesCopy}
-        onPaste={handleSeriesPaste}
-      />
-    ));
+  function saveAsTemplate() {
+    const template = getTemplateFromSession(session);
+    localStorage.setItem('isFromSession', 'true');
+    localStorage.setItem('currentTemplate', JSON.stringify(template));
   }
-
-  const [props, setProps] = useState<StudyProps>(() => {
-    const localStudy = localStorage.getItem(`currentStudy`);
-    return localStudy ? JSON.parse(localStudy) : {};
-  });
-
-  const [studyData, setStudyData] = useState<StudyData>({
-    study_instance_uid: props.StudyInstanceUID,
-    general_comment: '',
-  });
 
   useEffect(() => {
     (async () => {
-      console.log(`useEffect called with ${props.StudyInstanceUID}`)
       const fetchedStudyData = await getStudyData(props.StudyInstanceUID);
       setStudyData(fetchedStudyData);
     })();
   }, [props.StudyInstanceUID]);
 
+  useEffect(() => {
+    (async () => {
+      const choosenTemplate = studyTemplates.find((template) => template.id === selectedTemplateId);
+
+      const {validatedSeries, missingSeries} = await postValidationData(pacsSeries, choosenTemplate);
+      setValidatedSeries(validatedSeries);
+      setMissingSeries(missingSeries);
+    })()
+
+  }, [studyTemplates, selectedTemplateId, pacsSeries]);
+
   const handleTextChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = event.target;
+    const {name, value} = event.target;
+    setSession({...session, [name]: value});
     setStudyData({
       ...studyData,
       [name]: value,
@@ -189,8 +260,96 @@ function Measuring() {
   };
 
   useEffect(() => {
-    localStorage.setItem(`study-${props.StudyInstanceUID}`, JSON.stringify({ ...studyData }))
+    localStorage.setItem(`study-${props.StudyInstanceUID}`, JSON.stringify({...studyData}))
   }, [studyData]);
+
+  function handleSeriesChange(measurement: SeriesData, order: number | null = null) {
+    const filteredPacsSeries = pacsSeries.filter((s) => s.SeriesInstanceUID == measurement.series_instance_uid);
+    const pacsSerie = filteredPacsSeries[0];
+    setSession(prevSession => {
+      const updatedMeasurements = prevSession.measurements !== undefined
+        ? prevSession.measurements.filter(m => m.series_instance_UID !== measurement.series_instance_uid)
+        : [];
+        const newMeasurement: FormattedMeasurement = {
+          log_file_name: measurement.stim_log_file,
+          stimulation_protocol: measurement.stim_protocol,
+          raw_file_name: measurement.fyzio_raw_file,
+          order_of_measurement: order ? order : 0,
+          study_id: props.StudyID,
+          comment: measurement.comment,
+          series_instance_UID: measurement.series_instance_uid,
+          fyzio_EKG: measurement.bp_ekg,
+          fyzio_respiration_belt: measurement.bp_resp,
+          fyzio_GSR: measurement.bp_gsr,
+          fyzio_ACC: measurement.bp_acc,
+          fyzio_pulse_oxymeter: measurement.general_et,
+          fyzio_external: measurement.general_eeg,
+          siemens_EKG: measurement.siemens_ekg,
+          siemens_respiration: measurement.siemens_resp,
+          siemens_PT: measurement.siemens_pt,
+          time_of_measurement:  new Date(measurement.measured),
+          series_description: pacsSerie.SeriesDescription,
+          series_number: pacsSerie.SeriesNumber,
+          protocol_name: pacsSerie.ProtocolName,
+          software_version: pacsSerie.SoftwareVersions,
+          body_part_examined: pacsSerie.BodyPartExamined,
+          repetition_time: pacsSerie.RepetitionTime,
+          flip_angle: pacsSerie.FlipAngle,
+          spacing_between_slices: pacsSerie.SpacingBetweenSlices,
+          slice_thickness: pacsSerie.SliceThickness,
+          patient_position: pacsSerie.PatientPosition,
+          inversion_time: pacsSerie.InversionTime,
+        }
+      return { ...prevSession, measurements: [...updatedMeasurements, newMeasurement] };
+    });
+  }
+
+  function listSeries() {
+    var order = 0;
+
+    return [
+      ...validatedSeries.map((series) => { 
+        order = order + 1;
+      return (
+        <Series
+          key={`validated-${series.SeriesInstanceUID}`}
+          order={order}
+          validatedSerie={series}
+          templateSerie={null}
+          downloadedMeasurement={
+            mafilMeasurements !== undefined
+              ? mafilMeasurements.filter((measurement) => measurement.series_instance_UID == series.SeriesInstanceUID)[0] 
+              : null
+          }
+          onCopy={handleSeriesCopy}
+          onPaste={handleSeriesPaste}
+          allExpanded={expanded}
+          choosenTemplate={selectedTemplateId}
+          onChange={handleSeriesChange}
+          projectAcronym={props.ReferringPhysicianName}
+          visitId={props.AccessionNumber}
+        />
+      )}),
+      ...missingSeries.map((series) => {
+        order = order + 1;
+        return (
+        <Series
+          key={`missing-${series.SeriesDescription}`}
+          validatedSerie={null}
+          templateSerie={series}
+          downloadedMeasurement={null}
+          onCopy={handleSeriesCopy}
+          onPaste={handleSeriesPaste}
+          allExpanded={expanded}
+          choosenTemplate={selectedTemplateId}
+          onChange={handleSeriesChange}
+          order={order}
+          projectAcronym={props.ReferringPhysicianName}
+          visitId={props.AccessionNumber}
+        />
+      )}),
+    ];
+  }
 
   return (
     <SidebarProvider>
@@ -201,9 +360,11 @@ function Measuring() {
           pageTitle='Measuring and taking notes'
           content={
             <React.Fragment>
-              <SortButton sortOrder={sortOrder} onClick={toggleSortOrder} />
-              <SaveButton saveStatus={saveStatus} onClick={saveRecords} />
-              <RefreshButton fetchStatus={fetchStatus} onClick={handleRefresh} tooltipTitle='Re-fetch series for current study' />
+              <SortButton sortOrder={sortOrder} onClick={toggleSortOrder}/>
+              <ExpandButton expanded={expanded} onClick={toggleExpand}/>
+              <SaveButton saveStatus={saveStatus} onClick={saveRecords}/>
+              <RefreshButton fetchStatus={fetchStatus} onClick={handleRefresh}
+                             tooltipTitle='Re-fetch series for current study'/>
             </React.Fragment>
           }
         />
@@ -211,21 +372,27 @@ function Measuring() {
           open={open}
           toggleDrawer={toggleDrawer}
         >
-          <InfoItem label="Measuring operator" text={auth.user ? auth.user.profile.name : ''} />
-          <InfoItem label="Visit ID" text={props.AccessionNumber} />
-          <InfoItem label="Study UID" text={props.StudyInstanceUID} />
-          <InfoItem label="Patient name" text={props.PatientName} />
+          <InfoItem label='Measuring operator' text={auth.user ? auth.user.profile.name : ''}/>
+          <InfoItem label='Visit ID' text={props.AccessionNumber}/>
+          <InfoItem label='Study UID' text={props.StudyInstanceUID}/>
+          <InfoItem label='Patient name' text={props.PatientName}/>
+          <TemplateDropdown
+            selectedTemplate={selectedTemplateId}
+            handleTemplateChange={setSelectedTemplateId}
+            templates={studyTemplates}
+          />
           <MultiLineInput
-            label="General comment to study"
-            name="general_comment"
-            value={studyData.general_comment}
+            label='General comment to session'
+            name='comment'
+            value={session.comment}
             onChange={handleTextChange}
           />
-          <Box gap={2} display='flex' flexDirection="row" flexWrap='wrap' justifyContent="space-between">
-            <BlueButton text="Finish study" path="/success" onClick={handleFinishStudy} />
-            <RedButton text="Back to studies" path="/studies" onClick={handleBackToStudies} />
+          <Box gap={2} display='flex' flexDirection='row' flexWrap='wrap' justifyContent='space-between'>
+            <BlueButton text='Finish study' path='/success' onClick={handleFinishStudy}/>
+            <BlueButton text='Save as template' path='/template-edit' onClick={saveAsTemplate}/>
+            <RedButton text='Back to studies' path='/studies' onClick={handleBackToStudies}/>
           </Box>
-          <Divider sx={{ my: 3 }} />
+          <Divider sx={{my: 3}}/>
         </ResizableSidebar>
         <ListItems
           loading={loading}
@@ -234,7 +401,7 @@ function Measuring() {
           loadingMessage={`Fetching series...`}
         />
       </React.Fragment>
-    </SidebarProvider >
+    </SidebarProvider>
   );
 }
 

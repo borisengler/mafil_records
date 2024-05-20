@@ -6,9 +6,23 @@ export interface SingleLineInputProps {
   label: string;
   value: string;
   onChange: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+  type?: string;
+  required?: boolean;
+  error?: boolean;
+  helperText?: string;
 }
 
-export function SingleLineInput({ name, label, value, onChange }: SingleLineInputProps) {
+export function SingleLineInput(
+  {
+    name,
+    label,
+    value,
+    onChange,
+    type = 'text',
+    required = false,
+    error = required && value == '',
+    helperText = 'Field can\'t be empty'
+  }: SingleLineInputProps) {
   const handleTextChange = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
     onChange(event);
   };
@@ -21,7 +35,11 @@ export function SingleLineInput({ name, label, value, onChange }: SingleLineInpu
       value={value}
       onChange={handleTextChange}
       fullWidth
-      variant="outlined"
+      variant='outlined'
+      type={type}
+      required={required}
+      error={error}
+      helperText={error && helperText}
     />
   )
 }
@@ -33,7 +51,7 @@ export interface MultiLineInputProps {
   onChange: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
 }
 
-export function MultiLineInput({ name, label, value, onChange }: MultiLineInputProps) {
+export function MultiLineInput({name, label, value, onChange}: MultiLineInputProps) {
   const handleTextChange = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
     onChange(event);
   };
@@ -47,7 +65,7 @@ export function MultiLineInput({ name, label, value, onChange }: MultiLineInputP
       onChange={handleTextChange}
       fullWidth
       multiline
-      variant="outlined"
+      variant='outlined'
       maxRows={5}
     />
   )

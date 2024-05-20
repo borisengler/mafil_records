@@ -1,4 +1,5 @@
 import DateRange from '../components/studies/DateRangeSelector';
+import {PacsStudyAPI, PacsStudy, PACSSeries} from '../../../shared/Types';
 
 export async function fetchStudies(dateRange: DateRange) {
   const url = `/api/pacs/studies?start=${dateRange.start}&end=${dateRange.end}`;
@@ -31,7 +32,7 @@ export async function fetchSeries(accessionNumber: string) {
         method: 'GET',
         mode: 'cors',
       });
-    const series = await resp.json();
+    const series: PACSSeries[] = await resp.json();
     return series;
   } catch (err) {
     console.error(err)

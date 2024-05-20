@@ -8,9 +8,10 @@ function withAuthentication<P extends object>(
 ): React.FunctionComponent<P> {
   const WithAuth: React.FC<P> = (props) => {
     const auth = useAuth();
+    console.log(auth);
 
     if (!auth.isLoading && !auth.isAuthenticated) {
-      return <Navigate to="/" replace />;
+      return <Navigate to='/' replace />;
     }
 
     if (auth.isLoading) {

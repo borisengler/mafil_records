@@ -1,16 +1,16 @@
 import React from 'react';
-import { Card, IconButton, IconButtonProps } from '@mui/material';
+import {Card, IconButton, IconButtonProps} from '@mui/material';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
-import { styled } from '@mui/material/styles';
-import { ReactNode } from 'react';
+import {styled} from '@mui/material/styles';
+import {ReactNode} from 'react';
 
 interface AttributeProps {
   title: string;
   text: string;
 }
 
-export function Attribute({ title, text }: AttributeProps) {
+export function Attribute({title, text}: AttributeProps) {
   return (
     <Grid item xs={4} lg={4}>
       <Box
@@ -31,9 +31,9 @@ interface ExpandMoreProps extends IconButtonProps {
 }
 
 export const ExpandMore = styled((props: ExpandMoreProps) => {
-  const { expand, ...other } = props;
+  const {expand, ...other} = props;
   return <IconButton {...other} />;
-})(({ theme, expand }) => ({
+})(({theme, expand}) => ({
   transform: !expand ? 'rotate(0deg)' : 'rotate(180deg)',
   marginLeft: 'auto',
   transition: theme.transitions.create('transform', {
@@ -45,7 +45,7 @@ interface CommonCardProps {
   children?: ReactNode
 }
 
-function CommonCard({ children }: CommonCardProps) {
+function CommonCard({children}: CommonCardProps) {
   return (
     <Card
       sx={{
