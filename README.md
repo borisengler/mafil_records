@@ -1,6 +1,6 @@
 # Interactive data system to record the process of neurological measurements of volunteers
 
-The records application is the implementation part of a bachelor's thesis. The build submitted together with the thesis is available in this repository under the tag [v1.0.0](https://github.com/Crytastic/mafil-records-app/tree/v1.0.0).
+The records application is the implementation part of a bachelor's thesis. The build submitted together with the thesis is available in this repository under the tag [v1.0.0](https://github.com/borisengler/mafil_records/releases/tag/v1.0.0).
 
 It was developed with the goal of deploying it to a specific environment. While it is possible to run all services by executing `docker-compose up` from the root directory, it should be noted that certain functions will not be operational in this setup. To access the front-end, navigate to http://localhost:3000 in your web browser.
 
