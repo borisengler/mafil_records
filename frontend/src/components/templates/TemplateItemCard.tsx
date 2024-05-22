@@ -157,7 +157,6 @@ export function TemplateItemCard(props: TemplateItemProps) {
   const handleTextChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const {name, value} = event.target;
     const index = template.measurement_template_pairs.findIndex(pair => pair.key === name);
-    console.log(index);
     if (index === -1) {
       const new_pair: MeasurementTemplatePair = {
         key: name,
@@ -181,13 +180,11 @@ export function TemplateItemCard(props: TemplateItemProps) {
       const updatedTemplate = {...template};
       if (value == '') {
         updatedTemplate.measurement_template_pairs.splice(index, 1);
-        console.log(updatedTemplate);
       } else {
         updatedTemplate.measurement_template_pairs[index] = {
           ...updatedTemplate.measurement_template_pairs[index],
           valueA: value,
         }
-        console.log(updatedTemplate);
       }
       setTemplate(updatedTemplate);
     }

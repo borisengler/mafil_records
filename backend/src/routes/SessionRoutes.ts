@@ -1,6 +1,5 @@
 import axios from 'axios';
 import {FormattedMeasurement, FormattedSession, Measurement, Session} from '../../../shared/Types';
-import * as fs from 'fs';
 
 require('dotenv').config();
 const mafilApiUrl = process.env.MAFIL_API_URL;
@@ -122,12 +121,6 @@ export const postSession = async (req, res) => {
       measurements: measurements
     }
 
-    
-    const jsonString = JSON.stringify(requestBody, null, 2); // null and 2 are for formatting (pretty-print)
-
-    // Write the JSON string to a file
-    fs.writeFileSync('data.json', jsonString);
-
     const response = await axios.post(mafilApiUrl + `sessions`, requestBody, {headers});
     res.status(200).json();
   } catch (error) {
@@ -186,10 +179,6 @@ export const patchSession = async (req, res) => {
       comment: body.comment,
       measurements: measurements
     }
-    const jsonString = JSON.stringify(requestBody, null, 2); // null and 2 are for formatting (pretty-print)
-
-    // Write the JSON string to a file
-    fs.writeFileSync('data.json', jsonString);
     const response = await axios.patch(mafilApiUrl + `sessions/${session_uuid}`, requestBody, {headers});
     res.status(200).json();
   } catch (error) {

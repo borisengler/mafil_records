@@ -3,7 +3,6 @@ import {
   FormattedTemplate,
   VersionedTemplate,
 } from '../../../shared/Types'
-import * as fs from 'fs';
 
 const axios = require('axios');
 
@@ -145,11 +144,6 @@ export const postTemplate = async (req, res) => {
     };
     const body = req.body;
 
-    const jsonString = JSON.stringify(body, null, 2); // null and 2 are for formatting (pretty-print)
-
-    // Write the JSON string to a file
-    fs.writeFileSync('data.json', jsonString);
-
     const response = await axios.post(mafilApiUrl + 'templates', body, {headers});
     res.status(200).json();
   } catch (err) {
@@ -166,10 +160,6 @@ export const patchTemplate = async (req, res) => {
       'Authorization': `Bearer ${token}`
     };
     const body = req.body;
-    const jsonString = JSON.stringify(body, null, 2); // null and 2 are for formatting (pretty-print)
-
-    // Write the JSON string to a file
-    fs.writeFileSync('data.json', jsonString);
     const response = await axios.patch(mafilApiUrl + `templates/${getIdFromFormattedId(template_id)}`, body, {headers});
     res.status(200).json();
   } catch (err) {
