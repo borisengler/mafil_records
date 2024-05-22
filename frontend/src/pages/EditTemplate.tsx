@@ -292,7 +292,11 @@ export default function EditTemplate() {
               }
 
               <Box display={'flex'} flexDirection={'row'} mt={2}>
-                <Box sx={{width: '600px', marginRight: '10px'}}>
+                <Box  sx={{
+                    flex: '1 1 500px',
+                    marginRight: '10px',
+                    maxWidth: '600px',
+                  }}>
                   <MultiLineInput
                     name='comment'
                     label='Comment'
@@ -300,7 +304,7 @@ export default function EditTemplate() {
                     onChange={handleTextChange}
                   />
                 </Box>
-                <Box sx={{width: '100px'}}>
+                <Box sx={{flex: '0 0 100px', marginRight: '20px',}}>
                   <SingleLineInput
                     name='order_for_displaying'
                     type='number'
