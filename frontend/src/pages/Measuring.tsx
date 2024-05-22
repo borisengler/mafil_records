@@ -105,11 +105,6 @@ function Measuring() {
   }
 
   useEffect(() => {
-    console.log('session');
-    console.log(session);
-  },[session]);
-
-  useEffect(() => {
     fetchData();
   },[donwloadNewSession]);
 

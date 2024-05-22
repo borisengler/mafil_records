@@ -11,24 +11,18 @@ function OIDCCallback() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log('Inside OIDCCallback useEffect', auth.user, auth);
 
     const handleUserLoaded = () => {
-      console.log('User loaded:', auth.user);
       if (auth.user && auth.user.profile) {
-        console.log('Navigating to /studies');
         navigate('/studies');
       } else {
-        // console.log('Navigating to /');
         navigate('/');
       }
     };
 
-    console.log('Adding user loaded event listener');
     auth.events.addUserLoaded(handleUserLoaded);
 
     return () => {
-      console.log('Cleaning up user loaded event listener');
       auth.events.removeUserLoaded(handleUserLoaded);
     };
   }, [auth, navigate]);
