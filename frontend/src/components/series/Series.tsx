@@ -181,8 +181,8 @@ export function Series(props: SeriesProps) {
                 newSeriesData[element.key] = element.valueA == 'true';
               }
             });
-            const fyzio_raw_file = `${props.projectAcronym}_${props.visitId}_XX_rest1`;
-            const visitIdWithoutLetter = props.visitId.substring(1);
+            const fyzio_raw_file = `${props.projectAcronym}_${props.visitId}_XX_${newSeriesData['stim_protocol']}1`;
+            const visitIdWithoutLetter = props.visitId.substring(0, props.visitId.length - 1);
             const stim_log_file = `${props.projectAcronym}-${newSeriesData['stim_protocol']}-${visitIdWithoutLetter}-1`
             if (newSeriesData.validation_status != 'NOT_FOUND') {
               newSeriesData["fyzio_raw_file"] = fyzio_raw_file;

@@ -241,8 +241,6 @@ export default function EditTemplate() {
                 whiteSpace={'break-spaces'}
                 flexDirection={'row'}
               >
-                {!isNew ?
-                  `Name: ${props.name} | Version: ${props.version} | Project: ${props.project_name}` :
                   <Box width={'65%'}>
                     <SingleLineInput
                       name='name'
@@ -252,12 +250,9 @@ export default function EditTemplate() {
                       required={true}
                     />
                   </Box>
-                }
-
               </Box>
-
               {
-                isNew &&
+                isNew ?
                   <Box display={'flex'} flexDirection={'row'} mt={2}>
                       <FormControl style={{width: '300px'}}>
                           <InputLabel>Select Project</InputLabel>
@@ -286,7 +281,14 @@ export default function EditTemplate() {
                           color='primary'
                         />
                       } label='Is default'/>
-                  </Box>
+                  </Box> :
+                  <Box
+                  fontWeight={'bold'}
+                  fontSize={22}
+                  whiteSpace={'break-spaces'}
+                  flexDirection={'row'}
+                  sx={{marginTop: '10px'}}
+                > Version: {props.version} | Project: {props.project_name}</Box>
               }
 
               <Box display={'flex'} flexDirection={'row'} mt={2}>
@@ -331,7 +333,7 @@ export default function EditTemplate() {
                 errorMessage={''}
                 loadingMessage={`Fetching template...`}
                 hasToolbar={false}
-                maxHeight={!isNew ? (error =='' ? '65vh': '57vh') : (error == '' ? '53vh': '45vh')}
+                maxHeight={!isNew ? (error == '' ? '57vh': '49vh') : (error == '' ? '55vh': '45vh')}
               />
             </Box>
           </Box>
