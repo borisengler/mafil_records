@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {IconButton, MenuItem, Select, SelectChangeEvent, Tooltip, FormControl, InputLabel} from '@mui/material';
+import { MenuItem, Select, SelectChangeEvent, FormControl, InputLabel} from '@mui/material';
 import {FormattedTemplate} from '../../../../shared/Types';
 
 
@@ -7,12 +7,14 @@ interface TemplateDropdownProps {
   selectedTemplate: string;
   handleTemplateChange: (template: string) => void;
   templates: FormattedTemplate[];
+  disabled: boolean;
 }
 
 export const TemplateDropdown: React.FC<TemplateDropdownProps> = ({
                                                                     selectedTemplate,
                                                                     handleTemplateChange,
-                                                                    templates
+                                                                    templates,
+                                                                    disabled = false
                                                                   }) => {
 
   const onTemplateChange = (event: SelectChangeEvent<string>) => {
@@ -33,11 +35,12 @@ export const TemplateDropdown: React.FC<TemplateDropdownProps> = ({
         value={selectedTemplate || ''}
         onChange={onTemplateChange}
         label='Select Template'
+        disabled={disabled}
       >
         <MenuItem value=''>No template</MenuItem>
         {templates.map((template) => (
           <MenuItem key={template.id} value={template.id} selected={isTemplateSelected(template.id)}>
-            {`${template.name} (${template.version})`}
+            {`${template.name} (v${template.version})`}
           </MenuItem>
         ))}
       </Select>
