@@ -141,6 +141,7 @@ export function Series(props: SeriesProps) {
       newData["fyzio_raw_file"] = fyzio_raw_file;
       newData["stim_log_file"] = stim_log_file;
     }
+    
     return newData;
   }
 
