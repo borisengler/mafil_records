@@ -11,8 +11,8 @@
       ports:
         - "3000:3000"
       volumes:
-        - ./frontend:/app
-        - ./shared:/shared
+        # - ./frontend:/app
+        - ./shared:/app/shared
       environment:
         - PORT=3000
     backend:
@@ -22,7 +22,9 @@
       ports:
         - "4000:4000"
       volumes:
-        - ./backend:/app
+      #   - ./backend:/app
+        - ./shared:/app/shared
+        - ./.env:/app/.env
       environment:
         - PORT=4000
         - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
