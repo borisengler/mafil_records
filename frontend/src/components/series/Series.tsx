@@ -9,53 +9,22 @@ import Collapse from '@mui/material/Collapse';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import React, {useEffect, useState} from 'react';
 import CommonCard, {ExpandMore} from '../common/CommonCard';
-import {MultiLineInput, MultiLineInputProps, SingleLineInput, SingleLineInputProps} from '../common/Inputs';
-import {SeriesData, SeriesProps} from '../../../../shared/Types';
+import {CheckboxInputProps, SeriesData, SeriesProps, ValidatedSeries} from '../../../../shared/Types';
 import {
   CancelRounded,
   CheckCircle,
   HelpRounded,
   WarningRounded
 } from '@mui/icons-material';
+import { SeriesMultiLineInput } from '../common/SeriesMultiLineInput';
+import { SeriesSingleLineInput } from '../common/SeriesSingleLineInput';
 
-export function SeriesSingleLineInput({name, label, value, onChange, type = 'text'}: SingleLineInputProps) {
-  return (
-    <Box m={1} flexGrow={1}>
-      <SingleLineInput
-        name={name}
-        label={label}
-        value={value}
-        type={type}
-        onChange={onChange}
-      />
-    </Box>
-  );
-}
-
-export function SeriesMultiLineInput({name, label, value, onChange}: MultiLineInputProps) {
-  return (
-    <Box m={1} flexGrow={1}>
-      <MultiLineInput
-        name={name}
-        label={label}
-        value={value}
-        onChange={onChange}
-      />
-    </Box>
-  )
-}
-
-interface CheckboxInputProps {
-  text: string;
-  checked: boolean;
-  name: string;
-}
 
 
 export function Series(props: SeriesProps) {
   type SeriesStateEnum = 'successful' | 'failed' | 'pending' | 'waiting';
 
-  function CheckboxInput({text, checked, name}: CheckboxInputProps) {
+  function CheckboxInput({text, checked, name, disabled = false}: CheckboxInputProps) {
     return (
       <Box>
         <FormControlLabel control={
@@ -64,6 +33,7 @@ export function Series(props: SeriesProps) {
             onChange={handleCheckboxChange}
             name={name}
             color='primary'
+            disabled={disabled}
           />
         } label={text}/>
       </Box>
@@ -129,11 +99,56 @@ export function Series(props: SeriesProps) {
 
   const [measurementDownloaded, setMeasurementDownloaded] = useState(false);
 
+  function copyOldDataToNewSeries(newSeriesData: SeriesData, oldSeries: any) {
+    return {
+      ...newSeriesData,
+      seq_state: oldSeries.seq_state,
+      measured: oldSeries.measured,
+      last_updated: oldSeries.last_updated,
+      comment: oldSeries.comment,
+      stim_protocol: oldSeries.stim_protocol,
+      stim_log_file: oldSeries.stim_log_file,
+      fyzio_raw_file: oldSeries.fyzio_raw_file,
+      general_eeg: oldSeries.general_eeg,
+      general_et: oldSeries.general_et,
+      bp_ekg: oldSeries.bp_ekg,
+      bp_resp: oldSeries.bp_resp,
+      bp_gsr: oldSeries.bp_gsr,
+      bp_acc: oldSeries.bp_acc,
+      siemens_ekg: oldSeries.siemens_ekg,
+      siemens_resp: oldSeries.siemens_resp,
+      siemens_pt: oldSeries.siemens_pt
+    }
+  }
+
+  function setTemplateDataToNewSeries(props: SeriesProps, newSeriesData: SeriesData, validatedSerie: ValidatedSeries) {
+    let newData = newSeriesData;
+    newData.validation_status = props.validatedSerie ? props.validatedSerie.ValidationResult : 'MISSING';
+    validatedSerie.UserInput.forEach(element => {
+      if ((element.key == 'stim_protocol' || element.key == 'stim_log_file' || element.key == 'fyzio_raw_file') && element.valueA !== null) {
+        if (element.valueA.length > 0) newData[element.key] = element.valueA;
+      } else if ((element.key == 'general_eeg' || element.key == 'general_et' || element.key == 'bp_ekg'
+        || element.key == 'bp_resp' || element.key == 'bp_gsr' || element.key == 'bp_acc'
+        || element.key == 'siemens_ekg' || element.key == 'siemens_resp' || element.key == 'siemens_pt')
+      ) {
+        newData[element.key] = element.valueA == 'true';
+      }
+    });
+    const fyzio_raw_file = `${props.projectAcronym}_${props.visitId}_XX_${newData['stim_protocol']}1`;
+    const visitIdWithoutLetter = props.visitId.substring(0, props.visitId.length - 1);
+    const stim_log_file = `${props.projectAcronym}-${newData['stim_protocol']}-${visitIdWithoutLetter}-1`
+    if (newData.validation_status != 'NOT_FOUND') {
+      newData["fyzio_raw_file"] = fyzio_raw_file;
+      newData["stim_log_file"] = stim_log_file;
+    }
+    return newData;
+  }
+
   useEffect(() => {
     const triggeredByTemplateChange = template != props.choosenTemplate;
     setTemplate(props.choosenTemplate);
 
-    const fetchData = async () => {
+    const setDataToShow = async () => {
       if (props.validatedSerie !== null) {
 
         const oldSeriesJSON = localStorage.getItem(`series-${props.validatedSerie.SeriesInstanceUID}`);
@@ -149,45 +164,10 @@ export function Series(props: SeriesProps) {
             is_selected: oldSeries.is_selected,
             series_instance_uid: props.validatedSerie.SeriesInstanceUID,
           };
-          if (!triggeredByTemplateChange) {
-            newSeriesData = {
-              ...newSeriesData,
-              seq_state: oldSeries.seq_state,
-              measured: oldSeries.measured,
-              last_updated: oldSeries.last_updated,
-              comment: oldSeries.comment,
-              stim_protocol: oldSeries.stim_protocol,
-              stim_log_file: oldSeries.stim_log_file,
-              fyzio_raw_file: oldSeries.fyzio_raw_file,
-              general_eeg: oldSeries.general_eeg,
-              general_et: oldSeries.general_et,
-              bp_ekg: oldSeries.bp_ekg,
-              bp_resp: oldSeries.bp_resp,
-              bp_gsr: oldSeries.bp_gsr,
-              bp_acc: oldSeries.bp_acc,
-              siemens_ekg: oldSeries.siemens_ekg,
-              siemens_resp: oldSeries.siemens_resp,
-              siemens_pt: oldSeries.siemens_pt
-            }
+          if (triggeredByTemplateChange) {
+            newSeriesData = setTemplateDataToNewSeries(props, newSeriesData, props.validatedSerie);
           } else {
-            newSeriesData.validation_status = props.validatedSerie ? props.validatedSerie.ValidationResult : 'MISSING';
-            props.validatedSerie.UserInput.forEach(element => {
-              if ((element.key == 'stim_protocol' || element.key == 'stim_log_file' || element.key == 'fyzio_raw_file') && element.valueA !== null) {
-                if (element.valueA.length > 0) newSeriesData[element.key] = element.valueA;
-              } else if ((element.key == 'general_eeg' || element.key == 'general_et' || element.key == 'bp_ekg'
-                || element.key == 'bp_resp' || element.key == 'bp_gsr' || element.key == 'bp_acc'
-                || element.key == 'siemens_ekg' || element.key == 'siemens_resp' || element.key == 'siemens_pt')
-              ) {
-                newSeriesData[element.key] = element.valueA == 'true';
-              }
-            });
-            const fyzio_raw_file = `${props.projectAcronym}_${props.visitId}_XX_${newSeriesData['stim_protocol']}1`;
-            const visitIdWithoutLetter = props.visitId.substring(0, props.visitId.length - 1);
-            const stim_log_file = `${props.projectAcronym}-${newSeriesData['stim_protocol']}-${visitIdWithoutLetter}-1`
-            if (newSeriesData.validation_status != 'NOT_FOUND') {
-              newSeriesData["fyzio_raw_file"] = fyzio_raw_file;
-              newSeriesData["stim_log_file"] = stim_log_file;
-            }
+            newSeriesData = copyOldDataToNewSeries(newSeriesData, oldSeries);
           }
         }
 
@@ -222,7 +202,7 @@ export function Series(props: SeriesProps) {
         }
       }
     };
-    fetchData();
+    setDataToShow();
   }, [props.downloadedMeasurement, props.validatedSerie]);
 
   useEffect(() => {
@@ -270,7 +250,7 @@ export function Series(props: SeriesProps) {
         ...displayData,
         is_selected: !displayData.is_selected
       });
-      props.onCopy(`series-${props.validatedSerie.SeriesInstanceUID}`); // invoke parent onCopy handler
+      props.onCopy(`series-${props.validatedSerie.SeriesInstanceUID}`);
     }
   };
 
@@ -359,7 +339,7 @@ export function Series(props: SeriesProps) {
   const last_updated = props.validatedSerie !== null ? (displayData.last_updated ? displayData.last_updated.toLocaleString(): '-') : '-';
   const num_of_instances = props.validatedSerie !== null ? props.validatedSerie.NumberOfSeriesRelatedInstances : '-';
 
-  const disableInteractions = props.validatedSerie === null;
+  const readOnly = props.validatedSerie === null;
 
   return (
     <CommonCard>
@@ -385,14 +365,14 @@ export function Series(props: SeriesProps) {
             <CardActions disableSpacing>
               <Tooltip title={'Select this measurement for copying of records'}>
                 <span>
-                  <IconButton size='large' onClick={handleSeriesCopy} disabled={disableInteractions}>
+                  <IconButton size='large' onClick={handleSeriesCopy} disabled={readOnly}>
                     <ContentCopyIcon/>
                   </IconButton>
                 </span>
               </Tooltip>
               <Tooltip title={'Paste records from the selected measurement into this one'}>
                 <span>
-                  <IconButton size='large' onClick={handleSeriesPaste} disabled={disableInteractions}>
+                  <IconButton size='large' onClick={handleSeriesPaste} disabled={readOnly}>
                     <ContentPasteIcon/>
                   </IconButton>
                 </span>
@@ -405,15 +385,15 @@ export function Series(props: SeriesProps) {
             <span>
               <Select fullWidth
                       defaultValue={'pending'}
-                      value={disableInteractions ? 'waiting' : displayData.seq_state}
+                      value={readOnly ? 'waiting' : displayData.seq_state}
                       onChange={handleSeqStateChange}
                       sx={{color: getSelectColor}}
-                      disabled={disableInteractions}
+                      disabled={readOnly}
               >
                 <MenuItem value={'successful'}>Successful</MenuItem>
                 <MenuItem value={'failed'}>Failed</MenuItem>
                 <MenuItem value={'pending'}>Pending</MenuItem>
-                {disableInteractions && <MenuItem value={'waiting'}>Waiting</MenuItem>}
+                {readOnly && <MenuItem value={'waiting'}>Waiting</MenuItem>}
               </Select>
             </span>
           </Box>
@@ -432,7 +412,6 @@ export function Series(props: SeriesProps) {
                 expand={displayData.is_expanded}
                 onClick={handleSeriesClick}
                 aria-expanded={displayData.is_expanded}
-                disabled={disableInteractions}
               >
                 <ExpandMoreIcon/>
               </ExpandMore>
@@ -444,14 +423,14 @@ export function Series(props: SeriesProps) {
         <Collapse in={displayData.is_expanded} timeout='auto' unmountOnExit>
           <Box display={'flex'} flexDirection={'row'} flexWrap={'wrap'}>
             <SeriesSingleLineInput label='Stim. protocol' name='stim_protocol' value={displayData.stim_protocol}
-                                   onChange={handleTextChange}/>
+                                   onChange={handleTextChange} disabled={readOnly}/>
             <SeriesSingleLineInput label='Stim. log file' name='stim_log_file' value={displayData.stim_log_file}
-                                   onChange={handleTextChange}/>
+                                   onChange={handleTextChange} disabled={readOnly}/>
             <SeriesSingleLineInput label='Fyzio raw file (for BP)' name='fyzio_raw_file'
-                                   value={displayData.fyzio_raw_file} onChange={handleTextChange}/>
+                                   value={displayData.fyzio_raw_file} onChange={handleTextChange} disabled={readOnly}/>
             <Box sx={{width: '80ch'}}>
               <SeriesMultiLineInput label='Comment' name='comment' value={displayData.comment}
-                                    onChange={handleTextChange}/>
+                                    onChange={handleTextChange} disabled={readOnly}/>
             </Box>
             <Box m={1}>
               <Box
@@ -462,8 +441,8 @@ export function Series(props: SeriesProps) {
                 General
               </Box>
               <Box display={'flex'} flexDirection={'row'}>
-                <CheckboxInput text='EEG' checked={displayData.general_eeg} name='general_eeg'/>
-                <CheckboxInput text='ET' checked={displayData.general_et} name='general_et'/>
+                <CheckboxInput text='EEG' checked={displayData.general_eeg} name='general_eeg' disabled={readOnly}/>
+                <CheckboxInput text='ET' checked={displayData.general_et} name='general_et' disabled={readOnly}/>
               </Box>
             </Box>
             <Box m={1}>
@@ -475,10 +454,10 @@ export function Series(props: SeriesProps) {
                 BP ExG
               </Box>
               <Box display={'flex'} flexDirection={'row'}>
-                <CheckboxInput text='EKG' checked={displayData.bp_ekg} name='bp_ekg'/>
-                <CheckboxInput text='Resp.' checked={displayData.bp_resp} name='bp_resp'/>
-                <CheckboxInput text='GSR' checked={displayData.bp_gsr} name='bp_gsr'/>
-                <CheckboxInput text='ACC' checked={displayData.bp_acc} name='bp_acc'/>
+                <CheckboxInput text='EKG' checked={displayData.bp_ekg} name='bp_ekg' disabled={readOnly}/>
+                <CheckboxInput text='Resp.' checked={displayData.bp_resp} name='bp_resp' disabled={readOnly}/>
+                <CheckboxInput text='GSR' checked={displayData.bp_gsr} name='bp_gsr' disabled={readOnly}/>
+                <CheckboxInput text='ACC' checked={displayData.bp_acc} name='bp_acc' disabled={readOnly}/>
               </Box>
             </Box>
             <Box m={1}>
@@ -490,9 +469,9 @@ export function Series(props: SeriesProps) {
                 Siemens
               </Box>
               <Box display={'flex'} flexDirection={'row'}>
-                <CheckboxInput text='EKG' checked={displayData.siemens_ekg} name='siemens_ekg'/>
-                <CheckboxInput text='Resp.' checked={displayData.siemens_resp} name='siemens_resp'/>
-                <CheckboxInput text='PT' checked={displayData.siemens_pt} name='siemens_pt'/>
+                <CheckboxInput text='EKG' checked={displayData.siemens_ekg} name='siemens_ekg' disabled={readOnly}/>
+                <CheckboxInput text='Resp.' checked={displayData.siemens_resp} name='siemens_resp' disabled={readOnly}/>
+                <CheckboxInput text='PT' checked={displayData.siemens_pt} name='siemens_pt' disabled={readOnly}/>
               </Box>
             </Box>
           </Box>

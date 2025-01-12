@@ -9,13 +9,13 @@ import React, {useEffect, useState} from 'react';
 import CommonCard, {ExpandMore} from '../common/CommonCard';
 import {MultiLineInput, SingleLineInput} from '../common/Inputs';
 import {MeasurementTemplate, MeasurementTemplatePair} from '../../../../shared/Types';
-import {SeriesSingleLineInput} from '../series/Series';
 import DeleteIcon from '@mui/icons-material/Delete';
 import {DeleteDialog} from './DeleteDialog';
 import AddIcon from '@mui/icons-material/Add';
 import TemplatePairCard from './TemplatePairCard';
 import ListItems from '../common/ListItems';
 import SaveIcon from '@mui/icons-material/Save';
+import { SeriesSingleLineInput } from '../common/SeriesSingleLineInput';
 
 interface CheckboxInputProps {
   text: string;

@@ -281,3 +281,10 @@ export interface StudyProps {
   StudyDescription: string;
   StudyID: string;
 }
+
+export interface CheckboxInputProps {
+  text: string;
+  checked: boolean;
+  name: string;
+  disabled?: boolean;
+}

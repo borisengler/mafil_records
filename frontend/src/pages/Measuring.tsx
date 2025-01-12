@@ -72,21 +72,47 @@ function Measuring() {
     return localStudy ? JSON.parse(localStudy) : {};
   });
   const [expanded, setExpanded] = useState(false);
-  const [donwloadNewSession, setDownloadNewSession] = useState(false);
-
-
+  const [reDonwloadNewSession, setReDownloadNewSession] = useState(false);
+  const [readOnly, setReadOnly] = useState(false);
   const [studyData, setStudyData] = useState<StudyData>({
     study_instance_uid: props.StudyInstanceUID,
     general_comment: '',
   });
-
-
   const [studyTemplates, setStudyTemplates] = useState<FormattedTemplate[]>([]);
   const [selectedTemplateId, setSelectedTemplateId] = useState<string>('');
 
+  // init data
+  useEffect(() => {
+    fetchSessionAndMeasurements();
+    fetchProjectAndTemplates();
+    (async () => {
+      const fetchedStudyData = await getStudyData(props.StudyInstanceUID);
+      setStudyData(fetchedStudyData);
+    })();
+  }, []);
+
+  // refetch data
+  useEffect(() => {
+    fetchSessionAndMeasurements();
+  },[reDonwloadNewSession]);
+
+  // apply template
+  useEffect(() => {
+    (async () => {
+      const choosenTemplate = studyTemplates.find((template) => template.id === selectedTemplateId);
+      const {validatedSeries, missingSeries} = await postValidationData(pacsSeries, choosenTemplate);
+      setValidatedSeries(validatedSeries);
+      setMissingSeries(missingSeries);
+    })()
+  }, [studyTemplates, selectedTemplateId, pacsSeries]);
+
+  // save study data
+  useEffect(() => {
+    localStorage.setItem(`study-${props.StudyInstanceUID}`, JSON.stringify({...studyData}))
+  }, [studyData]);
+
   async function saveRecords(): Promise<boolean> {
     setSaveStatus('saving');
-
     const seriesSuccess = await saveSeriesData(props.StudyInstanceUID);
     const studySuccess = await saveStudyData(props.StudyInstanceUID);
     var sessionSucess = false;
@@ -94,7 +120,7 @@ function Measuring() {
       sessionSucess = await patchSession(auth.user ? auth.user.access_token : '', session);
     } else {
       sessionSucess = await postSession(auth.user ? auth.user.access_token : '', {...session, visit: props.AccessionNumber, studyInstanceUID: props.StudyInstanceUID});
-      setDownloadNewSession(true);
+      setReDownloadNewSession(true);
     }
     if (seriesSuccess && studySuccess && sessionSucess) {
       setSaveStatus('success');
@@ -104,11 +130,7 @@ function Measuring() {
     return false;
   }
 
-  useEffect(() => {
-    fetchData();
-  },[donwloadNewSession]);
-
-  async function fetchMafilData() {
+  async function fetchProjectAndTemplates() {
     try {
       const fetchedProjects: Project[] = await fetchProjects(auth.user ? auth.user.access_token : '');
       const project = fetchedProjects.find((project) => project.acronym == props.ReferringPhysicianName);
@@ -119,12 +141,10 @@ function Measuring() {
       }
       setStudyTemplates(fetchedTemplates);
     } catch (err) {
-
     }
-
   }
 
-  async function fetchData() {
+  async function fetchSessionAndMeasurements() {
     setFetchStatus('saving');
     const currentStudyString = localStorage.getItem('currentStudy');
     if (currentStudyString) {
@@ -139,10 +159,10 @@ function Measuring() {
 
         try {
           const newSession = await fetchSession(auth.user ? auth.user.access_token : '', currentStudy.StudyInstanceUID);
-          if ((session.uuid == '' && newSession !== undefined) || donwloadNewSession) {
+          if ((session.uuid == '' && newSession !== undefined) || reDonwloadNewSession) {
             setMafilMeasurements(newSession.measurements);
             setSession(newSession);
-            setDownloadNewSession(false);
+            setReDownloadNewSession(false);
           }
         } catch (error) {
         }
@@ -154,18 +174,6 @@ function Measuring() {
     }
     setLoading(false);
   }
-
-  useEffect(() => {
-    // Every 30 seconds, fetch series from PACS-API
-    const interval = setInterval(() => {
-      fetchData();
-      fetchMafilData();
-    }, 30 * 1000);
-
-    return () => {
-    clearInterval(interval);
-    };
-  }, [selectedTemplateId]);
 
   const toggleDrawer = () => {
     setOpen(!open);
@@ -184,14 +192,9 @@ function Measuring() {
     setPacsSeries(sortedData);
   };
 
-  useEffect(() => {
-    fetchData();
-    fetchMafilData();
-  }, []);
-
   function handleRefresh() {
-    fetchData();
-    fetchMafilData();
+    fetchSessionAndMeasurements();
+    fetchProjectAndTemplates();
   };
 
   function toggleExpand() {
@@ -227,23 +230,6 @@ function Measuring() {
     localStorage.setItem('currentTemplate', JSON.stringify(template));
   }
 
-  useEffect(() => {
-    (async () => {
-      const fetchedStudyData = await getStudyData(props.StudyInstanceUID);
-      setStudyData(fetchedStudyData);
-    })();
-  }, [props.StudyInstanceUID]);
-
-  useEffect(() => {
-    (async () => {
-      const choosenTemplate = studyTemplates.find((template) => template.id === selectedTemplateId);
-
-      const {validatedSeries, missingSeries} = await postValidationData(pacsSeries, choosenTemplate);
-      setValidatedSeries(validatedSeries);
-      setMissingSeries(missingSeries);
-    })()
-
-  }, [studyTemplates, selectedTemplateId, pacsSeries]);
 
   const handleTextChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const {name, value} = event.target;
@@ -253,10 +239,6 @@ function Measuring() {
       [name]: value,
     });
   };
-
-  useEffect(() => {
-    localStorage.setItem(`study-${props.StudyInstanceUID}`, JSON.stringify({...studyData}))
-  }, [studyData]);
 
   function handleSeriesChange(measurement: SeriesData, order: number | null = null) {
     const filteredPacsSeries = pacsSeries.filter((s) => s.SeriesInstanceUID == measurement.series_instance_uid);
@@ -352,7 +334,7 @@ function Measuring() {
         <CommonAppBar
           open={open}
           toggleDrawer={toggleDrawer}
-          pageTitle='Measuring and taking notes'
+          pageTitle={`Measuring and taking notes (${props.ReferringPhysicianName})`}
           content={
             <React.Fragment>
               <SortButton sortOrder={sortOrder} onClick={toggleSortOrder}/>
@@ -375,15 +357,18 @@ function Measuring() {
             selectedTemplate={selectedTemplateId}
             handleTemplateChange={setSelectedTemplateId}
             templates={studyTemplates}
+            disabled={readOnly}
           />
           <MultiLineInput
             label='General comment to session'
             name='comment'
             value={session.comment}
             onChange={handleTextChange}
+            disabled={readOnly}
           />
+          <BlueButton text='Save' path='/success' onClick={handleFinishStudy} sx={{marginBottom:'16px'}}/>
+
           <Box gap={2} display='flex' flexDirection='row' flexWrap='wrap' justifyContent='space-between'>
-            <BlueButton text='Finish study' path='/success' onClick={handleFinishStudy}/>
             <BlueButton text='Save as template' path='/template-edit' onClick={saveAsTemplate}/>
             <RedButton text='Back to studies' path='/studies' onClick={handleBackToStudies}/>
           </Box>

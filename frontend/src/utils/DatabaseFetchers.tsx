@@ -2,10 +2,11 @@ import { SeriesData } from '../../../shared/Types';
 
 export async function getStudyData(study_instance_uid: string) {
   // First, try to get the data from localStorage
-  let studyData = localStorage.getItem(`study-${study_instance_uid}`);
-  if (studyData) {
-    return JSON.parse(studyData);
-  }
+  // let studyData = localStorage.getItem(`study-${study_instance_uid}`);
+  // if (studyData) {
+  //   return JSON.parse(studyData);
+  // }
+  let studyData;
 
   // If not in localStorage, try to get the data from the backend server
   const response = await fetch(

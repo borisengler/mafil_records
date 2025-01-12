@@ -10,6 +10,7 @@ export interface SingleLineInputProps {
   required?: boolean;
   error?: boolean;
   helperText?: string;
+  disabled?: boolean;
 }
 
 export function SingleLineInput(
@@ -21,7 +22,8 @@ export function SingleLineInput(
     type = 'text',
     required = false,
     error = required && value == '',
-    helperText = 'Field can\'t be empty'
+    helperText = 'Field can\'t be empty',
+    disabled = false
   }: SingleLineInputProps) {
   const handleTextChange = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
     onChange(event);
@@ -40,6 +42,7 @@ export function SingleLineInput(
       required={required}
       error={error}
       helperText={error && helperText}
+      disabled={disabled}
     />
   )
 }
@@ -49,9 +52,10 @@ export interface MultiLineInputProps {
   label: string;
   value: string;
   onChange: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+  disabled?: boolean;
 }
 
-export function MultiLineInput({name, label, value, onChange}: MultiLineInputProps) {
+export function MultiLineInput({name, label, value, onChange, disabled = false}: MultiLineInputProps) {
   const handleTextChange = (event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
     onChange(event);
   };
@@ -67,6 +71,7 @@ export function MultiLineInput({name, label, value, onChange}: MultiLineInputPro
       multiline
       variant='outlined'
       maxRows={5}
+      disabled={disabled}
     />
   )
 }
