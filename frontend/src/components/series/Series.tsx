@@ -346,19 +346,26 @@ export function Series(props: SeriesProps) {
       <Box>
         <Box m={1} mb={0} display={'flex'} justifyContent={'space-between'} flexDirection={'row'} flexWrap={'wrap'}>
 
-          <Box
-            fontWeight={'bold'}
-            width={Math.max(38, description.length + seriesNumber.toString.length) + 'ch'}
-            fontSize={18}
-            whiteSpace={'break-spaces'}
-          >
-            {`${seriesNumber ? seriesNumber + ' | ' : ''}`}{description}
-          </Box>
+        <Box
+          fontWeight={'bold'}
+          width={Math.max(38, description.length + seriesNumber.toString().length) + 'ch'}
+          fontSize={18}
+          whiteSpace={'break-spaces'}
+        >
+          {seriesNumber ? (
+            <Tooltip title="Series Number">
+              <span>{`${seriesNumber} | `}</span>
+            </Tooltip>
+          ) : null}
+          {description}
+        </Box>
 
           <Box color={'grey'} justifyContent='flex-start' fontWeight={'lighter'} fontSize={12} width={'38ch'}>
             <Box>Measured: {measured}</Box>
             <Box>Last updated: {last_updated}</Box>
-            <Box>Number of instances: {num_of_instances}</Box>
+            <Tooltip title="NumberOfStudyRelatedSeries">
+              <Box>Number of instances: {num_of_instances}</Box>
+            </Tooltip>
           </Box>
 
           <Box display={'flex'} justifyContent='flex-start' flexDirection={'row'}>
@@ -432,6 +439,8 @@ export function Series(props: SeriesProps) {
               <SeriesMultiLineInput label='Comment' name='comment' value={displayData.comment}
                                     onChange={handleTextChange} disabled={readOnly}/>
             </Box>
+          </Box>
+          <Box display={'flex'} flexDirection={'row'} flexWrap={'wrap'}>  
             <Box m={1}>
               <Box
                 sx={{

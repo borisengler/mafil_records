@@ -1,30 +1,34 @@
 import React from 'react';
 import Box from '@mui/material/Box';
+import { Tooltip } from '@mui/material';
 
 interface Props {
   label: string;
   text: string | undefined;
+  hint?: string;
 }
 
-function InfoItem({label, text}: Props) {
+function InfoItem({label, text, hint}: Props) {
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-      }}>
-      <Box>
-        {label}
-      </Box>
+    <Tooltip title={hint} arrow>
       <Box
         sx={{
-          fontWeight: 'bold',
-          wordBreak: 'break-all'
-        }}
-      >
-        {text ? text : ''}
+          display: 'flex',
+          flexDirection: 'column',
+        }}>
+        <Box>
+          {label}
+        </Box>
+        <Box
+          sx={{
+            fontWeight: 'bold',
+            wordBreak: 'break-all'
+          }}
+        >
+          {text ? text : ''}
+        </Box>
       </Box>
-    </Box>
+    </Tooltip>
   )
 }
 

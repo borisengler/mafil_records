@@ -98,7 +98,6 @@ export function TemplateItemCard(props: TemplateItemProps) {
   const onAddTemplateClick = () => {
     const new_pair: MeasurementTemplatePair = {
       key: '',
-      key_source: '',
       user_input: false,
       type_of_comparison: 'equal',
       valueA: '',
@@ -261,7 +260,7 @@ export function TemplateItemCard(props: TemplateItemProps) {
             fontSize={18}
             whiteSpace={'break-spaces'}
           >
-            <SingleLineInput label='Name' name='name' value={template.name} onChange={setTemplateName} required={true}/>
+            <SingleLineInput label='Series description' name='name' value={template.name} onChange={setTemplateName} required={true}/>
           </Box>
           <CardActions disableSpacing>
             <span>

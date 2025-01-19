@@ -334,7 +334,7 @@ function Measuring() {
         <CommonAppBar
           open={open}
           toggleDrawer={toggleDrawer}
-          pageTitle={`Measuring and taking notes (${props.ReferringPhysicianName})`}
+          pageTitle={"Measuring and taking notes"}
           content={
             <React.Fragment>
               <SortButton sortOrder={sortOrder} onClick={toggleSortOrder}/>
@@ -350,9 +350,11 @@ function Measuring() {
           toggleDrawer={toggleDrawer}
         >
           <InfoItem label='Measuring operator' text={auth.user ? auth.user.profile.name : ''}/>
-          <InfoItem label='Visit ID' text={props.AccessionNumber}/>
-          <InfoItem label='Study UID' text={props.StudyInstanceUID}/>
-          <InfoItem label='Patient name' text={props.PatientName}/>
+          <InfoItem label='Project' text={props.ReferringPhysicianName} hint='ReferringPhysicianName'/>
+          <InfoItem label='Visit ID' text={props.AccessionNumber} hint='AccessionNumber'/>
+          <InfoItem label='Study UID' text={props.StudyInstanceUID} hint='StudyInstanceUID'/>
+          <InfoItem label='Patient name' text={props.PatientName} hint='PatientName'/>
+          <InfoItem label='Patient ID' text={props.PatientID} hint='PatientID'/>
           <TemplateDropdown
             selectedTemplate={selectedTemplateId}
             handleTemplateChange={setSelectedTemplateId}

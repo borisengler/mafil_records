@@ -108,11 +108,8 @@ function Studies() {
               fetchData={fetchData}
             />
             {lastAccessedStudy !== undefined &&
-                <div style={{display: 'flex', alignItems: 'center'}}>
-                    <BlueButton text='Open last accessed study' path='/measuring'/>
-                    <div style={{marginLeft: '4px'}}>
-                        <Tooltip title={
-                          <span>
+                <Tooltip title={
+                  <span>
                     Project <strong>{lastAccessedStudy.ReferringPhysicianName}</strong>
                     <br/>
                     VisitId <strong>{lastAccessedStudy.AccessionNumber}</strong>
@@ -121,11 +118,11 @@ function Studies() {
                     <br/>
                     Patient <strong>{lastAccessedStudy.PatientName}</strong>
                   </span>}
-                        >
-                            <InfoOutlinedIcon/>
-                        </Tooltip>
-                    </div>
-                </div>
+                >
+                  <div style={{display: 'flex', alignItems: 'center'}}>
+                    <BlueButton text='Open last accessed study' path='/measuring'/>
+                  </div>
+                </Tooltip>
 
             }
             {<BlueButton text='Template administration' path='/templates'/>}

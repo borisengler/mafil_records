@@ -56,8 +56,8 @@ export default function TemplatePairCard(props: TemplatePairCardProps) {
   const valueAHint = pair.type_of_comparison == 'equal' ? 'Field can\'t be empty' : 'At least one of the values must be filled';
   const valueBHint = pair.type_of_comparison == 'equal' ? 'Field can\'t be empty' : 'At least one of the values must be filled';
 
-  const keyError = (pair.key_source == undefined || pair.key_source == '') && pair.key == '';
-  const keyHint = 'At least one of Source and Key fields must be filled';
+  const keyError = (pair.key == undefined || pair.key == '') && pair.key == '';
+  const keyHint = 'Field can\'t be empty';
 
   return (
 
@@ -66,15 +66,10 @@ export default function TemplatePairCard(props: TemplatePairCardProps) {
       <Box display={'flex'} flexDirection={'row'}>
         <DeleteDialog open={isDeleteDialogOpen} onClose={closeDeleteDialog} onConfirm={deleteItem}></DeleteDialog>
         <Box m={1} flexGrow={1}>
-          <SingleLineInput label='Source (PACS key)' name='key_source'
-                                 value={pair.key_source ? pair.key_source : ''} onChange={handleTextChange}
+          <SingleLineInput label='Source (PACS key)' name='key'
+                                 value={pair.key ? pair.key : ''} onChange={handleTextChange}
                                  error={keyError} helperText={keyHint}/>
         </Box>
-        <Box m={1} flexGrow={1}>
-          <SingleLineInput label='Key (Mafil key)' name='key' value={pair.key} onChange={handleTextChange}
-                                 error={keyError} helperText={keyHint}/>
-        </Box>
-
         <FormControl component='fieldset'>
           <FormLabel component='legend'>Type of Comparison</FormLabel>
           <RadioGroup

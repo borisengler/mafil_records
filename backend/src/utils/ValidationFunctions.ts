@@ -80,22 +80,22 @@ import {
   const validateSeriesWithPair = (serie: PACSSeries, pair: MeasurementTemplatePair): ValidationPairResult => {
     if (!pair.user_input) {
       if (pair.type_of_comparison == 'equal') {
-        if (serie[pair.key_source] != pair.valueA) {
+        if (serie[pair.key] != pair.valueA) {
           return {
             result: false,
-            reason: `${pair.key_source} should equal ${pair.valueA}, but is ${serie[pair.key_source]}`
+            reason: `${pair.key} should equal ${pair.valueA}, but is ${serie[pair.key]}`
           };
         }
       }
       if (pair.type_of_comparison == 'range') {
         if (
-          (pair.valueA != undefined && serie[pair.key_source] < pair.valueA)
-          || (pair.valueB != undefined && serie[pair.key_source] > pair.valueB)
+          (pair.valueA != undefined && serie[pair.key] < pair.valueA)
+          || (pair.valueB != undefined && serie[pair.key] > pair.valueB)
         ) {
           const interval = `(${pair.valueA ? pair.valueA : '-∞'},${pair.valueB ? pair.valueB : '∞'})`
           return {
             result: false,
-            reason: `${pair.key_source} should be in interval ${interval}, but is ${serie[pair.key_source]}`
+            reason: `${pair.key} should be in interval ${interval}, but is ${serie[pair.key]}`
           };
         }
       }

@@ -26,7 +26,6 @@ export interface MeasurementTemplate {
 
 export interface MeasurementTemplatePair {
   key: string;
-  key_source?: string;
   user_input: boolean;
   type_of_comparison: 'equal' | 'range';
   valueA: string;
